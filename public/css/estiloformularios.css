@@ -1,0 +1,476 @@
+/* Estilos generales para los formularios */
+.all-form {
+    padding: 10px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Estilos comunes para las secciones del formulario */
+.form-container {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilos de los grupos de formulario */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* Sección de bimestres */
+.bimestres-section {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.bimestres-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 15px;
+}
+
+.bimestre-item {
+    text-align: center;
+}
+
+.bimestre-item label {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #555;
+}
+
+.bimestre-item input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+}
+
+/* Sección de resultados */
+.resultados-section {
+    background: #e5eaf4;
+    padding: 20px;
+    border-radius: 8px;
+    margin: 20px 0;
+}
+
+.resultados-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 15px;
+}
+
+.resultado-item {
+    background: white;
+    padding: 15px;
+    border-radius: 6px;
+    text-align: center;
+}
+
+.resultado-item label {
+    display: block;
+    margin-bottom: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: #333;
+}
+
+.resultado-valor {
+    font-size: 24px;
+    font-weight: 700;
+    color: #04638b;
+}
+
+/* Botón de envío */
+.submit-btn {
+    background: #04638b;
+    color: white;
+    padding: 12px 30px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.submit-btn:hover {
+    background: #004c69;
+}
+
+/* Títulos de secciones */
+.section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #04638b;
+}
+
+/* Estilos para la cabecera responsive */
+.responsive-header {
+    width: 100%;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 10px;
+    background-color: #e5eaf4;
+    border-bottom: 1px solid #ddd;
+    flex-wrap: nowrap;
+    position: fixed;
+    z-index: 9999;
+    top: 0;
+    left: 0;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo de tablas */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 25px;
+}
+
+th {
+    background-color: #04638b;
+    color: white;
+    padding: 12px 8px;
+    text-align: center;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+th:first-child {
+    border-radius: 4px 0 0 0;
+}
+
+th:last-child {
+    border-radius: 0 4px 0 0;
+}
+
+td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #658598;
+}
+
+/* Estilos para los formularios en filas */
+.form-row {
+    display: flex;
+    gap: 15px;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+/* Media query para pantallas pequeñas (hasta 600px) */
+@media (max-width: 600px) {
+    .form-row {
+        flex-direction: column;
+        gap: 0;
+    }
+    
+    .form-container {
+        padding: 25px;
+        margin: 10px;
+    }
+
+    .submit-btn {
+        width: auto;
+    }
+
+    /* Header responsivo */
+    .responsive-header {
+        padding: 8px 16px;
+    }
+    
+    .header-title {
+        font-size: 1.3rem;
+    }
+    
+    .form-container {
+        padding: 25px;
+        margin: 10px;
+    }
+
+    /* Ajustes de tablas */
+    table {
+        font-size: 11px;
+    }
+
+    .date-input {
+        width: 100px;
+    }
+}
+
+/* Media query para pantallas de tablet (hasta 900px) */
+@media (max-width: 900px) {
+    .header-title {
+        font-size: 1.6rem;
+    }
+
+    .form-container {
+        padding: 25px;
+        margin: 10px;
+    }
+}
+
+/* Estilo de contenedor del formulario */
+.form-container-head,
+.form-container-body {
+    margin: 0 auto;
+    padding: 20px;
+    color: #5a5c69;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.3);
+    background: #FFFFFF;
+}
+
+/* Estilos adicionales del formulario (alternativa de estilos) */
+.div-fila {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.div-fila > * {
+    flex: 1;
+}
+
+.div-fila-alt {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0px;
+}
+
+.div-uniq {
+  border: 3px dotted #7d7d7d;
+  padding: 10px;
+  padding-bottom: 20px;
+  border-radius: 5px;
+}
+
+.list-item {
+    background: rgba(255, 255, 255, 0.7);
+    border: 1px solid rgba(100, 99, 139, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.list-item:hover {
+    background: rgba(255, 255, 255, 0.9);
+    border-color: rgba(99, 105, 139, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(93, 64, 55, 0.1);
+}
+
+.item-meta {
+    color: #4a4c4f ;
+    font-size: 0.85rem;
+}
+
+.meeting-badge {
+    display: inline-block;
+    background: rgba(99, 100, 141, 0.2);
+    color: #3b375d;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.date-input {
+    width: 130px;
+    padding: 8px;
+    border: 1px solid #a8b9d4;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: #212665;
+    font-size: 13px;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+.etapa-label {
+    background-color: #e3efff;
+    font-weight: 500;
+    color: #282165;
+    text-align: left;
+    padding-left: 15px;
+    position: relative;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 8px;
+    background-color: #a8b7d4;
+    transition: background-color 0.3s ease;
+}
+
+.status-dot.complete {
+    background-color: #1c148b;
+}
+
+.section-title2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #333;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+}
+
+.progress-info {
+    text-align: center;
+    margin-bottom: 25px;
+    color: #04235c ;
+    font-size: 14px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 4px;
+    background: #a8b7d4;
+    border-radius: 2px;
+    margin: 15px 0 30px 0;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background: #04235c ;
+    transition: width 0.3s ease;
+    width: 0%;
+}
+
+.date-input.filled {
+    background-color: #f0f8f0;
+    border-color: #16148b;
+}
+
+.btn-unarchive {
+    background-color: #28a745;
+    color: white;
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-unarchive:hover {
+    background-color: #218838;
+}
+
+.btn-archive {
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-archive:hover {
+    background-color: #dadada;
+}
+
+tr.archivado {
+    background-color: #f3f3f3;
+    opacity: 0.8;
+}
+
+.btn-edit {
+    background-color: #2889a7;
+    color: white;
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-edit:hover {
+    background-color: #04638b
+}
+
+.btn-etapas {
+    background-color: #2889a7;
+    color: white;
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-etapas:hover {
+    background-color: #04638b
+}
+
+
+.progress-mini {
+    width: 80px;
+    height: 20px;
+    background-color: #e0e0e0;
+    border-radius: 10px;
+    overflow: hidden;
+    display: inline-block;
+    margin-bottom: 5px;
+}
+
+.progress-bar-mini {
+    height: 100%;
+    /*background: linear-gradient(90deg, #ff6b6b 0%, #ffd93d 50%, #6bcf7f 100%);*/
+    background-color: #6bcf7f;
+    transition: width 0.3s ease;
+}
+

@@ -1,0 +1,6 @@
+[90m= [39m[34;4mApp\Models\Parte[39;24m {#5644
+    [34mID_parte[39m: [35m10001[39m,
+    [34mID_libro[39m: [36mnull[39m,
+    [34mdesc[39m: "[32mPropósito de la Normativa para la Infraestructura del Transporte[39m",
+  }
+
