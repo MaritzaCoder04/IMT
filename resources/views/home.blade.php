@@ -64,10 +64,13 @@
             </a>
           </li>
             <li class="submenu-toggle">
-              <a href="" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');">
+              {{--<a href="" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');">--}}
+                <a href="{{ route('representaciones') }}">
                 <img src="{{asset('/img/config.png')}}" alt="">
                 &nbsp;Representaciones
               </a>
+            </li>
+              {{--
                 <ul class="submenu">
                   <li>
                     <a href="{{ route('representaciones') }}">
@@ -90,8 +93,7 @@
                       &nbsp;Busqueda avanzada
                     </a>
                   </li>
-                </ul>
-            </li>
+                </ul>--}}
             <li class="submenu-toggle">
                 <a href="" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');">
                   <img src="{{asset('/img/config.png')}}" alt="">

@@ -15,7 +15,7 @@
 
 /* Estilos de los grupos de formulario */
 .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 .form-group label {
@@ -440,6 +440,22 @@ tr.archivado {
     background-color: #04638b
 }
 
+.btn-delete {
+    background-color: #a72828;
+    color: white;
+    width: 100%;
+    padding: 5px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.btn-delete:hover {
+    background-color: #8b0404
+}
+
 .btn-etapas {
     background-color: #2889a7;
     color: white;
@@ -455,7 +471,6 @@ tr.archivado {
 .btn-etapas:hover {
     background-color: #04638b
 }
-
 
 .progress-mini {
     width: 80px;
@@ -473,4 +488,31 @@ tr.archivado {
     background-color: #6bcf7f;
     transition: width 0.3s ease;
 }
+
+.up {
+    background-color: #eaf0f3;
+}
+
+.docs-table-wrapper {
+  max-height: 46vh; 
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.docs-table-wrapper2 {
+  max-height: 60vh; 
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.docs-table thead th {
+  position: sticky;
+  top: 0;
+  background: #2889a7;
+  z-index: 10;
+  border-bottom: 2px solid #ccc;
+}
+
 

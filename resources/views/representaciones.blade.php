@@ -1,225 +1,681 @@
 @extends('home')
 
 @section('contenido')
-<div class="all-form">
-    <div class="form-container">
-        <div class="container">
-            <div class="layout">
-                <main class="main-content">
-                    <!-- Sección Organismos -->
-                    <section id="organismos" class="section active">
-                        <div class="section-header">
-                            <h2 class="section-title">Gestión de Organismos</h2>
-                        </div>
+<style>
+    .reunion-tracker {
+        padding: 2rem;
+        background: #f8fafc;
+        min-height: 100vh;
+    }
+    
+    .reunion-header {
+        margin-bottom: 2rem;
+    }
+    
+    .reunion-title {
+        font-size: 2rem;
+        font-weight: 300;
+        color: #1e3a8a;
+        margin-bottom: 1.5rem;
+    }
+    
+    .tabs-container {
+        display: flex;
+        gap: 0.25rem;
+        margin-bottom: 0.25rem;
+        align-items: center;
+        background: white;
+        border-bottom: 1px solid #cbd5e1;
+    }
+    
+    .tab-item {
+        position: relative;
+    }
+    
+    .tab-button {
+        padding: 0.75rem 1.5rem;
+        font-weight: 500;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        transition: all 0.2s;
+        color: #64748b;
+        border-top: 1px solid transparent;
+        border-left: 1px solid transparent;
+        border-right: 1px solid transparent;
+    }
+    
+    .tab-button.active {
+        color: #1d4ed8;
+        background: #eff6ff;
+        border-top: 2px solid #2563eb;
+        border-left: 1px solid #cbd5e1;
+        border-right: 1px solid #cbd5e1;
+    }
+    
+    .tab-button:hover:not(.active) {
+        background: #f1f5f9;
+    }
+    
+    .delete-year {
+        position: absolute;
+        top: -4px;
+        right: -4px;
+        background: #ef4444;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        width: 18px;
+        height: 18px;
+        font-size: 10px;
+        cursor: pointer;
+        opacity: 0;
+        transition: opacity 0.2s;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .tab-item:hover .delete-year {
+        opacity: 1;
+    }
+    
+    .add-year-form {
+        display: none;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0 0.5rem;
+    }
+    
+    .add-year-input {
+        width: 80px;
+        padding: 0.25rem 0.5rem;
+        border: 1px solid #93c5fd;
+        border-radius: 0.25rem;
+        font-size: 0.875rem;
+    }
+    
+    .add-year-input:focus {
+        outline: none;
+        ring: 1px solid #2563eb;
+    }
+    
+    .btn-small {
+        padding: 0.25rem 0.75rem;
+        font-size: 0.875rem;
+        border: none;
+        border-radius: 0.25rem;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    
+    .btn-primary {
+        background: #2563eb;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background: #1d4ed8;
+    }
+    
+    .btn-secondary {
+        background: #cbd5e1;
+        color: #334155;
+    }
+    
+    .btn-secondary:hover {
+        background: #94a3b8;
+    }
+    
+    .btn-add-year {
+        padding: 0.75rem 1rem;
+        color: #2563eb;
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-size: 0.875rem;
+        transition: background 0.2s;
+    }
+    
+    .btn-add-year:hover {
+        background: #eff6ff;
+    }
+    
+    .table-container {
+        background: white;
+        border: 1px solid #cbd5e1;
+        overflow: hidden;
+    }
+    
+    .table-scroll {
+        overflow-x: auto;
+    }
+    
+    .reunion-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .reunion-table th,
+    .reunion-table td {
+        border: 1px solid #cbd5e1;
+        padding: 0.5rem 0.75rem;
+        text-align: center;
+    }
+    
+    .reunion-table thead th {
+        background: #f1f5f9;
+        font-weight: 600;
+        color: #334155;
+        font-size: 0.875rem;
+    }
+    
+    .reunion-table thead tr:first-child th {
+        background: #e2e8f0;
+    }
+    
+    .empresa-cell {
+        text-align: left;
+        font-weight: 500;
+        color: #1e293b;
+        background: white;
+        position: sticky;
+        left: 0;
+        z-index: 10;
+    }
+    
+    .semana-header {
+        background: #f8fafc;
+        font-size: 0.75rem;
+        color: #64748b;
+        font-weight: 500;
+        min-width: 50px;
+    }
+    
+    .dia-cell {
+        background: white;
+        cursor: pointer;
+        transition: background 0.2s;
+        min-height: 24px;
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #334155;
+    }
+    
+    .dia-cell:hover {
+        background: #f8fafc;
+    }
+    
+    .dia-cell.empty {
+        color: #cbd5e1;
+    }
+    
+    .dia-input {
+        width: 100%;
+        text-align: center;
+        font-size: 0.875rem;
+        padding: 0.125rem 0.25rem;
+        border: 1px solid #60a5fa;
+        border-radius: 0.25rem;
+    }
+    
+    .dia-input:focus {
+        outline: none;
+        ring: 1px solid #2563eb;
+    }
+    
+    .totales-cell {
+        background: #eff6ff;
+        font-weight: 700;
+        color: #1d4ed8;
+    }
+    
+    .programadas-input {
+        width: 100%;
+        text-align: center;
+        font-weight: 700;
+        color: #1e3a8a;
+        background: transparent;
+        border: none;
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    
+    .programadas-input:focus {
+        outline: none;
+        ring: 1px solid #2563eb;
+        border-radius: 0.25rem;
+    }
+</style>
+
+<div class="reunion-tracker">
+    <div class="reunion-header">
+        <h1 class="reunion-title">Registro de Reuniones</h1>
+    </div>
+    
+    <!-- Pestañas de años -->
+    <div class="tabs-container">
+        <div class="tab-item">
+            <button class="tab-button active" onclick="cambiarAnio(2023)">2023</button>
+            <button class="delete-year" onclick="eliminarAnio(2023)">×</button>
+        </div>
+        <div class="tab-item">
+            <button class="tab-button" onclick="cambiarAnio(2024)">2024</button>
+            <button class="delete-year" onclick="eliminarAnio(2024)">×</button>
+        </div>
+        <div class="tab-item">
+            <button class="tab-button" onclick="cambiarAnio(2025)">2025</button>
+            <button class="delete-year" onclick="eliminarAnio(2025)">×</button>
+        </div>
+        <div class="tab-item">
+            <button class="tab-button" onclick="cambiarAnio(2026)">2026</button>
+            <button class="delete-year" onclick="eliminarAnio(2026)">×</button>
+        </div>
+        
+        <div class="add-year-form" id="addYearForm">
+            <input type="number" class="add-year-input" id="newYearInput" placeholder="2027">
+            <button class="btn-small btn-primary" onclick="agregarAnio()">OK</button>
+            <button class="btn-small btn-secondary" onclick="toggleAddYear()">Cancelar</button>
+        </div>
+        
+        <button class="btn-add-year" id="btnAddYear" onclick="toggleAddYear()">
+            <svg style="width: 16px; height: 16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Tabla -->
+    <div class="table-container">
+        <div class="table-scroll">
+            <table class="reunion-table">
+                <thead>
+                    <tr>
+                        <th rowspan="2" class="empresa-cell">Empresa</th>
+                        <th colspan="4">Ene</th>
+                        <th colspan="4">Feb</th>
+                        <th colspan="4">Mar</th>
+                        <th colspan="4">Abr</th>
+                        <th colspan="4">May</th>
+                        <th colspan="4">Jun</th>
+                        <th colspan="4">Jul</th>
+                        <th colspan="4">Ago</th>
+                        <th colspan="4">Sep</th>
+                        <th colspan="4">Oct</th>
+                        <th colspan="4">Nov</th>
+                        <th colspan="4">Dic</th>
+                        <th rowspan="2" class="totales-cell" style="min-width: 100px;">Realizadas</th>
+                        <th rowspan="2" class="totales-cell" style="min-width: 110px;">Programadas</th>
+                    </tr>
+                    <tr>
+                        <!-- 12 meses × 4 semanas = 48 columnas -->
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
                         
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label class="form-label">Nombre del Organismo</label>
-                                <input type="text" id="nombreOrganismo" class="form-input" placeholder="Ingresa el nombre del organismo" required>
-                            </div>
-                            <div class="form-group">
-                                <label class="form-label">Reuniones Anuales</label>
-                                <input type="number" id="reunionesProgramadas" class="form-input" min="0" placeholder="Número de reuniones programadas">
-                            </div>
-                        </div>
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
                         
-                        <button class="submit-btn" onclick="agregarOrganismo()">
-                            Agregar Organismo
-                        </button>
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
                         
-                        <div style="margin-top: 30px;">
-                            <h3 style="color: #4a4c4f; margin-bottom: 20px; font-weight: 400;">Organismos Registrados</h3>
-                            <div id="listaOrganismos" class="card-list"></div>
-                        </div>
-                    </section>
-                </main>
-            </div>
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                        
+                        <th class="semana-header">S1</th>
+                        <th class="semana-header">S2</th>
+                        <th class="semana-header">S3</th>
+                        <th class="semana-header">S4</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Empresa A -->
+                    <tr>
+                        <td class="empresa-cell">Empresa A</td>
+                        <!-- Enero -->
+                        <td class="dia-cell" onclick="editarDia(this)">5</td>
+                        <td class="dia-cell" onclick="editarDia(this)">12</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Febrero -->
+                        <td class="dia-cell" onclick="editarDia(this)">2</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Marzo -->
+                        <td class="dia-cell" onclick="editarDia(this)">8</td>
+                        <td class="dia-cell" onclick="editarDia(this)">15</td>
+                        <td class="dia-cell" onclick="editarDia(this)">22</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Abril -->
+                        <td class="dia-cell" onclick="editarDia(this)">3</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Mayo a Diciembre (vacíos) -->
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="totales-cell">8</td>
+                        <td class="totales-cell">
+                            <input type="number" class="programadas-input" value="24" min="0">
+                        </td>
+                    </tr>
+                    
+                    <!-- Empresa B -->
+                    <tr>
+                        <td class="empresa-cell">Empresa B</td>
+                        <!-- Enero -->
+                        <td class="dia-cell" onclick="editarDia(this)">6</td>
+                        <td class="dia-cell" onclick="editarDia(this)">13</td>
+                        <td class="dia-cell" onclick="editarDia(this)">20</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Febrero -->
+                        <td class="dia-cell" onclick="editarDia(this)">3</td>
+                        <td class="dia-cell" onclick="editarDia(this)">17</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Marzo -->
+                        <td class="dia-cell" onclick="editarDia(this)">9</td>
+                        <td class="dia-cell" onclick="editarDia(this)">16</td>
+                        <td class="dia-cell" onclick="editarDia(this)">23</td>
+                        <td class="dia-cell" onclick="editarDia(this)">30</td>
+                        <!-- Abril -->
+                        <td class="dia-cell" onclick="editarDia(this)">4</td>
+                        <td class="dia-cell" onclick="editarDia(this)">11</td>
+                        <td class="dia-cell" onclick="editarDia(this)">18</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Mayo a Diciembre (vacíos) -->
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="totales-cell">13</td>
+                        <td class="totales-cell">
+                            <input type="number" class="programadas-input" value="36" min="0">
+                        </td>
+                    </tr>
+                    
+                    <!-- Empresa C -->
+                    <tr>
+                        <td class="empresa-cell">Empresa C</td>
+                        <!-- Enero -->
+                        <td class="dia-cell" onclick="editarDia(this)">7</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Febrero -->
+                        <td class="dia-cell" onclick="editarDia(this)">5</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Marzo -->
+                        <td class="dia-cell" onclick="editarDia(this)">10</td>
+                        <td class="dia-cell" onclick="editarDia(this)">24</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Abril -->
+                        <td class="dia-cell" onclick="editarDia(this)">6</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <!-- Mayo a Diciembre (vacíos) -->
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        <td class="dia-cell empty" onclick="editarDia(this)">-</td>
+                        
+                        <td class="totales-cell">5</td>
+                        <td class="totales-cell">
+                            <input type="number" class="programadas-input" value="12" min="0">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
     </div>
 </div>
 
 <script>
-let organismos = [];
-let reuniones = [];
-
-// Inicializar aplicación
-function init() {
-    cargarDatos();
-    actualizarListaOrganismos();
-}
-
-// Cargar datos (aquí conectarías con tu backend/API)
-function cargarDatos() {
-    // Cargar desde base de datos o API
-    // Por ahora datos de ejemplo opcionales:
-    /*
-    organismos = [
-        { id: 1, nombre: "Consejo Municipal", reunionesProgramadas: 12, fechaCreacion: new Date().toISOString() },
-        { id: 2, nombre: "Junta Directiva", reunionesProgramadas: 24, fechaCreacion: new Date().toISOString() }
-    ];
-    reuniones = [
-        { id: 1, organismoId: 1, fecha: "2024-01-15" },
-        { id: 2, organismoId: 1, fecha: "2024-02-15" }
-    ];
-    */
-}
-
-// Agregar organismo
-function agregarOrganismo() {
-    const nombre = document.getElementById('nombreOrganismo').value.trim();
-    const programadas = parseInt(document.getElementById('reunionesProgramadas').value) || 0;
-    
-    if (!nombre) {
-        return;
-    }
-    
-    if (programadas < 0) {
-        alert('El número de reuniones debe ser mayor o igual a 0', 'error');
-        return;
-    }
-    
-    const organismo = {
-        id: Date.now(),
-        nombre: nombre,
-        reunionesProgramadas: programadas,
-        fechaCreacion: new Date().toISOString()
-    };
-    
-    organismos.push(organismo);
-    guardarDatos();
-    limpiarFormularioOrganismo();
-    actualizarListaOrganismos();
-    alert(`Organismo "${nombre}" agregado exitosamente`);
-}
-
-// Limpiar formulario
-function limpiarFormularioOrganismo() {
-    document.getElementById('nombreOrganismo').value = '';
-    document.getElementById('reunionesProgramadas').value = '';
-}
-
-// Editar organismo
-function editarOrganismo(id, campo) {
-    const organismo = organismos.find(org => org.id === id);
-    if (!organismo) return;
-    
-    let nuevoValor;
-    if (campo === 'nombre') {
-        nuevoValor = prompt('Nuevo nombre:', organismo.nombre);
-        if (nuevoValor && nuevoValor.trim()) {
-            organismo.nombre = nuevoValor.trim();
-            alert('Nombre actualizado');
-        } else if (nuevoValor === '') {
-            alert('El nombre no puede estar vacío', 'error');
-            return;
-        }
-    } else if (campo === 'reuniones') {
-        nuevoValor = prompt('Reuniones programadas:', organismo.reunionesProgramadas);
-        if (nuevoValor !== null) {
-            const numero = parseInt(nuevoValor);
-            if (isNaN(numero) || numero < 0) {
-                alert('Ingresa un número válido mayor o igual a 0', 'error');
-                return;
-            }
-            organismo.reunionesProgramadas = numero;
-            alert('Reuniones programadas actualizadas');
+    function toggleAddYear() {
+        const form = document.getElementById('addYearForm');
+        const btn = document.getElementById('btnAddYear');
+        
+        if (form.style.display === 'none' || form.style.display === '') {
+            form.style.display = 'flex';
+            btn.style.display = 'none';
+            document.getElementById('newYearInput').focus();
+        } else {
+            form.style.display = 'none';
+            btn.style.display = 'flex';
         }
     }
     
-    if (nuevoValor !== null && nuevoValor !== '') {
-        guardarDatos();
-        actualizarListaOrganismos();
-    }
-}
-
-// Eliminar organismo
-function eliminarOrganismo(id) {
-    const organismo = organismos.find(org => org.id === id);
-    if (!organismo) return;
-    
-    if (confirm(`¿Eliminar "${organismo.nombre}" y todas sus reuniones?`)) {
-        organismos = organismos.filter(org => org.id !== id);
-        reuniones = reuniones.filter(reunion => reunion.organismoId !== id);
-        guardarDatos();
-        actualizarListaOrganismos();
-        alert('Organismo eliminado');
-    }
-}
-
-// Actualizar lista de organismos
-function actualizarListaOrganismos() {
-    const lista = document.getElementById('listaOrganismos');
-    
-    if (organismos.length === 0) {
-        lista.innerHTML = `
-            <div class="empty-state">
-                <div>No hay organismos registrados</div>
-            </div>
-        `;
-        return;
+    function cambiarAnio(anio) {
+        // Remover clase active de todos los botones
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Agregar clase active al botón clickeado
+        event.target.classList.add('active');
+        
+        // Aquí iría la lógica para cargar los datos del año seleccionado
+        console.log('Cambiando a año:', anio);
     }
     
-    lista.innerHTML = organismos
-        .sort((a, b) => a.nombre.localeCompare(b.nombre))
-        .map(organismo => {
-            const reunionesRealizadas = reuniones.filter(r => r.organismoId === organismo.id).length;
-            const progreso = organismo.reunionesProgramadas > 0 
-                ? (reunionesRealizadas / organismo.reunionesProgramadas) * 100 
-                : 0;
+    function agregarAnio() {
+        const input = document.getElementById('newYearInput');
+        const anio = parseInt(input.value);
+        
+        if (anio && anio > 1900 && anio < 2100) {
+            // Aquí iría la lógica para agregar el año
+            console.log('Agregando año:', anio);
+            toggleAddYear();
+            input.value = '';
+        } else {
+            alert('Por favor ingresa un año válido');
+        }
+    }
+    
+    function eliminarAnio(anio) {
+        if (confirm(`¿Estás seguro de eliminar el año ${anio}?`)) {
+            // Aquí iría la lógica para eliminar el año
+            console.log('Eliminando año:', anio);
+        }
+    }
+    
+    function editarDia(celda) {
+        const valorActual = celda.textContent.trim();
+        const valor = valorActual === '-' ? '' : valorActual;
+        
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.className = 'dia-input';
+        input.value = valor;
+        input.placeholder = 'Día';
+        
+        celda.innerHTML = '';
+        celda.appendChild(input);
+        input.focus();
+        
+        const guardar = () => {
+            const nuevoValor = input.value.trim();
+            const textoMostrar = nuevoValor || '-';
             
-            return `
-                <div class="list-item">
-                    <div class="item-content">
-                        <h4>${escapeHtml(organismo.nombre)}</h4>
-                        <div class="item-meta">
-                            ${reunionesRealizadas}/${organismo.reunionesProgramadas} reuniones
-                            <span class="meeting-badge">${progreso.toFixed(1)}% completado</span>
-                        </div>
-                        <div class="progress-bar">
-                            <div class="progress-fill" style="width: ${Math.min(progreso, 100)}%"></div>
-                        </div>
-                    </div>
-                    <div class="item-actions">
-                        <button class="btn btn-secondary btn-small" onclick="editarOrganismo(${organismo.id}, 'nombre')" title="Editar nombre">
-                            ✏️
-                        </button>
-                        <button class="btn btn-secondary btn-small" onclick="editarOrganismo(${organismo.id}, 'reuniones')" title="Editar reuniones programadas">
-                            📊
-                        </button>
-                        <button class="btn btn-danger btn-small" onclick="eliminarOrganismo(${organismo.id})" title="Eliminar">
-                            🗑️
-                        </button>
-                    </div>
-                </div>
-            `;
-        }).join('');
-}
-
-// Escapar HTML para prevenir XSS
-function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
-    return text.replace(/[&<>"']/g, m => map[m]);
-}
-
-// Guardar datos
-function guardarDatos() {
-    const datos = {
-        organismos: organismos,
-        reuniones: reuniones,
-        ultimaActualizacion: new Date().toISOString()
-    };
-    // Aquí guardarías en tu base de datos
-    console.log('Datos guardados:', datos);
-}
-
-
-// Inicializar al cargar
-document.addEventListener('DOMContentLoaded', init);
+            celda.innerHTML = textoMostrar;
+            
+            if (nuevoValor) {
+                celda.classList.remove('empty');
+            } else {
+                celda.classList.add('empty');
+            }
+            
+            // Aquí iría la lógica para guardar en base de datos
+            console.log('Guardando día:', nuevoValor);
+        };
+        
+        input.addEventListener('blur', guardar);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                guardar();
+            }
+        });
+    }
 </script>
+
 @endsection

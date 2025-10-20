@@ -28,7 +28,10 @@ Route::get('/fechas/form', [FechaController::class, 'create'])->name('formfechas
 Route::post('/fechas',      [FechaController::class, 'store'])->name('fechas.store');
 
 //Route::get('/buscar-documentos', [App\Http\Controllers\DocumentoController::class, 'buscarDocumentos']);
-Route::get('/buscar-documentos', [DocumentoController::class, 'buscarDocumentos']);
+//Route::get('/buscar-documentos', [DocumentoController::class, 'buscarDocumentos']);
+//Route::post('/buscar-documentos', [TuControlador::class, 'buscar'])->name('buscar.documentos');
+//Route::post('/buscar-documentos', [DocumentoController::class, 'buscarDocumentos'])->name('buscarDocumentos');
+Route::get('/buscar-documentos', [DocumentoController::class, 'buscar']);
 
 
 //Rutas para... etapas? 

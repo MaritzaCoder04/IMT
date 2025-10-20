@@ -104,11 +104,19 @@
     background-color: #98afc4;
 }
 
+
 .actions {
   display: flex;
   gap: 15px;
   justify-content: center;
   margin-top: 25px;
+}
+
+.actions2 {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  margin-top: 55px;
 }
 
   .btn-warning {

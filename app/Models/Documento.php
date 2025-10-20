@@ -24,6 +24,12 @@ class Documento extends Model
         'vigente'
     ];
 
+    // Relación con DocumentoInfo
+    public function info()
+    {
+        return $this->hasOne(DocumentoInfo::class, 'ID_doc', 'ID_doc');
+    }
+
     public function etapas()
     {
         return $this->hasOne(Etapa::class, 'ID_doc', 'ID_doc');

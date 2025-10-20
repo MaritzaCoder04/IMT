@@ -74,7 +74,11 @@ class DocumentoController extends Controller
 
     public function index()
     {
-        $documentos = Documento::with(['libroRelacion', 'parteRelacion'])
+        $documentos = Documento::with(['libroRelacion', 
+        'temaRelacion', 
+        'parteRelacion', 
+        'tituloRelacion',
+        'info'])
         ->where('vigente', 1)
         ->orderBy('libro')
         ->orderBy('anio')
@@ -250,37 +254,23 @@ class DocumentoController extends Controller
         return view('productosterminados', compact('documentos', 'documentosProcesados', 'partes'));
     }
 
-    public function buscarDocumentos(Request $request)
+    public function buscar(Request $request)
 {
     $query = Documento::query();
 
     if ($request->filled('cp')) {
-        $query->where(function ($q) use ($request) {
-            $q->where('nombre', 'like', "%{$request->cp}%")
-              ->orWhere('designacion', 'like', "%{$request->cp}%")
-              ->orWhere('tema', 'like', "%{$request->cp}%");
-        });
+        $query->where('nombre', 'like', '%' . $request->cp . '%');
     }
-
-    if ($request->filled('tema')) {
-        $query->where('tema', 'like', "%{$request->tema}%");
+    if ($request->filled('libro')) {
+        $query->where('libro', $request->libro);
     }
-
-    if ($request->filled('titulo')) {
-        $query->where('titulo', 'like', "%{$request->titulo}%");
-    }
-
     if ($request->filled('time')) {
-        $query->where('anio', $request->time);
+        $query->whereYear('fecha_nueva', $request->time);
     }
 
-    if ($request->uv) {
-        $query->orderByDesc('anio')->take(1);
-    }
+    $resultados = $query->with(['info', 'libroRelacion', 'temaRelacion'])->get();
 
-    $documentos = $query->get();
-
-    return response()->json($documentos);
+    return response()->json($resultados);
 }
 
 
