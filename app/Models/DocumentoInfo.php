@@ -15,9 +15,16 @@ class DocumentoInfo extends Model
         'nombre',
         'tipo',
         'libro',
+        'tema',
+        'parte',
+        'desc_parte',
+        'titulo',
+        'desc_titulo',
+        'capitulo',
         'designacion',
         'origen',
-        // Agrega otros campos que tenga la tabla
+        'anio_simple',
+        'anio'
     ];
     
     public function documento()
