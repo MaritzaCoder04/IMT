@@ -17,8 +17,8 @@ class ProductosTerminados extends Component
 
     public function render()
     {
-        $documentos = Documento::with(['libroRelacion', 'parteRelacion', 'etapas'])
-            ->where('vigente', 1)
+        // Primero obtener todos los documentos vigentes
+        $documentos = Documento::where('vigente', 1)
             ->orderBy('libro')
             ->orderBy('tema')
             ->orderBy('parte')
@@ -28,7 +28,27 @@ class ProductosTerminados extends Component
             ->orderBy('anio')
             ->get();
 
-        $documentosAgrupados = $documentos->groupBy('nombre');
+        // Luego filtrar solo los que tienen etapas completas
+        $documentosConEtapasCompletas = [];
+        
+        foreach ($documentos as $documento) {
+            $etapas = \App\Models\Etapa::where('ID_doc', $documento->ID_doc)->first();
+            
+            if ($etapas && 
+                !empty($etapas->{'3a'}) && 
+                !empty($etapas->{'3b'}) && 
+                !empty($etapas->{'3c'}) && 
+                !empty($etapas->{'3d'}) && 
+                !empty($etapas->{'3e'})) {
+                
+                // Cargar las relaciones necesarias
+                $documento->load(['libroRelacion', 'parteRelacion']);
+                $documento->etapas = $etapas;
+                $documentosConEtapasCompletas[] = $documento;
+            }
+        }
+
+        $documentosAgrupados = collect($documentosConEtapasCompletas)->groupBy('nombre');
         $documentosProcesados = [];
 
         foreach ($documentosAgrupados as $nombre => $grupo) {
@@ -46,30 +66,26 @@ class ProductosTerminados extends Component
             // Determinar la última fecha y su tipo
             $ultimaFecha = $primeraFecha;
             $tipoUltimaFecha = 'nueva';
+            $documentoUltimaFecha = $documentoPrincipal; // Por defecto el primer documento
             
             if (!empty($actualizaciones)) {
                 $ultimaActualizacion = max($actualizaciones);
                 if ($ultimaActualizacion > $primeraFecha) {
                     $ultimaFecha = $ultimaActualizacion;
                     $tipoUltimaFecha = 'actualizacion';
+                    // Buscar el documento que corresponde a la última actualización
+                    $documentoUltimaFecha = $grupoOrdenado->where('anio', $ultimaActualizacion)->first();
                 }
             }
             
+            // Asignar los datos del documento con la última fecha
             $documentoPrincipal->ultima_fecha = $ultimaFecha;
             $documentoPrincipal->tipo_ultima_fecha = $tipoUltimaFecha;
+            $documentoPrincipal->origen_ultima_fecha = $documentoUltimaFecha->origen;
+            $documentoPrincipal->designacion_ultima_fecha = $documentoUltimaFecha->designacion;
 
-            $etapas = $documentoPrincipal->etapas;
-
-            if (
-                $etapas &&
-                $etapas->{'3a'} &&
-                $etapas->{'3b'} &&
-                $etapas->{'3c'} &&
-                $etapas->{'3d'} &&
-                $etapas->{'3e'}
-            ) {
-                $documentosProcesados[] = $documentoPrincipal;
-            }
+            // Ya sabemos que todos los documentos tienen etapas completas, así que agregamos directamente
+            $documentosProcesados[] = $documentoPrincipal;
         }
 
         // Aplicar filtro de búsqueda si existe
