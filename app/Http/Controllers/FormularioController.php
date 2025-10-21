@@ -21,6 +21,7 @@ class FormularioController extends Controller
         'tipoDocumento' => 'required',
         'ID_libro' => 'required',
         'nombre' => 'required',
+        'origen' => 'required',
         'fechaPublicacion' => 'nullable',
     ]);
 
@@ -32,6 +33,7 @@ class FormularioController extends Controller
     $documento->tipo = ($request->tipoDocumento == 'm') ? 1 : 2;
     
     $documento->libro = $request->ID_libro;
+    $documento->origen = $request->origen;
     
     // Estos campos esperan números, así que los ponemos en 0
     $documento->tema = 0;

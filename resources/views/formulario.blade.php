@@ -63,8 +63,8 @@
                     <label for="origen">Origen</label>
                     <select id="origen" name="origen" required>
                         <option value="">Selecciona el origen</option>
-                        <option value="origen1">IMT</option>
-                        <option value="origen2">Otro</option>
+                        <option value="1">IMT</option>
+                        <option value="2">Otro</option>
                     </select>
                 </div>
 
