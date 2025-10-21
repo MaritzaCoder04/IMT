@@ -31,9 +31,7 @@
                     </div>
                     <div class="actions">
                     <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
-                    <!--<a href="{{ route('exportar.todoslosdocumentos.sql', ['palabra' => $palabra, 'designacion' => $designacion, 'libro' => $libro, 'anio' => $anio]) }}" class="btn btn-primary" target="_blank">
-                        Descargar SQL
-                    </a>-->
+                    <!--<button wire:click="descargarSQL" class="btn btn-success">Descargar SQL</button>-->
                 </div>
                 </div>
             </div>

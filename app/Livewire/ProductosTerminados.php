@@ -43,6 +43,21 @@ class ProductosTerminados extends Component
                 ? implode(', ', $actualizaciones)
                 : null;
 
+            // Determinar la última fecha y su tipo
+            $ultimaFecha = $primeraFecha;
+            $tipoUltimaFecha = 'nueva';
+            
+            if (!empty($actualizaciones)) {
+                $ultimaActualizacion = max($actualizaciones);
+                if ($ultimaActualizacion > $primeraFecha) {
+                    $ultimaFecha = $ultimaActualizacion;
+                    $tipoUltimaFecha = 'actualizacion';
+                }
+            }
+            
+            $documentoPrincipal->ultima_fecha = $ultimaFecha;
+            $documentoPrincipal->tipo_ultima_fecha = $tipoUltimaFecha;
+
             $etapas = $documentoPrincipal->etapas;
 
             if (

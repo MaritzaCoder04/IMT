@@ -42,7 +42,7 @@
                         <th rowspan="2">Designación</th>
                         <th rowspan="2">Nombre</th>
                         <th rowspan="2">Nueva/Actualización</th>
-                        <th rowspan="2">Año Publicación</th>
+                        <th rowspan="2">Última Fecha</th>
                         <th colspan="5">Fecha Terminación</th>
                     </tr>
                     <tr>
@@ -60,8 +60,8 @@
                         <td>{{ $documento->origen ?? '--' }}</td>
                         <td>{{ $documento->designacion ?? '--' }}</td>
                         <td>{{ $documento->nombre ?? '--' }}</td>
-                        <td>{{ $documento->nue_act ?? '--' }}</td>
-                        <td>{{ $documento->anio_pub?? '--' }}</td>
+                        <td>{{ ucfirst($documento->tipo_ultima_fecha ?? '--') }}</td>
+                        <td>{{ $documento->ultima_fecha ?? '--' }}</td>
 
                         {{-- Fechas de Terminación --}}
                         <td>{{ $documento->etapas->{'3a'} ?? '--' }}</td>
