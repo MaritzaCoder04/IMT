@@ -9,12 +9,6 @@ class ControlDeAvances extends Component
 {
     public $busqueda = '';
 
-    public function buscar()
-    {
-        // Este método se ejecutará cuando se presione el botón de buscar
-        $this->render();
-    }
-
     public function limpiar()
     {
         $this->busqueda = '';

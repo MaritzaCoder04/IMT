@@ -26,11 +26,10 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="busqueda">Cualquier Palabra</label>
-                                            <input type="text" id="busqueda" wire:model="busqueda" placeholder="Ingrese cualquier palabra">
+                                            <input type="text" wire:model.live="busqueda" id="busqueda" placeholder="Ingrese cualquier palabra">
                                         </div>   
                                         <div class="actions2">
-                                            <button type="button" wire:click="buscar" class="btn btn-secondary">Buscar</button>
-                            <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
+                                            <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
                                             <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>
                                         </div>
                                     </div>
