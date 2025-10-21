@@ -42,7 +42,7 @@ class ProductosTerminados extends Component
                 !empty($etapas->{'3e'})) {
                 
                 // Cargar las relaciones necesarias
-                $documento->load(['libroRelacion', 'parteRelacion']);
+                $documento->load(['libroRelacion', 'parteRelacion', 'info']);
                 $documento->etapas = $etapas;
                 $documentosConEtapasCompletas[] = $documento;
             }

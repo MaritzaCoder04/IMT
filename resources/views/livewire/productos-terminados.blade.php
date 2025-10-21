@@ -57,8 +57,8 @@
                 <tbody>
                     @forelse($documentosProcesados as $documento)
                     <tr>
-                        <td>{{ $documento->origen_ultima_fecha ?? '--' }}</td>
-                        <td>{{ $documento->designacion_ultima_fecha ?? '--' }}</td>
+                        <td>{{ $documento->info->origen ?? '--' }}</td>
+                        <td>{{ $documento->info->designacion ?? '--' }}</td>
                         <td>{{ $documento->nombre ?? '--' }}</td>
                         <td>{{ ucfirst($documento->tipo_ultima_fecha ?? '--') }}</td>
                         <td>{{ $documento->ultima_fecha ?? '--' }}</td>
