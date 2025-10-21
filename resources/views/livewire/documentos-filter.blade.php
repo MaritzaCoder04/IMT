@@ -29,10 +29,12 @@
                         <label for="anio">Año</label>
                         <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
                     </div>
-                </div>
-
-                <div class="actions">
+                    <div class="actions">
                     <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
+                    <!--<a href="{{ route('exportar.todoslosdocumentos.sql', ['palabra' => $palabra, 'designacion' => $designacion, 'libro' => $libro, 'anio' => $anio]) }}" class="btn btn-primary" target="_blank">
+                        Descargar SQL
+                    </a>-->
+                </div>
                 </div>
             </div>
         </div>
@@ -64,11 +66,11 @@
                         <tbody>
                         @forelse($documentosProcesados as $documento)
                             <tr>
-                                <td>{{ $documento->tipo == 1 ? 'Manual' : 'Norma' }}</td>
+                                <td>{{ $documento->tipoRelacion->desc ?? ($documento->tipo == 1 ? 'Manual' : 'Norma') }}</td>
                                 <td>{{ $documento->libroRelacion->desc ?? $documento->libro }}</td>
                                 <td>{{ $documento->temaRelacion->desc ?? ($documento->tema == 0 ? '-' : $documento->tema) }}</td>
-                        <td>{{ $documento->info->desc_parte ?? ($documento->parte == 0 ? '-' : $documento->parte) }}</td>
-                        <td>{{ $documento->info->desc_titulo ?? ($documento->titulo == 0 ? '-' : $documento->titulo) }}</td>
+                                <td>{{ $documento->info->desc_parte ?? ($documento->parte == 0 ? '-' : $documento->parte) }}</td>
+                                <td>{{ $documento->info->desc_titulo ?? ($documento->titulo == 0 ? '-' : $documento->titulo) }}</td>
                                 <td>{{ $documento->capitulo }}</td>
                                 <td>{{ $documento->info->designacion ?? '-' }}</td>
                                 <td>{{ $documento->nombre ?? '-' }}</td>

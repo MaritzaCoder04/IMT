@@ -20,7 +20,7 @@ class ControlDeAvances extends Component
             $documento = Documento::findOrFail($id);
             $documento->delete();
             
-            session()->flash('success', 'Documento eliminado correctamente.');
+            session()->flash('success');
         } catch (\Exception $e) {
             session()->flash('error', 'Error al eliminar el documento: ' . $e->getMessage());
         }

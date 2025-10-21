@@ -60,5 +60,9 @@ class Documento extends Model
         return $this->belongsTo(Titulo::class, 'titulo', 'ID_titulo');
     }
 
+    public function tipoRelacion()
+    {
+        return $this->belongsTo(Tipo::class, 'tipo', 'ID_tipo');
+    }
 
 }

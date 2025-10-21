@@ -19,7 +19,7 @@ class DocumentosFilter extends Component
         $libros = Libro::orderBy('desc')->get();
 
         // Construir la consulta con filtros
-        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion']);
+        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'tipoRelacion']);
 
         // Filtro por palabra (busca en nombre, origen y designación)
         if (!empty($this->palabra)) {

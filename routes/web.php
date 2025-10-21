@@ -24,6 +24,8 @@ Route::get('/exportar-procesados-sql', [App\Http\Controllers\DocumentoController
 
 Route::get('/exportar-sql', [App\Http\Controllers\DocumentoController::class, 'exportarSQL']);
 
+Route::get('/exportar-todoslosdocumentos-sql', [App\Http\Controllers\DocumentoController::class, 'exportarTodoslosdocumentosSQL'])->name('exportar.todoslosdocumentos.sql');
+
 Route::get('/fechas/form', [FechaController::class, 'create'])->name('formfechas');
 Route::post('/fechas',      [FechaController::class, 'store'])->name('fechas.store');
 

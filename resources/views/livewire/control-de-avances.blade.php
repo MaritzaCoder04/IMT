@@ -139,10 +139,10 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="23" class="empty-state">
-                                    <p>No hay documentos registrados</p>
-                                </td>
-                            </tr>
+                <td colspan="23" class="empty-state">
+                    <p>No hay documentos registrados</p>
+                </td>
+            </tr>
                             @endforelse
                         </tbody>
                     </table>

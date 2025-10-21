@@ -348,4 +348,133 @@ class DocumentoController extends Controller
     {
         return redirect()->route('controldeavances')->with('success');
     }
+
+    public function exportarTodoslosdocumentosSQL(Request $request)
+    {
+        // Obtener los filtros de la request
+        $palabra = $request->get('palabra', '');
+        $designacion = $request->get('designacion', '');
+        $libro = $request->get('libro', '');
+        $anio = $request->get('anio', '');
+
+        // Replicar la misma lógica que usa DocumentosFilter para obtener los datos
+        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion']);
+
+        // Aplicar los mismos filtros que en DocumentosFilter
+        // Filtro por palabra (busca en nombre, origen y designación)
+        if (!empty($palabra)) {
+            $query->where(function($q) use ($palabra) {
+                $q->where('nombre', 'like', '%' . $palabra . '%')
+                  ->orWhere('origen', 'like', '%' . $palabra . '%')
+                  ->orWhereHas('info', function($subQ) use ($palabra) {
+                      $subQ->where('designacion', 'like', '%' . $palabra . '%');
+                  });
+            });
+        }
+
+        // Filtro por designación específica
+        if (!empty($designacion)) {
+            $query->whereHas('info', function($q) use ($designacion) {
+                $q->where('designacion', 'like', '%' . $designacion . '%');
+            });
+        }
+
+        // Filtro por libro
+        if (!empty($libro)) {
+            $query->where('libro', $libro);
+        }
+
+        $documentos = $query->get();
+
+        // Procesar documentos agrupados (misma lógica que DocumentosFilter)
+        $documentosAgrupados = $documentos->groupBy(function ($documento) {
+            return $documento->nombre . '|' . $documento->tipo . '|' . $documento->libro . '|' . $documento->tema . '|' . $documento->parte . '|' . $documento->titulo . '|' . $documento->capitulo;
+        });
+
+        $documentosProcesados = [];
+
+        foreach ($documentosAgrupados as $grupo) {
+            $documentoPrincipal = $grupo->first();
+            
+            $fechas = $grupo->pluck('anio')->filter()->sort()->values();
+            $primeraFecha = $fechas->first();
+            $actualizaciones = $fechas->slice(1)->toArray();
+
+            $documentoPrincipal->fecha_nueva = $primeraFecha;
+            $documentoPrincipal->fechas_actualizacion = !empty($actualizaciones) ? implode(', ', $actualizaciones) : null;
+
+            // Filtro por año - busca en fecha nueva y actualizaciones (igual que en DocumentosFilter)
+            $incluirDocumento = true;
+            if (!empty($anio)) {
+                $anioCoincide = false;
+                
+                // Verificar si el año coincide con la fecha nueva
+                if ($primeraFecha && $primeraFecha == $anio) {
+                    $anioCoincide = true;
+                }
+                
+                // Verificar si el año coincide con alguna actualización
+                if (!$anioCoincide && !empty($actualizaciones)) {
+                    foreach ($actualizaciones as $fechaActualizacion) {
+                        if ($fechaActualizacion == $anio) {
+                            $anioCoincide = true;
+                            break;
+                        }
+                    }
+                }
+                
+                if (!$anioCoincide) {
+                    $incluirDocumento = false;
+                }
+            }
+
+            if ($incluirDocumento) {
+                $documentosProcesados[] = $documentoPrincipal;
+            }
+        }
+
+        // Generar el SQL
+        $sql = "-- Exportación de datos de Todos los Documentos\n";
+        $sql .= "-- Fecha de exportación: " . date('Y-m-d H:i:s') . "\n\n";
+        $sql .= "INSERT INTO todoslosdocumentos (id, tipo, libro, tema, parte, titulo, capitulo, designacion, nombre, origen, fecha_nueva, fechas_actualizacion) VALUES\n";
+
+        $values = [];
+        foreach ($documentosProcesados as $d) {
+            $tipo = $d->tipo == 1 ? 'Manual' : 'Norma';
+            $libro = $d->libroRelacion->desc ?? $d->libro;
+            $tema = $d->temaRelacion->desc ?? ($d->tema == 0 ? '-' : $d->tema);
+            $parte = $d->info->desc_parte ?? ($d->parte == 0 ? '-' : $d->parte);
+            $titulo = $d->info->desc_titulo ?? ($d->titulo == 0 ? '-' : $d->titulo);
+            $capitulo = $d->capitulo;
+            $designacion = $d->info->designacion ?? '-';
+            $nombre = $d->nombre ?? '-';
+            $origen = $d->info->origen ?? '-';
+            $fecha_nueva = $d->fecha_nueva;
+            $fechas_actualizacion = $d->fechas_actualizacion ?? '-';
+
+            $values[] = sprintf(
+                "(%d, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')",
+                $d->ID_doc,
+                addslashes($tipo),
+                addslashes($libro),
+                addslashes($tema),
+                addslashes($parte),
+                addslashes($titulo),
+                addslashes($capitulo),
+                addslashes($designacion),
+                addslashes($nombre),
+                addslashes($origen),
+                addslashes($fecha_nueva),
+                addslashes($fechas_actualizacion)
+            );
+        }
+
+        $sql .= implode(",\n", $values) . ";";
+
+        $fileName = 'todoslosdocumentos_' . date('Y-m-d_H-i-s') . '.sql';
+        return Response::make($sql, 200, [
+            'Content-Type' => 'application/sql',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ]);
+    }
 }
