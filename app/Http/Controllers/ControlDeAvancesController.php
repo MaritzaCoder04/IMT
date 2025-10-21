@@ -8,9 +8,6 @@ class ControlDeAvancesController extends Controller
 {
     public function index()
     {
-        // Cargar TODOS con sus etapas y relaciones
-        $documentos = Documento::with(['libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'etapas'])->get();
-        
-        return view('controldeavances', compact('documentos'));
+        return view('controldeavances');
     }
 }

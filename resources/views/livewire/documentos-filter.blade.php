@@ -1,0 +1,92 @@
+<div>
+    <!-- Sección Búsqueda -->
+    <section id="busqueda" class="section active">
+        <div class="section-header">
+            <h2 class="section-title">Todos Los Manuales/Normas</h2>
+        </div>
+
+        <div class="search-container">
+            <div class="search-row">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="palabra">Cualquier Palabra</label>
+                        <input type="text" id="palabra" wire:model.live="palabra" placeholder="Ingrese cualquier palabra">
+                    </div>
+                    <div class="form-group">
+                        <label for="designacion">Designación</label>
+                        <input type="text" id="designacion" wire:model.live="designacion" placeholder="Ingrese designación">
+                    </div>
+                    <div class="form-group">
+                        <label for="libro">Libro</label>
+                        <select id="libro" wire:model.live="libro">
+                            <option value="">Selecciona un libro</option>
+                            @foreach($libros as $libroItem)
+                                <option value="{{ $libroItem->ID_libro }}">{{ $libroItem->desc }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="anio">Año</label>
+                        <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
+                    </div>
+                </div>
+
+                <div class="actions">
+                    <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
+                </div>
+            </div>
+        </div>
+        
+        <div id="resultadosBusqueda"></div>
+    </section>
+
+    <!-- Tabla de Documentos -->
+    <div class="all-form"> 
+        <div class="form-container">
+            <div class="docs-container">
+                <div class="docs-table-wrapper">
+                    <table class="docs-table">
+                        <thead>
+                            <tr>
+                                <th>Norma/Manual</th>
+                                <th>Libro</th>
+                                <th>Tema</th>
+                                <th>Parte</th>
+                                <th>Título</th>
+                                <th>Capítulo</th>
+                                <th>Designación</th>
+                                <th>Nombre</th>
+                                <th>Origen</th>
+                                <th>Nueva</th>
+                                <th>Actualización</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @forelse($documentosProcesados as $documento)
+                            <tr>
+                                <td>{{ $documento->tipo == 1 ? 'Manual' : 'Norma' }}</td>
+                                <td>{{ $documento->libroRelacion->desc ?? $documento->libro }}</td>
+                                <td>{{ $documento->temaRelacion->desc ?? $documento->tema }}</td>
+                                <td>{{ $documento->parte }}</td>
+                                <td>{{ $documento->titulo }}</td>
+                                <td>{{ $documento->capitulo }}</td>
+                                <td>{{ $documento->info->designacion ?? '-' }}</td>
+                                <td>{{ $documento->nombre ?? '-' }}</td>
+                                <td>{{ $documento->info->origen ?? '-' }}</td>
+                                <td>{{ $documento->fecha_nueva }}</td>
+                                <td>{{ $documento->fechas_actualizacion ?? '-' }}</td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="11" class="empty-state">
+                                    <p>No hay documentos registrados</p>
+                                </td>
+                            </tr>
+                        @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -60,8 +60,5 @@ class Documento extends Model
         return $this->belongsTo(Titulo::class, 'titulo', 'ID_titulo');
     }
 
-    public function capituloRelacion()
-    {
-        return $this->belongsTo(Capitulo::class, 'capitulo', 'ID_capitulo');
-    }
+
 }
