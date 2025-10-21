@@ -104,11 +104,12 @@
                         <td>
                             @php
                             $etapas = $documento->etapas;
-                            $totalFechas = 15;
+                            $totalFechas = 10; // Solo fechas de entrega (2a-2e) y terminación (3a-3e)
                             $fechasCompletadas = 0;
                                         
                                         if ($etapas) {
-                                            $campos = ['1a', '2a', '3a', '1b', '2b', '3b', '1c', '2c', '3c', '1d', '2d', '3d', '1e', '2e', '3e'];
+                                            // Solo considerar fechas de entrega (2a-2e) y terminación (3a-3e)
+                                            $campos = ['2a', '2b', '2c', '2d', '2e', '3a', '3b', '3c', '3d', '3e'];
                                             foreach ($campos as $campo) {
                                                 if (!empty($etapas->$campo)) {
                                                     $fechasCompletadas++;
