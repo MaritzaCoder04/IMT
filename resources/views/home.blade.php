@@ -63,59 +63,24 @@
               &nbsp;Productos Terminados
             </a>
           </li>
-            <li class="submenu-toggle">
-              {{--<a href="" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');">--}}
-                <a href="{{ route('representaciones') }}">
-                <img src="{{asset('/img/config.png')}}" alt="">
-                &nbsp;Representaciones
-              </a>
-            </li>
-              {{--
-                <ul class="submenu">
-                  <li>
-                    <a href="{{ route('representaciones') }}">
-                      &nbsp;&nbsp;&nbsp;
-                      <img src="{{asset('/img/marca.png')}}" alt="">
-                      &nbsp;Gestion de organismos
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('organismos') }}">
-                      &nbsp;&nbsp;&nbsp;
-                      <img src="{{asset('/img/marca.png')}}" alt="">
-                      &nbsp;Registro de reuniones
-                    </a>
-                  </li>
-                  <li>
-                    <a href="{{ route('busqueda') }}">
-                      &nbsp;&nbsp;&nbsp;
-                      <img src="{{asset('/img/marca.png')}}" alt="">
-                      &nbsp;Busqueda avanzada
-                    </a>
-                  </li>
-                </ul>--}}
-            <li class="submenu-toggle">
-                <a href="" onclick="event.preventDefault(); this.parentElement.classList.toggle('open');">
+              <li>
+                <a href="{{ route('grupotrabajo.index') }}">
                   <img src="{{asset('/img/config.png')}}" alt="">
-                  &nbsp;Informes
+                  &nbsp;Programaciones 
                 </a>
-                  <ul class="submenu">
-                    <li>
-                      <a href="{{ route('registroinformes') }}">
-                        &nbsp;&nbsp;&nbsp;
-                        <img src="{{asset('/img/invent_bl.png')}}" alt="">
-                        &nbsp;Registro Informes
-                      </a>
-                    </li>
-                    <li>
-                      <a href="{{ route('informes') }}">
-                        &nbsp;&nbsp;&nbsp;
-                        <img src="{{asset('/img/tablefull.png')}}" alt="">
-                        &nbsp;Avances
-                      </a>
-                    </li>
-                  </ul>
-              </li>
+            </li>
+            <li>
+                <a href="{{ route('grupotrabajo.agenda') }}">
+                  <img src="{{asset('/img/config.png')}}" alt="">
+                  &nbsp;Representaciones
+                </a>
+            </li>
+            <li>
+                <a href="{{ route('grupotrabajo.reporte') }}">
+                  <img src="{{asset('/img/config.png')}}" alt="">
+                  &nbsp;Informe Anual
+                </a>
+            </li>
         </ul>
       </div>
     </nav>

@@ -7,75 +7,85 @@
     <div class="form-container">
         <form id="formularioLineasAccion" action="{{ route('formulario.guardar') }}" method="POST">
             @csrf
-            
-            <!-- Información Básica -->
-            <div class="section-title">Información de la Línea de Acción</div>
-            
             <div class="form-group">
-                <label for="lineaAccion">Línea de Acción</label>
-                <input type="text" id="lineaAccion" name="lineaAccion" 
-                       placeholder="Ej: Infraestructura Vial" required>
+            <div class="section-title">Informes Realizados por Bimestre</div>
+                    <label for="unidadMedida">Linea de Acción</label>
+                    <select id="unidadMedida" name="unidadMedida" required>
+                        <option value="">Selecciona una linea de acción</option>
+                        <option value="l1">LA 1</option>
+                        <option value="l2">LA 2</option>
+                    </select>
             </div>
 
+            <!-- Informes Realizados por Bimestre -->
             <div class="form-group">
-                <label for="unidadMedida">Unidad de Medida</label>
-                <select id="unidadMedida" name="unidadMedida" required>
-                    <option value="">Selecciona la unidad de medida</option>
-                    <option value="pt">Producto Terminado</option>
-                    <option value="ap">Anteproyecto Preliminar</option>
-                    <option value="af">Anteproyecto Final</option>
-                    <option value="pp">Proyecto Preliminar</option>
-                    <option value="nm">Norma y/o Manual</option>
-                    <option value="re">Reunión</option>
-                    <option value="otro">Otro</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="metaAnual">Meta Anual Programada</label>
-                <input type="number" id="metaAnual" name="metaAnual" 
-                       placeholder="Ej: 12" min="0" step="0.01" required>
-            </div>
-
-            <!-- Informes Programados por Bimestre -->
-            <div class="bimestres-section">
-                <div class="section-title">Informes Programados por Bimestre</div>
+                <label for="unidadMedida">Informes Realizados</label>
+                <div class="bimestres-section">
                 <div class="bimestres-grid">
                     <div class="bimestre-item">
                         <label>Enero - Febrero</label>
-                        <input type="number" name="programado_b1" id="programado_b1" 
+                        <input type="number" name="realizado_b1" id="realizado_b1" 
                                placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div class="bimestre-item">
                         <label>Marzo - Abril</label>
-                        <input type="number" name="programado_b2" id="programado_b2" 
+                        <input type="number" name="realizado_b2" id="realizado_b2" 
                                placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div class="bimestre-item">
                         <label>Mayo - Junio</label>
-                        <input type="number" name="programado_b3" id="programado_b3" 
+                        <input type="number" name="realizado_b3" id="realizado_b3" 
                                placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div class="bimestre-item">
                         <label>Julio - Agosto</label>
-                        <input type="number" name="programado_b4" id="programado_b4" 
+                        <input type="number" name="realizado_b4" id="realizado_b4" 
                                placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div class="bimestre-item">
                         <label>Septiembre - Octubre</label>
-                        <input type="number" name="programado_b5" id="programado_b5" 
+                        <input type="number" name="realizado_b5" id="realizado_b5" 
                                placeholder="0" min="0" step="0.01" value="0">
                     </div>
                     <div class="bimestre-item">
                         <label>Noviembre - Diciembre</label>
-                        <input type="number" name="programado_b6" id="programado_b6" 
+                        <input type="number" name="realizado_b6" id="realizado_b6" 
                                placeholder="0" min="0" step="0.01" value="0">
                     </div>
                 </div>
+                </div>
             </div>
 
-            <button type="submit" class="submit-btn">Registrar Línea de Acción</button>
+            <!-- Observaciones -->
+            <div class="form-group">
+                <label for="observaciones">Observaciones</label>
+                <textarea id="observaciones" name="observaciones" 
+                          placeholder="Ingrese observaciones o comentarios sobre el seguimiento..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Guardar Cambios</button>
         </form>
+    </div>&nbsp
+
+    <div class="form-container">
+        <!-- Resultados Calculados -->
+        <div class="resultados-section">
+            <div class="section-title">Resultados</div>
+            <div class="resultados-grid">
+                <div class="resultado-item">
+                    <label>Acumulado Real</label>
+                    <div class="resultado-valor" id="acumuladoReal">0</div>
+                </div>
+                <div class="resultado-item">
+                    <label>% Avance Bimestral</label>
+                    <div class="resultado-valor" id="porcentajeBimestral">0%</div>
+                </div>
+                <div class="resultado-item">
+                    <label>% Avance Anual</label>
+                    <div class="resultado-valor" id="porcentajeAnual">0%</div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -147,5 +157,3 @@
     });
 </script>
 @endsection
-
-

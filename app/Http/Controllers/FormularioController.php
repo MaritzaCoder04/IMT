@@ -61,6 +61,6 @@ class FormularioController extends Controller
     
     $documento->save();
 
-    return redirect()->route('controldeavances')->with('success', 'Documento registrado correctamente');
+    return redirect()->route('controldeavances')->with('success');
     }
 }

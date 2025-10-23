@@ -300,13 +300,13 @@ class DocumentoController extends Controller
     public function guardarFormulario(Request $request)
     {
         // Lógica para guardar el formulario
-        return redirect()->route('formulario')->with('success', 'Documento registrado');
+        return redirect()->route('formulario')->with('success');
     }
 
     public function guardarFechas(Request $request)
     {
         // Lógica para guardar las fechas
-        return redirect()->route('fechas')->with('success', 'Fechas guardadas');
+        return redirect()->route('fechas')->with('success');
     }
 
     public function guardarRepresentaciones(Request $request)

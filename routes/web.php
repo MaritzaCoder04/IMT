@@ -19,6 +19,38 @@ use App\Http\Controllers\ClasificacionController;
 use App\Http\Controllers\EtapaController;
 
 use App\Http\Controllers\FechaController;
+use App\Http\Controllers\GrupoTrabajoController;
+use App\Http\Controllers\ReunionController;
+
+Route::resource('reunion', ReunionController::class);
+
+// Si solo quieres mostrar la vista directamente
+Route::get('/', [GrupoTrabajoController::class, 'index'])->name('index');
+
+//Route::get('/', function () {
+//    return view('grupotrabajo.index');
+//})->name('index');
+
+Route::resource('grupotrabajo', App\Http\Controllers\GrupoTrabajoController::class);
+
+// Vista 1: Lista de grupos
+Route::get('/grupos-trabajo', [GrupoTrabajoController::class, 'index'])->name('grupotrabajo.index');
+
+// Vista 2: Formulario
+Route::get('/grupos-trabajo/crear', [GrupoTrabajoController::class, 'create'])->name('grupotrabajo.create');
+Route::post('/grupos-trabajo', [GrupoTrabajoController::class, 'store'])->name('grupotrabajo.store');
+
+// Vista 3: Agenda
+Route::get('/grupos-trabajo/agenda', [GrupoTrabajoController::class, 'agenda'])->name('grupotrabajo.agenda');
+Route::post('/grupos-trabajo/reunion', [GrupoTrabajoController::class, 'guardarReunion'])->name('grupotrabajo.guardarReunion');
+
+// Vista 4: Reporte
+Route::get('/grupos-trabajo/reporte', [GrupoTrabajoController::class, 'reporte'])->name('grupotrabajo.reporte');
+Route::post('/grupos-trabajo/{id}/observaciones', [GrupoTrabajoController::class, 'actualizarObservaciones'])->name('grupotrabajo.actualizarObservaciones');
+Route::get('/grupos-trabajo/reporte/pdf', [GrupoTrabajoController::class, 'descargarPDF'])->name('grupotrabajo.pdf');
+
+
+
 
 Route::get('/exportar-procesados-sql', [App\Http\Controllers\DocumentoController::class, 'exportarProcesadosSQL']);
 
