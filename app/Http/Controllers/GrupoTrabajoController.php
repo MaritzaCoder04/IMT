@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GrupoTrabajo;
+use App\Models\Grupo;
 use App\Models\Reunion;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -20,7 +21,8 @@ class GrupoTrabajoController extends Controller
     // Vista 2: Formulario para crear grupo
     public function create()
     {
-        return view('grupotrabajo.create');
+        $grupos = Grupo::activos()->orderBy('nombre')->get();
+        return view('grupotrabajo.create', compact('grupos'));
     }
 
     // Guardar grupo de trabajo
@@ -143,7 +145,33 @@ class GrupoTrabajoController extends Controller
     public function edit($id)
     {
         $grupo = GrupoTrabajo::findOrFail($id);
-        return view('grupotrabajo.edit', compact('grupo'));
+        $grupos = Grupo::activos()->orderBy('nombre')->get();
+        return view('grupotrabajo.edit', compact('grupo', 'grupos'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'nombre' => 'required|string|max:255',
+            'meta_anual' => 'required|integer|min:0',
+        ]);
+
+        $grupo = GrupoTrabajo::findOrFail($id);
+        $grupo->update($validated);
+
+        return redirect()->route('grupotrabajo.index')->with('success');
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $grupo = GrupoTrabajo::findOrFail($id);
+            $grupo->delete();
+
+            return redirect()->route('grupotrabajo.index')->with('success');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al eliminar el grupo de trabajo: ' . $e->getMessage());
+        }
     }
     
     public function reportes(Request $request)
@@ -169,7 +197,7 @@ class GrupoTrabajoController extends Controller
     
     $ultimoReporte = ReporteBimestral::latest()->first();
     
-    return view('grupotrabajo.reportes', compact(
+    return view('grupotrabajo.reporte', compact(
         'grupos',
         'anioSeleccionado',
         'bimestreSeleccionado',
@@ -243,7 +271,7 @@ public function guardarReporte(Request $request)
         return redirect()->route('grupotrabajo.reportes', [
             'anio' => $request->anio,
             'bimestre' => $request->bimestre
-        ])->with('success', '✅ Reporte guardado exitosamente');
+        ])->with('success');
         
     } catch (\Exception $e) {
         return back()->with('error', 'Error al guardar el reporte: ' . $e->getMessage());
@@ -257,9 +285,55 @@ public function eliminarReporte($id)
         $reporte->delete();
         
         return redirect()->route('grupotrabajo.reportes')
-            ->with('success', '🗑️ Reporte eliminado correctamente');
+            ->with('success');
     } catch (\Exception $e) {
         return back()->with('error', 'Error al eliminar el reporte');
+    }
+}
+
+// Métodos para gestionar reuniones
+public function editReunion($id)
+{
+    try {
+        $reunion = Reunion::findOrFail($id);
+        $grupos = Grupo::activos()->get();
+        
+        return view('grupotrabajo.edit-reunion', compact('reunion', 'grupos'));
+    } catch (\Exception $e) {
+        return back()->with('error', 'Reunión no encontrada');
+    }
+}
+
+public function updateReunion(Request $request, $id)
+{
+    try {
+        $validated = $request->validate([
+            'grupo_trabajo_id' => 'required|exists:grupos_trabajo,id',
+            'fecha' => 'required|date',
+            'programada' => 'required|boolean',
+            'motivo' => 'nullable|string',
+        ]);
+
+        $reunion = Reunion::findOrFail($id);
+        $reunion->update($validated);
+
+        return redirect()->route('grupotrabajo.agenda')
+            ->with('success');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al actualizar la reunión: ' . $e->getMessage());
+    }
+}
+
+public function deleteReunion($id)
+{
+    try {
+        $reunion = Reunion::findOrFail($id);
+        $reunion->delete();
+        
+        return redirect()->route('grupotrabajo.agenda')
+            ->with('success');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al eliminar la reunión');
     }
 }
 }

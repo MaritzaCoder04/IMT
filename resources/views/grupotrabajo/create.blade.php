@@ -13,13 +13,9 @@
                 <label for="nombre">Nombre del Grupo</label>
                 <select id="nombre" name="nombre" required>
                     <option value="">Selecciona un grupo...</option>
-                    <option value="Grupo Terracerías">Grupo Terracerías</option>
-                    <option value="Grupo Estructuras">Grupo Estructuras</option>
-                    <option value="Grupo Drenaje">Grupo Drenaje</option>
-                    <option value="Grupo Pavimentos">Grupo Pavimentos</option>
-                    <option value="Grupo Túneles">Grupo Túneles</option>
-                    <option value="Grupo Señalamiento">Grupo Señalamiento</option>
-                    <option value="Otro">Otro</option>
+                    @foreach($grupos as $grupo)
+                        <option value="{{ $grupo->nombre }}">{{ $grupo->nombre }}</option>
+                    @endforeach
                 </select>
             </div>
 

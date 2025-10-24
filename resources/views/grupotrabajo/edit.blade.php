@@ -1,6 +1,6 @@
-@extends('layouts.app')
+@extends('home')
 
-@section('content')
+@section('contenido')
 <div class="container">
     <h2>Editar Grupo de Trabajo</h2>
 
@@ -10,7 +10,14 @@
 
         <div class="mb-3">
             <label for="nombre" class="form-label">Nombre del grupo</label>
-            <input type="text" id="nombre" name="nombre" class="form-control" value="{{ $grupo->nombre }}">
+            <select id="nombre" name="nombre" class="form-control" required>
+                <option value="">Selecciona un grupo...</option>
+                @foreach($grupos as $grupoOption)
+                    <option value="{{ $grupoOption->nombre }}" {{ $grupo->nombre == $grupoOption->nombre ? 'selected' : '' }}>
+                        {{ $grupoOption->nombre }}
+                    </option>
+                @endforeach
+            </select>
         </div>
 
         <div class="mb-3">

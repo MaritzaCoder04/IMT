@@ -466,6 +466,7 @@
                     @forelse($reunionesBimestre as $reunion)
                         <div class="reunion-badge {{ !$reunion->programada ? 'fuera-programacion' : '' }}" 
                              onclick="verDetalleReunion({{ json_encode([
+                                 'id' => $reunion->id,
                                  'fecha' => $reunion->fecha->format('d/m/Y'),
                                  'programada' => $reunion->programada,
                                  'motivo' => $reunion->motivo,
@@ -661,6 +662,9 @@ function verDetalleReunion(datos) {
     const motivoContainer = document.getElementById('detalle-motivo-container');
     const motivoLabel = document.getElementById('detalle-motivo-label');
     
+    // Guardar los datos de la reunión actual para usar en editar/eliminar
+    window.reunionActual = datos;
+    
     document.getElementById('detalle-grupo').textContent = datos.grupo;
     document.getElementById('detalle-fecha').textContent = datos.fecha;
     
@@ -702,14 +706,44 @@ function toggleAyuda() {
 }
 
 function editarReunion() {
-    alert('Función de editar reunión - Implementar según tu ruta de edición');
-    // window.location = '{{ route("reunion.edit", "ID") }}';
+    if (!window.reunionActual) {
+        alert('No hay reunión seleccionada');
+        return;
+    }
+    
+    // Redirigir a la página de edición con el ID de la reunión
+    window.location.href = '{{ route("grupotrabajo.editReunion", ":id") }}'.replace(':id', window.reunionActual.id);
 }
 
 function eliminarReunion() {
-    if (confirm('¿Estás seguro de eliminar esta reunión?')) {
-        alert('Función de eliminar reunión - Implementar según tu ruta');
-        // Aquí iría el código para eliminar
+    if (!window.reunionActual) {
+        alert('No hay reunión seleccionada');
+        return;
+    }
+    
+    if (confirm('¿Estás seguro de que deseas eliminar esta reunión?\n\nFecha: ' + window.reunionActual.fecha + '\nGrupo: ' + window.reunionActual.grupo)) {
+        // Crear un formulario para enviar la petición DELETE
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = '{{ route("grupotrabajo.deleteReunion", ":id") }}'.replace(':id', window.reunionActual.id);
+        
+        // Agregar token CSRF
+        const csrfToken = document.createElement('input');
+        csrfToken.type = 'hidden';
+        csrfToken.name = '_token';
+        csrfToken.value = '{{ csrf_token() }}';
+        form.appendChild(csrfToken);
+        
+        // Agregar método DELETE
+        const methodInput = document.createElement('input');
+        methodInput.type = 'hidden';
+        methodInput.name = '_method';
+        methodInput.value = 'DELETE';
+        form.appendChild(methodInput);
+        
+        // Enviar el formulario
+        document.body.appendChild(form);
+        form.submit();
     }
 }
 

@@ -49,6 +49,9 @@ Route::post('/grupos-trabajo', [GrupoTrabajoController::class, 'store'])->name('
 // Vista 3: Agenda
 Route::get('/grupos-trabajo/agenda', [GrupoTrabajoController::class, 'agenda'])->name('grupotrabajo.agenda');
 Route::post('/grupos-trabajo/reunion', [GrupoTrabajoController::class, 'guardarReunion'])->name('grupotrabajo.guardarReunion');
+Route::get('/grupos-trabajo/reunion/{id}/edit', [GrupoTrabajoController::class, 'editReunion'])->name('grupotrabajo.editReunion');
+Route::put('/grupos-trabajo/reunion/{id}', [GrupoTrabajoController::class, 'updateReunion'])->name('grupotrabajo.updateReunion');
+Route::delete('/grupos-trabajo/reunion/{id}', [GrupoTrabajoController::class, 'deleteReunion'])->name('grupotrabajo.deleteReunion');
 
 // Vista 4: Reporte
 Route::get('/grupos-trabajo/reporte', [GrupoTrabajoController::class, 'reporte'])->name('grupotrabajo.reporte');
