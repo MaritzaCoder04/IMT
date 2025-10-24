@@ -385,9 +385,6 @@
                     Ver Todos los Grupos
                 </button>
             @endif
-            <button type="button" class="btn-agregar" onclick="window.location='{{ route('grupotrabajo.create') }}'">
-                ➕ Crear Nuevo Grupo
-            </button>
         </div>
     </div>
     @endif

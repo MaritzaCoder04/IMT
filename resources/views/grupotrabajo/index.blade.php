@@ -357,9 +357,6 @@
                             <div class="empty-state-icon">📋</div>
                             <p><strong>No hay grupos de trabajo registrados</strong></p>
                             <p style="color: #666; font-size: 0.9em;">Comienza agregando tu primer grupo de trabajo</p>
-                            <button type="button" class="btn btn-secondary" style="margin-top: 15px;" onclick="window.location='{{ route('grupotrabajo.create') }}'">
-                                ➕ Agregar Primer Grupo
-                            </button>
                         </td>
                     </tr>
                     @endforelse
