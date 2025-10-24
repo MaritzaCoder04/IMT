@@ -6,6 +6,7 @@ use App\Models\GrupoTrabajo;
 use App\Models\Reunion;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\ReporteBimestral;
 
 class GrupoTrabajoController extends Controller
 {
@@ -144,5 +145,121 @@ class GrupoTrabajoController extends Controller
         $grupo = GrupoTrabajo::findOrFail($id);
         return view('grupotrabajo.edit', compact('grupo'));
     }
+    
+    public function reportes(Request $request)
+{
+    $anioSeleccionado = $request->get('anio', date('Y'));
+    $bimestreSeleccionado = $request->get('bimestre', 1);
+    
+    $grupos = GrupoTrabajo::with('reuniones')->get();
+    
+    // Obtener todos los reportes guardados agrupados por año
+    $reportesPorAnio = ReporteBimestral::orderBy('anio', 'desc')
+        ->orderBy('bimestre', 'asc')
+        ->get()
+        ->groupBy('anio');
+    
+    // Verificar qué bimestres ya están guardados
+    $reportesGuardados = [];
+    foreach ($reportesPorAnio as $anio => $reportes) {
+        foreach ($reportes as $reporte) {
+            $reportesGuardados[$anio][$reporte->bimestre] = true;
+        }
+    }
+    
+    $ultimoReporte = ReporteBimestral::latest()->first();
+    
+    return view('grupotrabajo.reportes', compact(
+        'grupos',
+        'anioSeleccionado',
+        'bimestreSeleccionado',
+        'reportesPorAnio',
+        'reportesGuardados',
+        'ultimoReporte'
+    ));
+}
 
+public function guardarReporte(Request $request)
+{
+    $request->validate([
+        'anio' => 'required|integer',
+        'bimestre' => 'required|integer|between:1,6',
+        'datos_grupos' => 'required|json'
+    ]);
+    
+    try {
+        // Actualizar observaciones en los grupos
+        $datosGrupos = json_decode($request->datos_grupos, true);
+        foreach ($datosGrupos as $dato) {
+            GrupoTrabajo::where('id', $dato['grupo_id'])
+                ->update(['observaciones' => $dato['observaciones']]);
+        }
+        
+        // Obtener datos completos para el reporte
+        $grupos = GrupoTrabajo::with('reuniones')->get();
+        $datosReporte = [];
+        
+        foreach ($grupos as $grupo) {
+            $metaBimestral = $grupo->{'meta_bimestre_' . $request->bimestre};
+            
+            $realizadoBimestre = $grupo->reuniones->filter(function($r) use ($request) {
+                $mes = $r->fecha->month;
+                $inicio = ($request->bimestre - 1) * 2 + 1;
+                $fin = $request->bimestre * 2;
+                return $mes >= $inicio && $mes <= $fin;
+            })->count();
+            
+            $totalAcumulado = $grupo->reuniones->filter(function($r) use ($request) {
+                $mes = $r->fecha->month;
+                $fin = $request->bimestre * 2;
+                return $mes <= $fin;
+            })->count();
+            
+            $datosReporte[] = [
+                'grupo_id' => $grupo->id,
+                'nombre' => $grupo->nombre,
+                'meta_anual' => $grupo->meta_anual,
+                'meta_bimestral' => $metaBimestral,
+                'realizado_bimestre' => $realizadoBimestre,
+                'total_acumulado' => $totalAcumulado,
+                'porc_bimestral' => $metaBimestral > 0 ? round(($realizadoBimestre / $metaBimestral) * 100) : 0,
+                'porc_anual' => $grupo->meta_anual > 0 ? round(($totalAcumulado / $grupo->meta_anual) * 100) : 0,
+                'observaciones' => $grupo->observaciones
+            ];
+        }
+        
+        // Guardar o actualizar reporte
+        ReporteBimestral::updateOrCreate(
+            [
+                'anio' => $request->anio,
+                'bimestre' => $request->bimestre
+            ],
+            [
+                'datos_grupos' => $datosReporte,
+                'notas' => $request->notas
+            ]
+        );
+        
+        return redirect()->route('grupotrabajo.reportes', [
+            'anio' => $request->anio,
+            'bimestre' => $request->bimestre
+        ])->with('success', '✅ Reporte guardado exitosamente');
+        
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al guardar el reporte: ' . $e->getMessage());
+    }
+}
+
+public function eliminarReporte($id)
+{
+    try {
+        $reporte = ReporteBimestral::findOrFail($id);
+        $reporte->delete();
+        
+        return redirect()->route('grupotrabajo.reportes')
+            ->with('success', '🗑️ Reporte eliminado correctamente');
+    } catch (\Exception $e) {
+        return back()->with('error', 'Error al eliminar el reporte');
+    }
+}
 }

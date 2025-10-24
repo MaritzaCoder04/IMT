@@ -607,11 +607,10 @@
     </div>
 </div>
 
-<!-- Info flotante de ayuda -->
+<!-- Info flotante de ayuda 
 <div style="position: fixed; bottom: 20px; right: 20px; background: white; border: 2px solid #667eea; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.2); z-index: 999;" onclick="toggleAyuda()" title="Ayuda">
     <span style="font-size: 1.5em;">💡</span>
 </div>
-
 <div id="panel-ayuda" style="display: none; position: fixed; bottom: 80px; right: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; max-width: 350px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); z-index: 998;">
     <h4 style="margin: 0 0 15px 0; color: #667eea;">💡 Guía Rápida</h4>
     <ul style="margin: 0; padding-left: 20px; font-size: 0.9em; line-height: 1.6;">
@@ -626,6 +625,7 @@
         Cerrar
     </button>
 </div>
+-->
 
 <script>
 function abrirModal(grupoId) {
