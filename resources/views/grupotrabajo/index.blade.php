@@ -202,7 +202,7 @@
             <div class="actions">
                 
                 <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.create') }}'">
-                    ➕ Agregar Grupo
+                    Agregar Grupo
                 </button>
             </div>
         </div>
@@ -215,6 +215,7 @@
         @endphp
 
         <!-- Tarjetas de estadísticas -->
+         <!--
         <div class="stats-cards">
             <div class="stat-card">
                 <div class="stat-icon" style="background: #e3f2fd;">
@@ -259,10 +260,11 @@
                 </div>
             </div>
         </div>
+        -->
 
         <!-- Buscador -->
         <form method="GET" action="{{ route('grupotrabajo.index') }}" class="search-box">
-            <input type="text" name="busqueda" placeholder="🔍 Buscar grupo por nombre..." value="{{ request('busqueda') }}">
+            <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
             <button type="submit" class="btn btn-secondary">Buscar</button>
             @if(request('busqueda'))
                 <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('grupotrabajo.index') }}'">Limpiar</button>
@@ -275,12 +277,12 @@
                     <tr>
                         <th>Nombre del Grupo</th>
                         <th>Meta Anual</th>
-                        <th>Bim 1<br><small style="font-weight: 400;">(Ene-Feb)</small></th>
-                        <th>Bim 2<br><small style="font-weight: 400;">(Mar-Abr)</small></th>
-                        <th>Bim 3<br><small style="font-weight: 400;">(May-Jun)</small></th>
-                        <th>Bim 4<br><small style="font-weight: 400;">(Jul-Ago)</small></th>
-                        <th>Bim 5<br><small style="font-weight: 400;">(Sep-Oct)</small></th>
-                        <th>Bim 6<br><small style="font-weight: 400;">(Nov-Dic)</small></th>
+                        <th>Ene-Feb</th>
+                        <th>Mar-Abr</th>
+                        <th>May-Jun</th>
+                        <th>Jul-Ago</th>
+                        <th>Sep-Oct</th>
+                        <th>Nov-Dic</th>
                         <th>Total / Progreso</th>
                         <th>Acciones</th>
                     </tr>

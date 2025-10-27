@@ -340,29 +340,51 @@
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse($grupos as $index => $grupo)
+                        @forelse($todosLosGrupos as $index => $grupo)
                         @php
-                            $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
-                            $realizadoBimestre = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
-                                $mes = $r->fecha->month;
-                                $inicio = ($bimestreActual - 1) * 2 + 1;
-                                $fin = $bimestreActual * 2;
-                                return $mes >= $inicio && $mes <= $fin;
-                            })->count();
-                            
-                            $totalAcumulado = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
-                                $mes = $r->fecha->month;
-                                $fin = $bimestreActual * 2;
-                                return $mes <= $fin;
-                            })->count();
+                            if (isset($grupo->es_fijo) && $grupo->es_fijo) {
+                                // Para grupos fijos, usar los datos calculados desde etapas
+                                $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
+                                $realizadoBimestre = $grupo->realizados[$bimestreActual] ?? 0;
+                                $totalAcumulado = 0;
+                                
+                                // Calcular acumulado hasta el bimestre actual
+                                for ($i = 1; $i <= $bimestreActual; $i++) {
+                                    $totalAcumulado += $grupo->realizados[$i] ?? 0;
+                                }
+                                
+                                $unidadMedida = 'Documentos terminados';
+                            } else {
+                                // Para grupos regulares, usar la lógica original
+                                $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
+                                $realizadoBimestre = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
+                                    $mes = $r->fecha->month;
+                                    $inicio = ($bimestreActual - 1) * 2 + 1;
+                                    $fin = $bimestreActual * 2;
+                                    return $mes >= $inicio && $mes <= $fin;
+                                })->count();
+                                
+                                $totalAcumulado = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
+                                    $mes = $r->fecha->month;
+                                    $fin = $bimestreActual * 2;
+                                    return $mes <= $fin;
+                                })->count();
+                                
+                                $unidadMedida = 'Reuniones';
+                            }
                             
                             $porcBimestral = $metaBimestral > 0 ? round(($realizadoBimestre / $metaBimestral) * 100) : 0;
                             $porcAnual = $grupo->meta_anual > 0 ? round(($totalAcumulado / $grupo->meta_anual) * 100) : 0;
                         @endphp
-                        <tr>
+                        <tr style="{{ isset($grupo->es_fijo) && $grupo->es_fijo ? 'background-color: #f8f9fa; border-left: 4px solid #007bff;' : '' }}">
                             <td>{{ $index + 1 }}</td>
-                            <td><strong>{{ $grupo->nombre }}</strong></td>
-                            <td>Reuniones</td>
+                            <td>
+                                <strong>{{ $grupo->nombre }}</strong>
+                                @if(isset($grupo->es_fijo) && $grupo->es_fijo)
+                                    <span style="font-size: 0.8em; color: #007bff; font-weight: normal;">(Grupo Fijo)</span>
+                                @endif
+                            </td>
+                            <td>{{ $unidadMedida }}</td>
                             <td>{{ $grupo->meta_anual }}</td>
                             <td>{{ $metaBimestral }}</td>
                             <td><strong>{{ $realizadoBimestre }}</strong></td>
@@ -398,6 +420,268 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+
+        <!-- Sección 6.1.4 - Normativa Técnica de la SICT -->
+        <div style="margin-top: 40px;">
+            <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                <h3 style="text-align: center; font-weight: bold; margin: 0;">REPORTE DE AVANCE DEL PROGRAMA DE LA ELABORACIÓN DE NORMAS</h3>
+            </div>
+            
+            <table class="table table-bordered" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                <thead>
+                    <tr style="background-color: #f8f9fa;">
+                        <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 5%;">No.</th>
+                        <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 35%;">Descripción</th>
+                        <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 10%;">Unidad de medida</th>
+                        <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 8%;">Meta</th>
+                        <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 10%;">Avance bimestral <br><br>Productos terminados<br><br>(sólo en el caso de normas y manuales)</th>
+                        <th colspan="2" style="border: 1px solid #000; padding: 8px; text-align: center;">PRIMER BIMESTRE</th>
+                        <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 15%;">Observaciones</th>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <th colspan="2" style="border: 1px solid #000; padding: 8px; text-align: center;">PORCENTAJE</th>
+                    </tr>
+                    <tr style="background-color: #f8f9fa;">
+                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-size: 10px;">Realizado vs. Programado en el período</th>
+                        <th style="border: 1px solid #000; padding: 8px; text-align: center; font-size: 10px;">Realizado acumulado vs. Prog. Anual</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @php
+                        // Obtener datos de grupos fijos para la sección 6.1.4
+                        $gruposFijosData = collect($gruposFijos ?? []);
+                        $aptGrupo = $gruposFijosData->where('id', 'apt')->first();
+                        $aftGrupo = $gruposFijosData->where('id', 'aft')->first();
+                        $pptGrupo = $gruposFijosData->where('id', 'ppt')->first();
+                        $npGrupo = $gruposFijosData->where('id', 'np')->first();
+                        
+                        // Calcular totales de metas
+                        $totalMetas = ($aptGrupo->metaAnual ?? 0) + ($aftGrupo->metaAnual ?? 0) + ($pptGrupo->metaAnual ?? 0) + ($npGrupo->metaAnual ?? 0);
+                    @endphp
+                    
+                    <!-- Fila principal con descripción general -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;">6.1.4</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: justify; font-size: 11px;">
+                            Con base en el entorno tecnológico mundial, el IMT emitirá normas y manuales para ampliar y actualizar la Normativa Técnica de la SICT para la infraestructura del transporte, en lo referente a proyecto, construcción, conservación y características de materiales, así como métodos de muestreo y pruebas de materiales, con una meta de <strong>{{ $aptGrupo->metaAnual ?? 0 }}</strong> anteproyectos preliminares, <strong>{{ $aftGrupo->metaAnual ?? 0 }}</strong> anteproyectos finales, <strong>{{ $pptGrupo->metaAnual ?? 0 }}</strong> proyectos preliminares y <strong>{{ $npGrupo->metaAnual ?? 0 }}</strong> normas y manuales por publicar.
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">Producto Terminado</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;">{{ $totalMetas }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">
+                        </td>
+                        <td rowspan="8" style="border: 1px solid #000; padding: 8px; vertical-align: top;">
+                            <textarea class="observaciones-autosave" data-field="observaciones_generales" style="width: 100%; min-height: 120px; border: 1px solid #ddd; padding: 5px; font-size: 11px; resize: vertical;" placeholder="Sin observaciones generales">{{ $observaciones_generales ?? '' }}</textarea>
+                        </td>
+                    </tr>
+                    
+                    <!-- a) Elaboración de anteproyectos preliminares -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;">a)</td>
+                        <td style="border: 1px solid #000; padding: 8px;"> Elaboración de anteproyectos preliminares de normas y manuales</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">Anteproyecto preliminar</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $aptGrupo->metaAnual ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $aptGrupo->realizadoBimestre[0] ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaBim = $aptGrupo->metaBimestral[0] ?? 0;
+                                $realBim = $aptGrupo->realizadoBimestre[0] ?? 0;
+                                $porcPeriodo = $metaBim > 0 ? round(($realBim / $metaBim) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcPeriodo }}%
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaAnual = $aptGrupo->metaAnual ?? 0;
+                                $totalAcum = $aptGrupo->totalAcumulado ?? 0;
+                                $porcAnual = $metaAnual > 0 ? round(($totalAcum / $metaAnual) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcAnual }}%
+                        </td>
+                    </tr>
+                    
+                    <!-- b) Elaboración de anteproyectos finales -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;">b)</td>
+                        <td style="border: 1px solid #000; padding: 8px;"> Elaboración de anteproyectos finales de normas y manuales</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">Anteproyecto final</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $aftGrupo->metaAnual ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $aftGrupo->realizadoBimestre[0] ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaBim = $aftGrupo->metaBimestral[0] ?? 0;
+                                $realBim = $aftGrupo->realizadoBimestre[0] ?? 0;
+                                $porcPeriodo = $metaBim > 0 ? round(($realBim / $metaBim) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcPeriodo }}%
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaAnual = $aftGrupo->metaAnual ?? 0;
+                                $totalAcum = $aftGrupo->totalAcumulado ?? 0;
+                                $porcAnual = $metaAnual > 0 ? round(($totalAcum / $metaAnual) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcAnual }}%
+                        </td>
+                    </tr>
+                    
+                    <!-- c) Elaboración de proyectos preliminares -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;">c)</td>
+                        <td style="border: 1px solid #000; padding: 8px;">Elaboración de proyectos preliminares de normas y manuales</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">Proyecto preliminar</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $pptGrupo->metaAnual ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $pptGrupo->realizadoBimestre[0] ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaBim = $pptGrupo->metaBimestral[0] ?? 0;
+                                $realBim = $pptGrupo->realizadoBimestre[0] ?? 0;
+                                $porcPeriodo = $metaBim > 0 ? round(($realBim / $metaBim) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcPeriodo }}%
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaAnual = $pptGrupo->metaAnual ?? 0;
+                                $totalAcum = $pptGrupo->totalAcumulado ?? 0;
+                                $porcAnual = $metaAnual > 0 ? round(($totalAcum / $metaAnual) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcAnual }}%
+                        </td>
+                    </tr>
+                    
+                    <!-- d) Publicación de normas y manuales -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;">d)</td>
+                        <td style="border: 1px solid #000; padding: 8px;">Publicación de normas y manuales</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">Norma y/o manual</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $npGrupo->metaAnual ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">{{ $npGrupo->realizadoBimestre[0] ?? 0 }}</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaBim = $npGrupo->metaBimestral[0] ?? 0;
+                                $realBim = $npGrupo->realizadoBimestre[0] ?? 0;
+                                $porcPeriodo = $metaBim > 0 ? round(($realBim / $metaBim) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcPeriodo }}%
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $metaAnual = $npGrupo->metaAnual ?? 0;
+                                $totalAcum = $npGrupo->totalAcumulado ?? 0;
+                                $porcAnual = $metaAnual > 0 ? round(($totalAcum / $metaAnual) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcAnual }}%
+                        </td>
+                    </tr>
+                    <!--puro contexto -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;"></td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: justify; font-size: 11px;">
+                            Se continuará coordinando el Subcomité Número 4 de Señalamiento y Dispositivos de Seguridad Vial, del Comité Consultivo Nacional de Normalización de Transporte Terrestre y su Grupo de Trabajo 1, mismo que concluirá la NOM-037-SCT2-2025, Barreras de protección en carreteras y vías urbanas y publicará la NOM-033-SCT2-2024, Diseño de plazas de cobro en carreteras. Criterios de seguridad vial.
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;"></td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; font-weight: bold;"></td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;">
+                        </td>
+                    </tr>
+                    <!-- f) Coordinación de reuniones del subcomité No.4 -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; width: 5%; text-align: center; vertical-align: middle;"><strong>f)</strong></td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 35%;">
+                            Coordinación de las reuniones de trabajo del subcomité No.4
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">Reunión</td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 8%; text-align: center;">
+                            @php
+                                $grupoSubcomite = collect($todosLosGrupos ?? [])->firstWhere('nombre', 'like', '%subcomité%4%') 
+                                    ?? collect($todosLosGrupos ?? [])->firstWhere('nombre', 'like', '%Subcomité%4%')
+                                    ?? collect($todosLosGrupos ?? [])->firstWhere('nombre', 'Subcomité No.4');
+                                $metaSubcomite = $grupoSubcomite->meta_anual ?? 4;
+                            @endphp
+                            {{ $metaSubcomite }}
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">
+                            {{ isset($reunionesSubcomite) ? $reunionesSubcomite->where('bimestre', 1)->count() : 0 }}
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">
+                            @php
+                                $reunionesSubBim = isset($reunionesSubcomite) ? $reunionesSubcomite->where('bimestre', 1)->count() : 0;
+                                $metaSubBim = 1; // Meta bimestral para subcomité
+                                $porcSubPeriodo = $metaSubBim > 0 ? round(($reunionesSubBim / $metaSubBim) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcSubPeriodo }}%
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">
+                            @php
+                                $reunionesSubTotal = isset($reunionesSubcomite) ? $reunionesSubcomite->count() : 0;
+                                $metaSubAnual = 4;
+                                $porcSubAnual = $metaSubAnual > 0 ? round(($reunionesSubTotal / $metaSubAnual) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcSubAnual }}%
+                        </td>
+                    </tr>
+                    
+                    <!-- g) Coordinación de reuniones del grupo de trabajo -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle;"><strong>g)</strong></td>
+                        <td style="border: 1px solid #000; padding: 8px;">
+                            Coordinación de las reuniones del grupo de trabajo
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">Reunión</td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $grupoTrabajo = collect($todosLosGrupos ?? [])->firstWhere('nombre', 'like', '%grupo%trabajo%') 
+                                    ?? collect($todosLosGrupos ?? [])->firstWhere('nombre', 'like', '%Grupo%Trabajo%');
+                                $metaGrupoTrabajo = $grupoTrabajo->meta_anual ?? 13;
+                            @endphp
+                            {{ $metaGrupoTrabajo }}
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            {{ isset($reunionesGrupoTrabajo) ? $reunionesGrupoTrabajo->where('bimestre', 1)->count() : 0 }}
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $reunionesGrupoBim = isset($reunionesGrupoTrabajo) ? $reunionesGrupoTrabajo->where('bimestre', 1)->count() : 0;
+                                $metaGrupoBim = 2; // Meta bimestral para grupos de trabajo
+                                $porcGrupoPeriodo = $metaGrupoBim > 0 ? round(($reunionesGrupoBim / $metaGrupoBim) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcGrupoPeriodo }}%
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; text-align: center;">
+                            @php
+                                $reunionesGrupoTotal = isset($reunionesGrupoTrabajo) ? $reunionesGrupoTrabajo->count() : 0;
+                                $metaGrupoAnual = $metaGrupoTrabajo; // Usar la meta dinámica del grupo de trabajo
+                                $porcGrupoAnual = $metaGrupoAnual > 0 ? round(($reunionesGrupoTotal / $metaGrupoAnual) * 100, 1) : 0;
+                            @endphp
+                            {{ $porcGrupoAnual }}%
+                        </td>
+                    </tr>
+                    <!-- g.3) Participación en comités consultivos -->
+                    <tr>
+                        <td style="border: 1px solid #000; padding: 8px; width: 5%; text-align: center; vertical-align: middle;"><strong>g.3</strong></td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 35%;">
+                        Se continuará participando en los comités consultivos nacionales de normalización de Transporte Terrestre, de Transporte Aéreo, de seguridad al Usuario, de la Secretaría de Economía, de Ordenamiento Territorial y Desarrollo Urbano; en los grupos de trabajo del Organismo Nacional de Normalización y Certificación de la Construcción y Edificación, S.C. (ONNCCE), y en el Comité Técnico 4.6 de la Asociación Mundial de la Carretera.
+                        </td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">Reunión</td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 8%; text-align: center;">57</td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">9</td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">112.5%</td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 10%; text-align: center;">15.8%</td>
+                        <td style="border: 1px solid #000; padding: 8px; width: 15%;">
+                            <textarea class="observaciones-autosave" data-field="observaciones_g3" style="width: 100%; min-height: 60px; border: 1px solid #ddd; padding: 5px; font-size: 11px; resize: vertical;" placeholder="Sin observaciones">{{ $observaciones_g3 ?? '' }}</textarea>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
         </div>
 
         <div id="tab-inventario" class="tab-content">
@@ -587,6 +871,63 @@ function confirmarEliminarReporte(reporteId) {
         form.submit();
     }
 }
+
+// Funcionalidad de autosave para observaciones
+document.addEventListener('DOMContentLoaded', function() {
+    const observacionesTextareas = document.querySelectorAll('.observaciones-autosave');
+    let saveTimeout;
+    
+    observacionesTextareas.forEach(function(textarea) {
+        // Agregar indicador visual de guardado
+        const indicator = document.createElement('div');
+        indicator.className = 'save-indicator';
+        indicator.style.cssText = 'position: absolute; right: 5px; top: 5px; font-size: 10px; color: #28a745; display: none;';
+        indicator.textContent = '✓ Guardado';
+        
+        // Hacer el contenedor padre relativo para posicionar el indicador
+        textarea.parentElement.style.position = 'relative';
+        textarea.parentElement.appendChild(indicator);
+        
+        textarea.addEventListener('input', function() {
+            // Mostrar indicador de "guardando..."
+            indicator.textContent = '⏳ Guardando...';
+            indicator.style.color = '#ffc107';
+            indicator.style.display = 'block';
+            
+            // Limpiar timeout anterior
+            clearTimeout(saveTimeout);
+            
+            // Guardar después de 1 segundo de inactividad
+            saveTimeout = setTimeout(function() {
+                // Simular guardado (aquí se haría la petición AJAX real)
+                console.log('Guardando observación:', textarea.dataset.field, '=', textarea.value);
+                
+                // Mostrar confirmación de guardado
+                indicator.textContent = '✓ Guardado';
+                indicator.style.color = '#28a745';
+                
+                // Ocultar indicador después de 2 segundos
+                setTimeout(function() {
+                    indicator.style.display = 'none';
+                }, 2000);
+            }, 1000);
+        });
+        
+        // Guardar también al perder el foco
+        textarea.addEventListener('blur', function() {
+            clearTimeout(saveTimeout);
+            if (textarea.value !== textarea.defaultValue) {
+                console.log('Guardando observación al perder foco:', textarea.dataset.field, '=', textarea.value);
+                indicator.textContent = '✓ Guardado';
+                indicator.style.color = '#28a745';
+                indicator.style.display = 'block';
+                setTimeout(function() {
+                    indicator.style.display = 'none';
+                }, 2000);
+            }
+        });
+    });
+});
 </script>
 
 @endsection

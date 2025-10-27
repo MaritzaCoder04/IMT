@@ -359,7 +359,7 @@
                 <input type="text" name="busqueda" placeholder="Buscar grupo..." value="{{ $busqueda }}">
                 <input type="number" name="anio" placeholder="Año" value="{{ $anio }}">
                 <button type="submit" class="btn btn-secondary">🔍 Buscar</button>
-                @if($busqueda)
+                @if(request('busqueda'))
                     <button type="button" class="btn-secondary" onclick="window.location='{{ route('grupotrabajo.agenda', ['anio' => $anio]) }}'" style="background: #6c757d;">
                         ✖️ Limpiar
                     </button>

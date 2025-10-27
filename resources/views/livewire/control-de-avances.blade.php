@@ -29,7 +29,9 @@
                                             <input type="text" wire:model.live="busqueda" id="busqueda" placeholder="Ingrese cualquier palabra">
                                         </div>   
                                         <div class="actions2">
-                                            <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
+                                            @if($busqueda)
+                                                <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
+                                            @endif
                                             <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>
                                         </div>
                                     </div>

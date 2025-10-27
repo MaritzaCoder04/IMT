@@ -30,7 +30,9 @@
                         <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
                     </div>
                     <div class="actions">
-                    <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
+                    @if($palabra || $designacion || $libro || $anio)
+                        <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
+                    @endif
                     <!--<button wire:click="descargarSQL" class="btn btn-success">Descargar SQL</button>-->
                 </div>
                 </div>

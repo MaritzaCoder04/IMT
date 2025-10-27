@@ -17,7 +17,9 @@
                                             <input type="text" id="cp" wire:model.live="busqueda" placeholder="Ingrese cualquier palabra">
                                         </div>   
                                         <div class="actions2">
-                                            <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
+                                            @if($busqueda)
+                                                <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
+                                            @endif
                                         </div>
                                     </div>
                                 </div> 

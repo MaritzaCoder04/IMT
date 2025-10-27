@@ -81,11 +81,102 @@ class GrupoTrabajoController extends Controller
     // Vista 4: Reporte
     public function reporte()
     {
+        // Obtener grupos fijos guardados en la base de datos
+        $gruposFijosDB = GrupoTrabajo::whereIn('nombre', [
+            'Anteproyecto Preliminar',
+            'Anteproyecto Final', 
+            'Proyecto Preliminar',
+            'Publicación de Manuales/Normas'
+        ])->get();
+
+        // Crear array de grupos fijos con valores por defecto o de BD
+        $gruposFijos = [];
+        $nombresGruposFijos = [
+            'apt' => 'Anteproyecto Preliminar',
+            'aft' => 'Anteproyecto Final',
+            'ppt' => 'Proyecto Preliminar',
+            'np' => 'Publicación de Manuales/Normas'
+        ];
+
+        foreach ($nombresGruposFijos as $id => $nombre) {
+            $grupoGuardado = $gruposFijosDB->firstWhere('nombre', $nombre);
+            
+            $gruposFijos[] = (object)[
+                'id' => $id,
+                'nombre' => $nombre,
+                'meta_anual' => $grupoGuardado ? $grupoGuardado->meta_anual : 0,
+                'meta_bimestre_1' => $grupoGuardado ? $grupoGuardado->meta_bimestre_1 : 0,
+                'meta_bimestre_2' => $grupoGuardado ? $grupoGuardado->meta_bimestre_2 : 0,
+                'meta_bimestre_3' => $grupoGuardado ? $grupoGuardado->meta_bimestre_3 : 0,
+                'meta_bimestre_4' => $grupoGuardado ? $grupoGuardado->meta_bimestre_4 : 0,
+                'meta_bimestre_5' => $grupoGuardado ? $grupoGuardado->meta_bimestre_5 : 0,
+                'meta_bimestre_6' => $grupoGuardado ? $grupoGuardado->meta_bimestre_6 : 0,
+                'observaciones' => $grupoGuardado ? $grupoGuardado->observaciones : '',
+                'realizados' => [],
+                'total_realizado' => 0,
+                'es_fijo' => true,
+                'fechas_productos' => []
+            ];
+        }
+
+        // Calcular realizados por bimestre para grupos fijos basado en tabla etapas
+        foreach ($gruposFijos as $grupo) {
+            $grupo->realizados = [];
+            $grupo->fechas_productos = [];
+            
+            for ($i = 1; $i <= 6; $i++) {
+                $mesInicio = ($i - 1) * 2 + 1;
+                $mesFin = $mesInicio + 1;
+                
+                // Determinar el campo de fecha de terminación según el grupo
+                $campoFecha = '';
+                switch ($grupo->id) {
+                    case 'apt':
+                        $campoFecha = '3a';
+                        break;
+                    case 'aft':
+                        $campoFecha = '3b';
+                        break;
+                    case 'ppt':
+                        $campoFecha = '3c';
+                        break;
+                    case 'np':
+                        $campoFecha = '3e';
+                        break;
+                }
+                
+                // Obtener fechas de productos terminados en este bimestre
+                $fechasProductos = \DB::table('etapas')
+                    ->select($campoFecha . ' as fecha')
+                    ->whereNotNull($campoFecha)
+                    ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) >= ?", [$mesInicio])
+                    ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) <= ?", [$mesFin])
+                    ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [date('Y')])
+                    ->get();
+                
+                $grupo->fechas_productos[$i] = $fechasProductos->pluck('fecha')->toArray();
+                $grupo->realizados[$i] = $fechasProductos->count();
+            }
+            
+            // Total realizado en el año y todas las fechas
+            $todasFechas = \DB::table('etapas')
+                ->select($campoFecha . ' as fecha')
+                ->whereNotNull($campoFecha)
+                ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [date('Y')])
+                ->get();
+                
+            $grupo->total_realizado = $todasFechas->count();
+            $grupo->todas_fechas_productos = $todasFechas->pluck('fecha')->toArray();
+        }
+
+        // Obtener grupos de trabajo regulares
         $grupos = GrupoTrabajo::with('reuniones')->get();
         
-        // Calcular realizados por bimestre
+        // Calcular realizados por bimestre para grupos regulares
         foreach ($grupos as $grupo) {
             $grupo->realizados = [];
+            $grupo->es_fijo = false;
+            
             for ($i = 1; $i <= 6; $i++) {
                 $mesInicio = ($i - 1) * 2 + 1;
                 $mesFin = $mesInicio + 1;
@@ -102,7 +193,53 @@ class GrupoTrabajoController extends Controller
             $grupo->total_realizado = $grupo->reuniones()->whereYear('fecha', date('Y'))->count();
         }
 
-        return view('grupotrabajo.reporte', compact('grupos'));
+        // Combinar grupos fijos y regulares
+        $todosLosGrupos = collect($gruposFijos)->merge($grupos);
+
+        // Obtener datos adicionales para las secciones f y g (reuniones de subcomités)
+        $reunionesSubcomite = \DB::table('reuniones')
+            ->join('grupos_trabajo', 'reuniones.grupo_trabajo_id', '=', 'grupos_trabajo.id')
+            ->where('grupos_trabajo.nombre', 'like', '%subcomité%')
+            ->orWhere('grupos_trabajo.nombre', 'like', '%Subcomité%')
+            ->select('reuniones.fecha', 'grupos_trabajo.nombre as grupo_nombre', 
+                \DB::raw('CASE 
+                    WHEN MONTH(reuniones.fecha) IN (1,2) THEN 1
+                    WHEN MONTH(reuniones.fecha) IN (3,4) THEN 2
+                    WHEN MONTH(reuniones.fecha) IN (5,6) THEN 3
+                    WHEN MONTH(reuniones.fecha) IN (7,8) THEN 4
+                    WHEN MONTH(reuniones.fecha) IN (9,10) THEN 5
+                    WHEN MONTH(reuniones.fecha) IN (11,12) THEN 6
+                    END as bimestre'))
+            ->whereYear('reuniones.fecha', date('Y'))
+            ->orderBy('reuniones.fecha')
+            ->get();
+
+        $reunionesGrupoTrabajo = \DB::table('reuniones')
+            ->join('grupos_trabajo', 'reuniones.grupo_trabajo_id', '=', 'grupos_trabajo.id')
+            ->where('grupos_trabajo.nombre', 'like', '%grupo de trabajo%')
+            ->orWhere('grupos_trabajo.nombre', 'like', '%Grupo de Trabajo%')
+            ->select('reuniones.fecha', 'grupos_trabajo.nombre as grupo_nombre',
+                \DB::raw('CASE 
+                    WHEN MONTH(reuniones.fecha) IN (1,2) THEN 1
+                    WHEN MONTH(reuniones.fecha) IN (3,4) THEN 2
+                    WHEN MONTH(reuniones.fecha) IN (5,6) THEN 3
+                    WHEN MONTH(reuniones.fecha) IN (7,8) THEN 4
+                    WHEN MONTH(reuniones.fecha) IN (9,10) THEN 5
+                    WHEN MONTH(reuniones.fecha) IN (11,12) THEN 6
+                    END as bimestre'))
+            ->whereYear('reuniones.fecha', date('Y'))
+            ->orderBy('reuniones.fecha')
+            ->get();
+
+        // Combinar grupos fijos y regulares
+        $todosLosGrupos = collect($gruposFijos)->merge($grupos);
+
+        return view('grupotrabajo.reporte', compact(
+            'todosLosGrupos', 
+            'gruposFijos',
+            'reunionesSubcomite', 
+            'reunionesGrupoTrabajo'
+        ));
     }
 
     // Actualizar observaciones
@@ -179,7 +316,112 @@ class GrupoTrabajoController extends Controller
     $anioSeleccionado = $request->get('anio', date('Y'));
     $bimestreSeleccionado = $request->get('bimestre', 1);
     
+    // Obtener grupos fijos guardados en la base de datos
+    $gruposFijosDB = GrupoTrabajo::whereIn('nombre', [
+        'Anteproyecto Preliminar',
+        'Anteproyecto Final', 
+        'Proyecto Preliminar',
+        'Publicación de Manuales/Normas'
+    ])->get();
+
+    // Crear array de grupos fijos con valores por defecto o de BD
+    $gruposFijos = [];
+    $nombresGruposFijos = [
+        'apt' => 'Anteproyecto Preliminar',
+        'aft' => 'Anteproyecto Final',
+        'ppt' => 'Proyecto Preliminar',
+        'np' => 'Publicación de Manuales/Normas'
+    ];
+
+    foreach ($nombresGruposFijos as $id => $nombre) {
+        $grupoGuardado = $gruposFijosDB->firstWhere('nombre', $nombre);
+        
+        $gruposFijos[] = (object)[
+            'id' => $id,
+            'nombre' => $nombre,
+            'meta_anual' => $grupoGuardado ? $grupoGuardado->meta_anual : 0,
+            'meta_bimestre_1' => $grupoGuardado ? $grupoGuardado->meta_bimestre_1 : 0,
+            'meta_bimestre_2' => $grupoGuardado ? $grupoGuardado->meta_bimestre_2 : 0,
+            'meta_bimestre_3' => $grupoGuardado ? $grupoGuardado->meta_bimestre_3 : 0,
+            'meta_bimestre_4' => $grupoGuardado ? $grupoGuardado->meta_bimestre_4 : 0,
+            'meta_bimestre_5' => $grupoGuardado ? $grupoGuardado->meta_bimestre_5 : 0,
+            'meta_bimestre_6' => $grupoGuardado ? $grupoGuardado->meta_bimestre_6 : 0,
+            'observaciones' => $grupoGuardado ? $grupoGuardado->observaciones : '',
+            'realizados' => [],
+            'total_realizado' => 0,
+            'es_fijo' => true
+        ];
+    }
+
+    // Calcular realizados por bimestre para grupos fijos basado en tabla etapas
+    foreach ($gruposFijos as $grupo) {
+        $grupo->realizados = [];
+        
+        for ($i = 1; $i <= 6; $i++) {
+            $mesInicio = ($i - 1) * 2 + 1;
+            $mesFin = $mesInicio + 1;
+            
+            // Determinar el campo de fecha de terminación según el grupo
+            $campoFecha = '';
+            switch ($grupo->id) {
+                case 'apt':
+                    $campoFecha = '3a';
+                    break;
+                case 'aft':
+                    $campoFecha = '3b';
+                    break;
+                case 'ppt':
+                    $campoFecha = '3c';
+                    break;
+                case 'np':
+                    $campoFecha = '3e';
+                    break;
+            }
+            
+            // Contar documentos terminados en este bimestre
+            $count = \DB::table('etapas')
+                ->whereNotNull($campoFecha)
+                ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) >= ?", [$mesInicio])
+                ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) <= ?", [$mesFin])
+                ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                ->count();
+            
+            $grupo->realizados[$i] = $count;
+        }
+        
+        // Total realizado en el año
+        $grupo->total_realizado = \DB::table('etapas')
+            ->whereNotNull($campoFecha)
+            ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+            ->count();
+    }
+    
+    // Obtener grupos de trabajo regulares
     $grupos = GrupoTrabajo::with('reuniones')->get();
+    
+    // Calcular realizados por bimestre para grupos regulares
+    foreach ($grupos as $grupo) {
+        $grupo->realizados = [];
+        $grupo->es_fijo = false;
+        
+        for ($i = 1; $i <= 6; $i++) {
+            $mesInicio = ($i - 1) * 2 + 1;
+            $mesFin = $mesInicio + 1;
+            
+            $count = $grupo->reuniones()
+                ->whereMonth('fecha', '>=', $mesInicio)
+                ->whereMonth('fecha', '<=', $mesFin)
+                ->whereYear('fecha', $anioSeleccionado)
+                ->count();
+            
+            $grupo->realizados[$i] = $count;
+        }
+        
+        $grupo->total_realizado = $grupo->reuniones()->whereYear('fecha', $anioSeleccionado)->count();
+    }
+
+    // Combinar grupos fijos y regulares
+    $todosLosGrupos = collect($gruposFijos)->merge($grupos);
     
     // Obtener todos los reportes guardados agrupados por año
     $reportesPorAnio = ReporteBimestral::orderBy('anio', 'desc')
@@ -198,7 +440,7 @@ class GrupoTrabajoController extends Controller
     $ultimoReporte = ReporteBimestral::latest()->first();
     
     return view('grupotrabajo.reporte', compact(
-        'grupos',
+        'todosLosGrupos',
         'anioSeleccionado',
         'bimestreSeleccionado',
         'reportesPorAnio',
