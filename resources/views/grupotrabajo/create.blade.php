@@ -16,11 +16,7 @@
                     @foreach($grupos as $grupo)
                         <option value="{{ $grupo->nombre }}">{{ $grupo->nombre }}</option>
                     @endforeach
-                    <!-- Grupos fijos para documentos -->
-                    <option value="Anteproyecto Preliminar">Anteproyecto Preliminar</option>
-                    <option value="Anteproyecto Final">Anteproyecto Final</option>
-                    <option value="Proyecto Preliminar">Proyecto Preliminar</option>
-                    <option value="Publicación de Manuales/Normas">Publicación de Manuales/Normas</option>
+                    
                 </select>
             </div>
 
