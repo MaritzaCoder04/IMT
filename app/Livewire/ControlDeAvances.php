@@ -8,10 +8,12 @@ use App\Models\Documento;
 class ControlDeAvances extends Component
 {
     public $busqueda = '';
+    public $palabraExacta = '';
 
     public function limpiar()
     {
         $this->busqueda = '';
+        $this->palabraExacta = '';
     }
 
     public function eliminar($id)
@@ -35,6 +37,17 @@ class ControlDeAvances extends Component
                 $q->where('nombre', 'like', '%' . $this->busqueda . '%')
                   ->orWhereHas('info', function($subQuery) {
                       $subQuery->where('designacion', 'like', '%' . $this->busqueda . '%');
+                  });
+            });
+        }
+
+        // Filtro por palabra exacta (excluye libro y designación)
+        if (!empty($this->palabraExacta)) {
+            $pattern = '[[:<:]]' . preg_quote($this->palabraExacta, '/') . '[[:>:]]';
+            $query->where(function($q) use ($pattern) {
+                $q->whereRaw('nombre REGEXP ?', [$pattern])
+                  ->orWhereHas('info', function($subQ) use ($pattern) {
+                      $subQ->whereRaw('origen REGEXP ?', [$pattern]);
                   });
             });
         }

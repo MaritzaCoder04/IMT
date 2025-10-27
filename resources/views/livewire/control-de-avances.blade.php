@@ -27,9 +27,13 @@
                                         <div class="form-group">
                                             <label for="busqueda">Cualquier Palabra</label>
                                             <input type="text" wire:model.live="busqueda" id="busqueda" placeholder="Ingrese cualquier palabra">
-                                        </div>   
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="palabraExacta">Palabra exacta</label>
+                                            <input type="text" wire:model.live="palabraExacta" id="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                                        </div>
                                         <div class="actions2">
-                                            @if($busqueda)
+                                            @if($busqueda || $palabraExacta)
                                                 <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
                                             @endif
                                             <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>

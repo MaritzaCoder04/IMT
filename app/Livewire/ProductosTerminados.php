@@ -9,10 +9,12 @@ use App\Models\Parte;
 class ProductosTerminados extends Component
 {
     public $busqueda = '';
+    public $palabraExacta = '';
 
     public function limpiar()
     {
         $this->busqueda = '';
+        $this->palabraExacta = '';
     }
 
     public function render()
@@ -91,9 +93,26 @@ class ProductosTerminados extends Component
         // Aplicar filtro de búsqueda si existe
         if (!empty($this->busqueda)) {
             $documentosProcesados = array_filter($documentosProcesados, function($documento) {
-                return stripos($documento->nombre, $this->busqueda) !== false ||
-                       stripos($documento->designacion, $this->busqueda) !== false ||
-                       stripos($documento->origen, $this->busqueda) !== false;
+                return (
+                    isset($documento->nombre) && stripos($documento->nombre, $this->busqueda) !== false
+                ) || (
+                    isset($documento->designacion) && stripos($documento->designacion, $this->busqueda) !== false
+                ) || (
+                    // origen textual suele venir desde info
+                    (isset($documento->info) && isset($documento->info->origen) && stripos($documento->info->origen, $this->busqueda) !== false)
+                    || (isset($documento->origen) && stripos((string)$documento->origen, $this->busqueda) !== false)
+                );
+            });
+        }
+
+        // Filtro por palabra exacta (excluye libro y designación)
+        if (!empty($this->palabraExacta)) {
+            $pattern = '/\\b' . preg_quote($this->palabraExacta, '/') . '\\b/i';
+            $documentosProcesados = array_filter($documentosProcesados, function($documento) use ($pattern) {
+                $matchNombre = isset($documento->nombre) && preg_match($pattern, $documento->nombre);
+                $matchOrigen = (isset($documento->info) && isset($documento->info->origen) && preg_match($pattern, $documento->info->origen))
+                               || (isset($documento->origen) && preg_match($pattern, (string)$documento->origen));
+                return $matchNombre || $matchOrigen;
             });
         }
 

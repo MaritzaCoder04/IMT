@@ -169,33 +169,6 @@ class GrupoTrabajoController extends Controller
             $grupo->todas_fechas_productos = $todasFechas->pluck('fecha')->toArray();
         }
 
-        // Obtener grupos de trabajo regulares
-        $grupos = GrupoTrabajo::with('reuniones')->get();
-        
-        // Calcular realizados por bimestre para grupos regulares
-        foreach ($grupos as $grupo) {
-            $grupo->realizados = [];
-            $grupo->es_fijo = false;
-            
-            for ($i = 1; $i <= 6; $i++) {
-                $mesInicio = ($i - 1) * 2 + 1;
-                $mesFin = $mesInicio + 1;
-                
-                $count = $grupo->reuniones()
-                    ->whereMonth('fecha', '>=', $mesInicio)
-                    ->whereMonth('fecha', '<=', $mesFin)
-                    ->whereYear('fecha', date('Y'))
-                    ->count();
-                
-                $grupo->realizados[$i] = $count;
-            }
-            
-            $grupo->total_realizado = $grupo->reuniones()->whereYear('fecha', date('Y'))->count();
-        }
-
-        // Combinar grupos fijos y regulares
-        $todosLosGrupos = collect($gruposFijos)->merge($grupos);
-
         // Obtener datos adicionales para las secciones f y g (reuniones de subcomités)
         $reunionesSubcomite = \DB::table('reuniones')
             ->join('grupos_trabajo', 'reuniones.grupo_trabajo_id', '=', 'grupos_trabajo.id')
@@ -231,8 +204,100 @@ class GrupoTrabajoController extends Controller
             ->orderBy('reuniones.fecha')
             ->get();
 
-        // Combinar grupos fijos y regulares
-        $todosLosGrupos = collect($gruposFijos)->merge($grupos);
+        // Obtener grupos de trabajo regulares
+        $grupos = GrupoTrabajo::with('reuniones')->get();
+
+        // Detectar si ya existen grupos en BD que representan los especiales
+        $haySubcomite = $grupos->contains(function($gg){
+            return stripos($gg->nombre, 'subcomité') !== false || stripos($gg->nombre, 'subcomite') !== false;
+        });
+        $hayGrupoTrabajo = $grupos->contains(function($gg){
+            return stripos($gg->nombre, 'grupo de trabajo') !== false;
+        });
+        
+        // Calcular realizados por bimestre para grupos regulares
+        foreach ($grupos as $grupo) {
+            $grupo->realizados = [];
+            $grupo->es_fijo = false;
+            
+            for ($i = 1; $i <= 6; $i++) {
+                $mesInicio = ($i - 1) * 2 + 1;
+                $mesFin = $mesInicio + 1;
+                
+                $count = $grupo->reuniones()
+                    ->whereMonth('fecha', '>=', $mesInicio)
+                    ->whereMonth('fecha', '<=', $mesFin)
+                    ->whereYear('fecha', date('Y'))
+                    ->count();
+                
+                $grupo->realizados[$i] = $count;
+            }
+            
+            $grupo->total_realizado = $grupo->reuniones()->whereYear('fecha', date('Y'))->count();
+        }
+
+        // Agregar grupos especiales para reuniones de subcomités y grupos de trabajo
+        $gruposEspeciales = [
+            (object)[
+                'id' => 'f',
+                'nombre' => 'Coordinación de reuniones del subcomité No.4',
+                'meta_anual' => 0,
+                'meta_bimestre_1' => 0,
+                'meta_bimestre_2' => 0,
+                'meta_bimestre_3' => 0,
+                'meta_bimestre_4' => 0,
+                'meta_bimestre_5' => 0,
+                'meta_bimestre_6' => 0,
+                'observaciones' => '',
+                'realizados' => [],
+                'total_realizado' => 0,
+                'es_fijo' => false,
+                'reuniones' => $reunionesSubcomite
+            ],
+            (object)[
+                'id' => 'g',
+                'nombre' => 'Coordinación de reuniones del grupo de trabajo',
+                'meta_anual' => 0,
+                'meta_bimestre_1' => 0,
+                'meta_bimestre_2' => 0,
+                'meta_bimestre_3' => 0,
+                'meta_bimestre_4' => 0,
+                'meta_bimestre_5' => 0,
+                'meta_bimestre_6' => 0,
+                'observaciones' => '',
+                'realizados' => [],
+                'total_realizado' => 0,
+                'es_fijo' => false,
+                'reuniones' => $reunionesGrupoTrabajo
+            ]
+        ];
+
+        // Evitar duplicados si los grupos existen en BD
+        if ($haySubcomite) {
+            $gruposEspeciales = array_values(array_filter($gruposEspeciales, function($g){
+                return $g->id !== 'f';
+            }));
+        }
+        if ($hayGrupoTrabajo) {
+            $gruposEspeciales = array_values(array_filter($gruposEspeciales, function($g){
+                return $g->id !== 'g';
+            }));
+        }
+
+        // Calcular realizados por bimestre para grupos especiales
+        foreach ($gruposEspeciales as $grupo) {
+            $grupo->realizados = [];
+            
+            for ($i = 1; $i <= 6; $i++) {
+                $count = $grupo->reuniones->where('bimestre', $i)->count();
+                $grupo->realizados[$i] = $count;
+            }
+            
+            $grupo->total_realizado = $grupo->reuniones->count();
+        }
+
+        // Combinar todos los grupos
+        $todosLosGrupos = collect($gruposFijos)->merge($grupos)->merge($gruposEspeciales);
 
         return view('grupotrabajo.reporte', compact(
             'todosLosGrupos', 
@@ -396,8 +461,9 @@ class GrupoTrabajoController extends Controller
             ->count();
     }
     
-    // Obtener grupos de trabajo regulares
-    $grupos = GrupoTrabajo::with('reuniones')->get();
+        // Obtener todos los grupos de trabajo regulares (sin excluir por nombre);
+        // deduplicaremos contra grupos especiales más adelante.
+        $grupos = GrupoTrabajo::with('reuniones')->get();
     
     // Calcular realizados por bimestre para grupos regulares
     foreach ($grupos as $grupo) {
@@ -420,8 +486,113 @@ class GrupoTrabajoController extends Controller
         $grupo->total_realizado = $grupo->reuniones()->whereYear('fecha', $anioSeleccionado)->count();
     }
 
-    // Combinar grupos fijos y regulares
-    $todosLosGrupos = collect($gruposFijos)->merge($grupos);
+    // Agregar grupos especiales para reuniones de subcomités y grupos de trabajo
+    $reunionesSubcomite = \DB::table('reuniones')
+        ->join('grupos_trabajo', 'reuniones.grupo_trabajo_id', '=', 'grupos_trabajo.id')
+        ->where(function($q){
+            $q->where('grupos_trabajo.nombre', 'like', '%subcomité%')
+              ->orWhere('grupos_trabajo.nombre', 'like', '%Subcomité%')
+              ->orWhere('grupos_trabajo.nombre', 'like', '%subcomite%')
+              ->orWhere('grupos_trabajo.nombre', 'like', '%Subcomite%');
+        })
+        ->select('reuniones.fecha', 'grupos_trabajo.nombre as grupo_nombre', 
+            \DB::raw('CASE 
+                WHEN MONTH(reuniones.fecha) IN (1,2) THEN 1
+                WHEN MONTH(reuniones.fecha) IN (3,4) THEN 2
+                WHEN MONTH(reuniones.fecha) IN (5,6) THEN 3
+                WHEN MONTH(reuniones.fecha) IN (7,8) THEN 4
+                WHEN MONTH(reuniones.fecha) IN (9,10) THEN 5
+                WHEN MONTH(reuniones.fecha) IN (11,12) THEN 6
+                END as bimestre'))
+        ->whereYear('reuniones.fecha', $anioSeleccionado)
+        ->orderBy('reuniones.fecha')
+        ->get();
+
+    $reunionesGrupoTrabajo = \DB::table('reuniones')
+        ->join('grupos_trabajo', 'reuniones.grupo_trabajo_id', '=', 'grupos_trabajo.id')
+        ->where(function($q){
+            $q->where('grupos_trabajo.nombre', 'like', '%grupo de trabajo%')
+              ->orWhere('grupos_trabajo.nombre', 'like', '%Grupo de Trabajo%');
+        })
+        ->select('reuniones.fecha', 'grupos_trabajo.nombre as grupo_nombre',
+            \DB::raw('CASE 
+                WHEN MONTH(reuniones.fecha) IN (1,2) THEN 1
+                WHEN MONTH(reuniones.fecha) IN (3,4) THEN 2
+                WHEN MONTH(reuniones.fecha) IN (5,6) THEN 3
+                WHEN MONTH(reuniones.fecha) IN (7,8) THEN 4
+                WHEN MONTH(reuniones.fecha) IN (9,10) THEN 5
+                WHEN MONTH(reuniones.fecha) IN (11,12) THEN 6
+                END as bimestre'))
+        ->whereYear('reuniones.fecha', $anioSeleccionado)
+        ->orderBy('reuniones.fecha')
+        ->get();
+
+    // Detectar si ya existen grupos en BD que representan los especiales
+    $haySubcomite = $grupos->contains(function($gg){
+        return stripos($gg->nombre, 'subcomité') !== false || stripos($gg->nombre, 'subcomite') !== false;
+    });
+    $hayGrupoTrabajo = $grupos->contains(function($gg){
+        return stripos($gg->nombre, 'grupo de trabajo') !== false;
+    });
+
+    $gruposEspeciales = [
+        (object)[
+            'id' => 'f',
+            'nombre' => 'Coordinación de reuniones del subcomité No.4',
+            'meta_anual' => 0,
+            'meta_bimestre_1' => 0,
+            'meta_bimestre_2' => 0,
+            'meta_bimestre_3' => 0,
+            'meta_bimestre_4' => 0,
+            'meta_bimestre_5' => 0,
+            'meta_bimestre_6' => 0,
+            'observaciones' => '',
+            'realizados' => [],
+            'total_realizado' => 0,
+            'es_fijo' => false,
+            'reuniones' => $reunionesSubcomite
+        ],
+        (object)[
+            'id' => 'g',
+            'nombre' => 'Coordinación de reuniones del grupo de trabajo',
+            'meta_anual' => 0,
+            'meta_bimestre_1' => 0,
+            'meta_bimestre_2' => 0,
+            'meta_bimestre_3' => 0,
+            'meta_bimestre_4' => 0,
+            'meta_bimestre_5' => 0,
+            'meta_bimestre_6' => 0,
+            'observaciones' => '',
+            'realizados' => [],
+            'total_realizado' => 0,
+            'es_fijo' => false,
+            'reuniones' => $reunionesGrupoTrabajo
+        ]
+    ];
+
+    // Si ya hay grupo(s) en BD que cubren el subcomité o grupo de trabajo,
+    // no agregamos el especial correspondiente para evitar duplicados.
+    if ($haySubcomite) {
+        $gruposEspeciales = array_values(array_filter($gruposEspeciales, function($g){
+            return $g->id !== 'f';
+        }));
+    }
+    if ($hayGrupoTrabajo) {
+        $gruposEspeciales = array_values(array_filter($gruposEspeciales, function($g){
+            return $g->id !== 'g';
+        }));
+    }
+
+    // Calcular realizados por bimestre para grupos especiales
+    foreach ($gruposEspeciales as $grupo) {
+        $grupo->realizados = [];
+        for ($i = 1; $i <= 6; $i++) {
+            $grupo->realizados[$i] = $grupo->reuniones->where('bimestre', $i)->count();
+        }
+        $grupo->total_realizado = $grupo->reuniones->count();
+    }
+
+    $todosLosGrupos = collect($gruposFijos)->merge($grupos)->merge($gruposEspeciales);
     
     // Obtener todos los reportes guardados agrupados por año
     $reportesPorAnio = ReporteBimestral::orderBy('anio', 'desc')

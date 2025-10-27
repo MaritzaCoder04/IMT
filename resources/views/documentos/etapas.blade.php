@@ -5,6 +5,10 @@
 <div class="all-form">
     <div class="form-container">
         <div class="section-title2">Gestión de Fechas</div>
+        <div class="doc-summary" style="margin: 8px 0 12px 0; display: flex; gap: 24px; align-items: center;">
+            <div><strong>Documento:</strong> {{ $documento->nombre ?? '--' }}</div>
+            <div><strong>Designación:</strong> {{ $documento->info->designacion ?? '--' }}</div>
+        </div>
         <div class="progress-bar">
             <div class="progress-fill" id="progressFill"></div>
         </div>

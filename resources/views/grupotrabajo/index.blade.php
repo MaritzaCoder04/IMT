@@ -269,6 +269,7 @@
             @if(request('busqueda'))
                 <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('grupotrabajo.index') }}'">Limpiar</button>
             @endif
+            <a href="{{ route('grupos.index') }}" class="btn btn-primary" style="margin-left:8px;">Editar tipos de datos</a>
         </form>
 
         <div class="docs-table-wrapper">

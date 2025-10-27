@@ -9,9 +9,19 @@ use App\Models\Libro;
 class DocumentosFilter extends Component
 {
     public $palabra = '';
+    public $palabraExacta = '';
     public $designacion = '';
     public $libro = '';
     public $anio = '';
+
+    public function limpiar()
+    {
+        $this->palabra = '';
+        $this->palabraExacta = '';
+        $this->designacion = '';
+        $this->libro = '';
+        $this->anio = '';
+    }
 
     public function render()
     {
@@ -21,7 +31,7 @@ class DocumentosFilter extends Component
         // Construir la consulta con filtros
         $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'tipoRelacion']);
 
-        // Filtro por palabra (busca en nombre, origen y designación)
+        // Filtro por palabra (busca en nombre, origen y designación - coincidencia parcial)
         if (!empty($this->palabra)) {
             $query->where(function($q) {
                 $q->where('nombre', 'like', '%' . $this->palabra . '%')
@@ -29,6 +39,16 @@ class DocumentosFilter extends Component
                   ->orWhereHas('info', function($subQ) {
                       $subQ->where('designacion', 'like', '%' . $this->palabra . '%');
                   });
+            });
+        }
+
+        // Filtro por palabra exacta (sólo coincidencias como palabra completa)
+        // Excluye campos: libro y designación
+        if (!empty($this->palabraExacta)) {
+            $pattern = '[[:<:]]' . preg_quote($this->palabraExacta, '/') . '[[:>:]]';
+            $query->where(function($q) use ($pattern) {
+                $q->whereRaw('nombre REGEXP ?', [$pattern])
+                  ->orWhereRaw('origen REGEXP ?', [$pattern]);
             });
         }
 
@@ -99,13 +119,6 @@ class DocumentosFilter extends Component
         ]);
     }
 
-    public function limpiar()
-    {
-        $this->palabra = '';
-        $this->designacion = '';
-        $this->libro = '';
-        $this->anio = '';
-    }
 
     public function descargarSQL()
     {

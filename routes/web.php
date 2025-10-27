@@ -171,3 +171,11 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__.'/auth.php';
  
+// Gestión de tipos para creación de grupos de trabajo
+Route::resource('grupos', App\Http\Controllers\GrupoController::class)->only(['index','store','update','destroy']);
+// Gestión de selectores del formulario
+Route::resource('libros', App\Http\Controllers\LibroController::class)->only(['index','store','update','destroy']);
+Route::resource('temas', App\Http\Controllers\TemaController::class)->only(['index','store','update','destroy']);
+Route::resource('origenes', App\Http\Controllers\OrigenController::class)->only(['index','store','update','destroy']);
+Route::resource('tipos', App\Http\Controllers\TipoController::class)->only(['index','store','update','destroy']);
+ 

@@ -15,9 +15,13 @@
                                         <div class="form-group">
                                             <label for="cp">Cualquier Palabra</label>
                                             <input type="text" id="cp" wire:model.live="busqueda" placeholder="Ingrese cualquier palabra">
-                                        </div>   
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="pe">Palabra exacta</label>
+                                            <input type="text" id="pe" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                                        </div>
                                         <div class="actions2">
-                                            @if($busqueda)
+                                            @if($busqueda || $palabraExacta)
                                                 <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
                                             @endif
                                         </div>

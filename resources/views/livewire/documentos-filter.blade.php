@@ -13,6 +13,10 @@
                         <input type="text" id="palabra" wire:model.live="palabra" placeholder="Ingrese cualquier palabra">
                     </div>
                     <div class="form-group">
+                        <label for="palabraExacta">Palabra exacta</label>
+                        <input type="text" id="palabraExacta" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                    </div>
+                    <div class="form-group">
                         <label for="designacion">Designación</label>
                         <input type="text" id="designacion" wire:model.live="designacion" placeholder="Ingrese designación">
                     </div>
@@ -30,7 +34,7 @@
                         <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
                     </div>
                     <div class="actions">
-                    @if($palabra || $designacion || $libro || $anio)
+                    @if($palabra || $palabraExacta || $designacion || $libro || $anio)
                         <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
                     @endif
                     <!--<button wire:click="descargarSQL" class="btn btn-success">Descargar SQL</button>-->
@@ -55,7 +59,6 @@
                                 <th>Tema</th>
                                 <th>Parte</th>
                                 <th>Título</th>
-                                <th>Capítulo</th>
                                 <th>Designación</th>
                                 <th>Nombre</th>
                                 <th>Origen</th>
@@ -67,11 +70,10 @@
                         @forelse($documentosProcesados as $documento)
                             <tr>
                                 <td>{{ $documento->tipoRelacion->desc ?? ($documento->tipo == 1 ? 'Manual' : 'Norma') }}</td>
-                                <td>{{ $documento->libroRelacion->desc ?? $documento->libro }}</td>
-                                <td>{{ $documento->temaRelacion->desc ?? ($documento->tema == 0 ? '-' : $documento->tema) }}</td>
+                                <td>{{ $documento->libroRelacion->clave ?? ($documento->libro ?? '-') }}</td>
+                                <td>{{ $documento->temaRelacion->clave ?? ($documento->tema == 0 ? '-' : $documento->tema) }}</td>
                                 <td>{{ $documento->info->desc_parte ?? ($documento->parte == 0 ? '-' : $documento->parte) }}</td>
                                 <td>{{ $documento->info->desc_titulo ?? ($documento->titulo == 0 ? '-' : $documento->titulo) }}</td>
-                                <td>{{ $documento->capitulo }}</td>
                                 <td>{{ $documento->info->designacion ?? '-' }}</td>
                                 <td>{{ $documento->nombre ?? '-' }}</td>
                                 <td>{{ $documento->info->origen ?? '-' }}</td>
@@ -80,7 +82,7 @@
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="11" class="empty-state">
+                                <td colspan="10" class="empty-state">
                                     <p>No hay documentos registrados</p>
                                 </td>
                             </tr>

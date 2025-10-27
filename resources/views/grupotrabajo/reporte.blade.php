@@ -355,20 +355,31 @@
                                 
                                 $unidadMedida = 'Documentos terminados';
                             } else {
-                                // Para grupos regulares, usar la lógica original
+                                // Para grupos regulares y especiales de reuniones
                                 $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
-                                $realizadoBimestre = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
-                                    $mes = $r->fecha->month;
-                                    $inicio = ($bimestreActual - 1) * 2 + 1;
-                                    $fin = $bimestreActual * 2;
-                                    return $mes >= $inicio && $mes <= $fin;
-                                })->count();
                                 
-                                $totalAcumulado = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
-                                    $mes = $r->fecha->month;
-                                    $fin = $bimestreActual * 2;
-                                    return $mes <= $fin;
-                                })->count();
+                                if (isset($grupo->realizados) && !empty($grupo->realizados)) {
+                                    // Si el grupo trae realizados pre-calculados (especiales), úsalos
+                                    $realizadoBimestre = $grupo->realizados[$bimestreActual] ?? 0;
+                                    $totalAcumulado = 0;
+                                    for ($i = 1; $i <= $bimestreActual; $i++) {
+                                        $totalAcumulado += $grupo->realizados[$i] ?? 0;
+                                    }
+                                } else {
+                                    // Fall-back para grupos regulares con relación Eloquent
+                                    $realizadoBimestre = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
+                                        $mes = $r->fecha->month;
+                                        $inicio = ($bimestreActual - 1) * 2 + 1;
+                                        $fin = $bimestreActual * 2;
+                                        return $mes >= $inicio && $mes <= $fin;
+                                    })->count();
+                                    
+                                    $totalAcumulado = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
+                                        $mes = $r->fecha->month;
+                                        $fin = $bimestreActual * 2;
+                                        return $mes <= $fin;
+                                    })->count();
+                                }
                                 
                                 $unidadMedida = 'Reuniones';
                             }
@@ -501,6 +512,7 @@
         </tr>
     @endforeach
 </tbody>
+
 
 
             </table>
