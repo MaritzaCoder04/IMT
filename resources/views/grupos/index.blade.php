@@ -84,14 +84,12 @@
                 @forelse($grupos as $g)
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem 1.5rem;">
-                            <form method="POST" action="{{ route('grupos.update', $g->id) }}">
-                                @csrf
-                                @method('PUT')
                                 <input type="text" 
                                        name="nombre" 
                                        value="{{ $g->nombre }}" 
                                        list="nombres-grupos"
                                        required 
+                                       form="form-update-{{ $g->id }}"
                                        style="width: 100%; padding: 0.375rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
                                        onfocus="this.style.borderColor='#3b82f6'" 
                                        onblur="this.style.borderColor='#e2e8f0'">
@@ -100,6 +98,7 @@
                                 <input type="text" 
                                        name="descripcion" 
                                        value="{{ $g->descripcion }}" 
+                                       form="form-update-{{ $g->id }}"
                                        style="width: 100%; padding: 0.375rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
                                        onfocus="this.style.borderColor='#3b82f6'" 
                                        onblur="this.style.borderColor='#e2e8f0'">
@@ -109,28 +108,32 @@
                                        name="activo" 
                                        value="1" 
                                        {{ $g->activo ? 'checked' : '' }} 
+                                       form="form-update-{{ $g->id }}"
                                        style="width: 18px; height: 18px; accent-color: #3b82f6; cursor: pointer;">
                         </td>
                         <td style="padding: 1rem 1.5rem;">
                             <div style="display: flex; gap: 0.5rem;">
-                                <button type="submit" 
-                                        style="background: #3b82f6; color: white; padding: 0.375rem 0.875rem; border: none; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
-                                        onmouseover="this.style.background='#2563eb'" 
-                                        onmouseout="this.style.background='#3b82f6'">
-                                    Actualizar
-                                </button>
-                            </form>
-                            <form method="POST" action="{{ route('grupos.destroy', $g->id) }}">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" 
-                                        onclick="return confirm('¿Eliminar este tipo?')" 
-                                        style="background: white; color: #dc2626; padding: 0.375rem 0.875rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
-                                        onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#dc2626'" 
-                                        onmouseout="this.style.background='white'; this.style.borderColor='#fecaca'">
-                                    Eliminar
-                                </button>
-                            </form>
+                                <form id="form-update-{{ $g->id }}" method="POST" action="{{ route('grupos.update', $g->id) }}" style="display:inline;">
+                                    @csrf
+                                    @method('PUT')
+                                    <button type="submit" 
+                                            style="background: #3b82f6; color: white; padding: 0.375rem 0.875rem; border: none; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
+                                            onmouseover="this.style.background='#2563eb'" 
+                                            onmouseout="this.style.background='#3b82f6'">
+                                        Actualizar
+                                    </button>
+                                </form>
+                                <form method="POST" action="{{ route('grupos.destroy', $g->id) }}" style="display:inline;">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" 
+                                            onclick="return confirm('¿Eliminar este tipo?')" 
+                                            style="background: white; color: #dc2626; padding: 0.375rem 0.875rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+                                            onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#dc2626'" 
+                                            onmouseout="this.style.background='white'; this.style.borderColor='#fecaca'">
+                                        Eliminar
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>
@@ -145,5 +148,6 @@
             </table>
         </div>
     </div>
+
 </div>
 @endsection

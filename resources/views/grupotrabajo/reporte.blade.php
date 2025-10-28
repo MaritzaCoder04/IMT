@@ -430,12 +430,16 @@
     @php
         // Tabla normativa: solo los cuatro rubros de productos (sin coordinación)
         $grupos = [
+            ['id' => '',  'descripcion' => 'Con base en el entorno tecnológico mundial, el IMT emitirá normas y manuales para ampliar y actualizar la Normativa Técnica de la SICT para la infraestructura del transporte, en lo referente a proyecto, construcción, conservación y características de materiales, así como métodos de muestreo y pruebas de materiales, con una meta de 18 anteproyectos preliminares, 17 anteproyectos finales, 14 proyectos preliminares y 14 normas y manuales por publicar.', 'unidad' => 'Producto Terminado'],
             ['id' => 'apt',  'descripcion' => 'Elaboración de anteproyectos preliminares de normas y manuales', 'unidad' => 'Anteproyecto preliminar'],
             ['id' => 'aft',  'descripcion' => 'Elaboración de anteproyectos finales de normas y manuales',    'unidad' => 'Anteproyecto final'],
             ['id' => 'ppt',  'descripcion' => 'Elaboración de proyectos preliminares de normas y manuales',   'unidad' => 'Proyecto preliminar'],
-            ['id' => 'np',   'descripcion' => 'Publicación de normas y manuales',                            'unidad' => 'Norma y/o manual'],
+            ['id' => 'np',   'descripcion' => 'Publicación de normas y manuales', 'unidad' => 'Norma y/o manual'],
+            ['id' => '',   'descripcion' => 'Se continuará coordinando el Subcomité Número 4 de Señalamiento y Dispositivos de Seguridad Vial, del Comité Consultivo Nacional de Normalización de Transporte Terrestre y su Grupo de Trabajo 1, mismo que concluirá la NOM-037-SCT2-2025, Barreras de protección en carreteras y vías urbanas y publicará la NOM-033-SCT2-2024, Diseño de plazas de cobro en carreteras. Criterios de seguridad vial.', 'unidad' => ''],
             ['id' => 'sub4', 'descripcion' => 'Subcomité No.4',                                              'unidad' => 'Reunión'],
-            ['id' => 'gt1',  'descripcion' => 'Grupo de Trabajo 1',                                          'unidad' => 'Reunión'],
+            ['id' => 'gt1',  'descripcion' => 'Grupo de Trabajo 1',  'unidad' => 'Reunión'],
+            ['id' => '',   'descripcion' => 'Se continuará participando en los comités consultivos nacionales de normalización de Transporte Terrestre, de Transporte Aéreo, de Seguridad al Usuario, de la Secretaría de Economía, de Ordenamiento Territorial y Desarrollo Urbano; en los grupos de trabajo del Organismo Nacional de Normalización y Certificación de la Construcción y Edificación, S. C. (ONNCCE), y en el Comité Técnico 4.6 de la Asociación Mundial de la Carretera.', 'unidad' => 'Reunión'],
+                                        
         ];
     @endphp
 
