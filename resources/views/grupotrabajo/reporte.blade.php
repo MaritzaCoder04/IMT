@@ -265,6 +265,7 @@
     <div class="form-container">
         <div class="section-title">📊 Reportes de Grupos de Trabajo</div>
 
+        <!--
         <div class="tabs-container">
             <button class="tab-btn active" onclick="cambiarTab('crear')">
                 ➕ Crear/Editar Reporte
@@ -273,6 +274,7 @@
                 📚 Inventario de Reportes
             </button>
         </div>
+        -->
 
         <div id="tab-crear" class="tab-content active">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
@@ -283,9 +285,9 @@
                 </div>
 
                 <div style="display: flex; gap: 10px;">
-                    <button type="button" class="btn btn-secondary" onclick="abrirModalGuardar()">
+                    <!--<button type="button" class="btn btn-secondary" onclick="abrirModalGuardar()">
                         💾 Guardar Reporte
-                    </button>
+                    </button>-->
                     <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.pdf', ['anio' => $anioSeleccionado ?? date('Y'), 'bimestre' => $bimestreSeleccionado ?? 1]) }}'">
                         📥 Descargar PDF
                     </button>
@@ -331,8 +333,6 @@
                             <th rowspan="2">Meta Bimestral</th>
                             <th rowspan="2">Realizado en Bimestre</th>
                             <th colspan="2">PORCENTAJE</th>
-                            <th rowspan="2">Total Acumulado</th>
-                            <th rowspan="2">Observaciones</th>
                         </tr>
                         <tr>
                             <th>Realizado vs. Meta Bimestral</th>
@@ -376,14 +376,6 @@
                                 <span style="color: {{ $porcAnual >= 100 ? '#4caf50' : ($porcAnual >= 70 ? '#ff9800' : '#f44336') }}; font-weight: 600;">
                                     {{ $porcAnual }}%
                                 </span>
-                            </td>
-                            <td><strong>{{ $totalAcumulado }}</strong></td>
-                            <td>
-                                <textarea 
-                                    id="obs-{{ $grupo->id }}" 
-                                    rows="2" 
-                                    style="width: 100%;" 
-                                    placeholder="Agregar observaciones...">{{ $grupo->observaciones ?? '' }}</textarea>
                             </td>
                         </tr>
                         @empty
@@ -569,7 +561,7 @@
 
             </table>
         </div>
-
+<!--
         <div id="tab-inventario" class="tab-content">
             <div class="stats-grid">
                 <div class="stat-box">
@@ -686,7 +678,7 @@
             </form>
         </div>
     </div>
-</div>
+</div>-->
 
 <script>
 let anioActual = {{ $anioSeleccionado ?? date('Y') }};
