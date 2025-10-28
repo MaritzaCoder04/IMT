@@ -291,18 +291,10 @@
                 <tbody>
                     @forelse($grupos as $grupo)
                     @php
-                        $totalRealizadas = $grupo->reuniones->count();
-                        $progreso = $grupo->meta_anual > 0 ? round(($totalRealizadas / $grupo->meta_anual) * 100) : 0;
-                        
-                        // Calcular reuniones por bimestre
-                        $reunionesPorBimestre = [
-                            1 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [1,2]))->count(),
-                            2 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [3,4]))->count(),
-                            3 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [5,6]))->count(),
-                            4 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [7,8]))->count(),
-                            5 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [9,10]))->count(),
-                            6 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [11,12]))->count(),
-                        ];
+                        $stats = $statsByGroup[$grupo->id] ?? ['total_realizadas' => 0, 'progreso' => 0, 'reuniones_por_bimestre' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0]];
+                        $totalRealizadas = $stats['total_realizadas'];
+                        $progreso = $stats['progreso'];
+                        $reunionesPorBimestre = $stats['reuniones_por_bimestre'];
                     @endphp
                     <tr>
                         <td><strong>{{ $grupo->nombre }}</strong></td>
@@ -311,7 +303,7 @@
                         @for($i = 1; $i <= 6; $i++)
                             @php
                                 $meta = $grupo->{'meta_bimestre_' . $i};
-                                $realizadas = $reunionesPorBimestre[$i];
+                                $realizadas = $reunionesPorBimestre[$i] ?? 0;
                                 $statusClass = $realizadas >= $meta ? 'status-ok' : ($realizadas > 0 ? 'status-warning' : 'status-danger');
                             @endphp
                             <td class="bimestre-cell">

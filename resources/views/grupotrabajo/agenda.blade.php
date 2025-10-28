@@ -395,12 +395,12 @@
             <div class="grupo-info">
                 <h3>{{ $grupo->nombre }}</h3>
                 <div class="grupo-stats">
-                    🎯 Meta: {{ $grupo->meta_anual }} | ✅ Realizadas: {{ $grupo->reuniones->count() }} | 
-                    📊 {{ $grupo->meta_anual > 0 ? round(($grupo->reuniones->count() / $grupo->meta_anual) * 100) : 0 }}%
-                    @if($grupo->reuniones->count() >= $grupo->meta_anual)
+                    🎯 Meta: {{ $grupo->meta_anual }} | ✅ Realizadas: {{ $grupoViewModels[$grupo->id]['stats']['total'] ?? 0 }} | 
+                    📊 {{ $grupoViewModels[$grupo->id]['stats']['progreso'] ?? 0 }}%
+                    @if(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) >= $grupo->meta_anual)
                         <span style="margin-left: 10px;">🎉 ¡Meta cumplida!</span>
-                    @elseif($grupo->reuniones->count() > 0)
-                        <span style="margin-left: 10px;">⚡ {{ $grupo->meta_anual - $grupo->reuniones->count() }} pendientes</span>
+                    @elseif(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) > 0)
+                        <span style="margin-left: 10px;">⚡ {{ $grupo->meta_anual - ($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) }} pendientes</span>
                     @else
                         <span style="margin-left: 10px;">⏳ Sin reuniones aún</span>
                     @endif
@@ -427,9 +427,6 @@
                     ['Sep-Oct', [9, 10]],
                     ['Nov-Dic', [11, 12]]
                 ];
-                $reunionesPorMes = $grupo->reuniones->groupBy(function($reunion) {
-                    return $reunion->fecha->format('n');
-                });
             @endphp
 
             @foreach($bimestres as $index => $bimestre)
@@ -443,38 +440,34 @@
                 </div>
                 <div class="bimestre-contenido">
                     @php 
-                        $reunionesBimestre = collect();
-                        foreach($bimestre[1] as $mes) {
-                            $reunionesBimestre = $reunionesBimestre->merge($reunionesPorMes->get($mes, collect()));
-                        }
-                        $reunionesBimestre = $reunionesBimestre->sortBy('fecha');
-                        $cumpleMeta = $reunionesBimestre->count() >= $metaBimestre;
+                        $reunionesBimestre = $grupoViewModels[$grupo->id]['reuniones_bimestres'][$index + 1] ?? [];
+                        $cumpleMeta = count($reunionesBimestre) >= $metaBimestre;
                     @endphp
                     
-                    @if($reunionesBimestre->count() > 0)
+                    @if(count($reunionesBimestre) > 0)
                         @if($cumpleMeta)
                             <div style="text-align: center; padding: 3px; background: #e8f5e9; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #2e7d32; font-weight: 600;">
-                                ✓ {{ $reunionesBimestre->count() }}/{{ $metaBimestre }}
+                                ✓ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
                             </div>
                         @else
                             <div style="text-align: center; padding: 3px; background: #fff3e0; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #f57c00; font-weight: 600;">
-                                ⚡ {{ $reunionesBimestre->count() }}/{{ $metaBimestre }}
+                                ⚡ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
                             </div>
                         @endif
                     @endif
                     
                     @forelse($reunionesBimestre as $reunion)
-                        <div class="reunion-badge {{ !$reunion->programada ? 'fuera-programacion' : '' }}" 
+                        <div class="reunion-badge {{ !$reunion['programada'] ? 'fuera-programacion' : '' }}" 
                              onclick="verDetalleReunion({{ json_encode([
-                                 'id' => $reunion->id,
-                                 'fecha' => $reunion->fecha->format('d/m/Y'),
-                                 'programada' => $reunion->programada,
-                                 'motivo' => $reunion->motivo,
+                                 'id' => $reunion['id'],
+                                 'fecha' => $reunion['fecha_full'],
+                                 'programada' => $reunion['programada'],
+                                 'motivo' => $reunion['motivo'],
                                  'grupo' => $grupo->nombre
                              ]) }})"
                              title="Click para ver detalles">
-                            <span class="reunion-fecha">{{ $reunion->fecha->format('d/M') }}</span>
-                            <span class="reunion-icon">{{ $reunion->programada ? '✓' : '⚠' }}</span>
+                            <span class="reunion-fecha">{{ $reunion['fecha_display'] }}</span>
+                            <span class="reunion-icon">{{ $reunion['programada'] ? '✓' : '⚠' }}</span>
                         </div>
                     @empty
                         <div class="empty-bimestre">
@@ -550,15 +543,15 @@
                 </form>
                 
                 <!-- Resumen de reuniones del grupo -->
-                @if($grupo->reuniones->count() > 0)
+                @if(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) > 0)
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
                     <h4 style="margin: 0 0 10px 0; font-size: 0.95em; color: #666;">📊 Resumen de Reuniones</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85em;">
                         <div style="background: #e8f5e9; padding: 8px; border-radius: 4px;">
-                            <strong style="color: #2e7d32;">✅ Programadas:</strong> {{ $grupo->reuniones->where('programada', true)->count() }}
+                            <strong style="color: #2e7d32;">✅ Programadas:</strong> {{ $grupoViewModels[$grupo->id]['stats']['programadas'] ?? 0 }}
                         </div>
                         <div style="background: #fff3e0; padding: 8px; border-radius: 4px;">
-                            <strong style="color: #f57c00;">⚠️ Fuera de prog.:</strong> {{ $grupo->reuniones->where('programada', false)->count() }}
+                            <strong style="color: #f57c00;">⚠️ Fuera de prog.:</strong> {{ $grupoViewModels[$grupo->id]['stats']['fuera'] ?? 0 }}
                         </div>
                     </div>
                 </div>

@@ -342,47 +342,15 @@
                     <tbody>
                         @forelse($todosLosGrupos as $index => $grupo)
                         @php
-                            if (isset($grupo->es_fijo) && $grupo->es_fijo) {
-                                // Para grupos fijos, usar los datos calculados desde etapas
-                                $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
-                                $realizadoBimestre = $grupo->realizados[$bimestreActual] ?? 0;
-                                $totalAcumulado = 0;
-                                
-                                // Calcular acumulado hasta el bimestre actual
-                                for ($i = 1; $i <= $bimestreActual; $i++) {
-                                    $totalAcumulado += $grupo->realizados[$i] ?? 0;
-                                }
-                                
-                                $unidadMedida = 'Documentos terminados';
-                            } else {
-                                // Para grupos regulares y especiales de reuniones
-                                $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
-                                
-                                if (isset($grupo->realizados) && !empty($grupo->realizados)) {
-                                    // Si el grupo trae realizados pre-calculados (especiales), úsalos
-                                    $realizadoBimestre = $grupo->realizados[$bimestreActual] ?? 0;
-                                    $totalAcumulado = 0;
-                                    for ($i = 1; $i <= $bimestreActual; $i++) {
-                                        $totalAcumulado += $grupo->realizados[$i] ?? 0;
-                                    }
-                                } else {
-                                    // Fall-back para grupos regulares con relación Eloquent
-                                    $realizadoBimestre = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
-                                        $mes = $r->fecha->month;
-                                        $inicio = ($bimestreActual - 1) * 2 + 1;
-                                        $fin = $bimestreActual * 2;
-                                        return $mes >= $inicio && $mes <= $fin;
-                                    })->count();
-                                    
-                                    $totalAcumulado = $grupo->reuniones->filter(function($r) use ($bimestreActual) {
-                                        $mes = $r->fecha->month;
-                                        $fin = $bimestreActual * 2;
-                                        return $mes <= $fin;
-                                    })->count();
-                                }
-                                
-                                $unidadMedida = 'Reuniones';
+                            // Usar únicamente los datos precalculados del controlador
+                            $metaBimestral = $grupo->{'meta_bimestre_' . $bimestreActual};
+                            $realizadoBimestre = $grupo->realizados[$bimestreActual] ?? 0;
+                            $totalAcumulado = 0;
+                            for ($i = 1; $i <= $bimestreActual; $i++) {
+                                $totalAcumulado += $grupo->realizados[$i] ?? 0;
                             }
+
+                            $unidadMedida = (isset($grupo->es_fijo) && $grupo->es_fijo) ? 'Documentos terminados' : 'Reuniones';
                             
                             $porcBimestral = $metaBimestral > 0 ? round(($realizadoBimestre / $metaBimestral) * 100) : 0;
                             $porcAnual = $grupo->meta_anual > 0 ? round(($totalAcumulado / $grupo->meta_anual) * 100) : 0;
@@ -460,13 +428,14 @@
                 </thead>
                 <tbody>
     @php
+        // Tabla normativa: solo los cuatro rubros de productos (sin coordinación)
         $grupos = [
-            ['id' => 'apt', 'descripcion' => 'Elaboración de anteproyectos preliminares de normas y manuales', 'unidad' => 'Anteproyecto preliminar'],
-            ['id' => 'aft', 'descripcion' => 'Elaboración de anteproyectos finales de normas y manuales', 'unidad' => 'Anteproyecto final'],
-            ['id' => 'ppt', 'descripcion' => 'Elaboración de proyectos preliminares de normas y manuales', 'unidad' => 'Proyecto preliminar'],
-            ['id' => 'np',  'descripcion' => 'Publicación de normas y manuales', 'unidad' => 'Norma y/o manual'],
-            ['id' => 'f',   'descripcion' => 'Coordinación de reuniones del subcomité No.4', 'unidad' => 'Reunión'],
-            ['id' => 'g',   'descripcion' => 'Coordinación de reuniones del grupo de trabajo', 'unidad' => 'Reunión'],
+            ['id' => 'apt',  'descripcion' => 'Elaboración de anteproyectos preliminares de normas y manuales', 'unidad' => 'Anteproyecto preliminar'],
+            ['id' => 'aft',  'descripcion' => 'Elaboración de anteproyectos finales de normas y manuales',    'unidad' => 'Anteproyecto final'],
+            ['id' => 'ppt',  'descripcion' => 'Elaboración de proyectos preliminares de normas y manuales',   'unidad' => 'Proyecto preliminar'],
+            ['id' => 'np',   'descripcion' => 'Publicación de normas y manuales',                            'unidad' => 'Norma y/o manual'],
+            ['id' => 'sub4', 'descripcion' => 'Subcomité No.4',                                              'unidad' => 'Reunión'],
+            ['id' => 'gt1',  'descripcion' => 'Grupo de Trabajo 1',                                          'unidad' => 'Reunión'],
         ];
     @endphp
 
@@ -503,9 +472,10 @@
             <td style="border: 1px solid #000; text-align: center;">{{ $porcBimestral }}%</td>
             <td style="border: 1px solid #000; text-align: center;">{{ $porcAnual }}%</td>
             <td style="border: 1px solid #000;">
-                <textarea class="observaciones-autosave" 
-                          data-field="obs_{{ $grupo['id'] }}" 
-                          style="width: 100%; min-height: 60px;">
+                <textarea 
+                    id="obs-{{ $grupo['id'] }}" 
+                    class="observaciones-autosave" 
+                    style="width: 100%; min-height: 60px;">
                     {{ $datos->observaciones ?? '' }}
                 </textarea>
             </td>
@@ -560,7 +530,7 @@
                         </div>
                         <div class="reporte-actions">
                             <button class="btn btn-secondary" 
-                                    onclick="window.location='{{ route('grupotrabajo.reportes', ['anio' => $reporte->anio, 'bimestre' => $reporte->bimestre]) }}'">
+                                    onclick="window.location='{{ route('grupotrabajo.reporte') }}?anio={{ $reporte->anio }}&bimestre={{ $reporte->bimestre }}'">
                                 👁️ Ver
                             </button>
                             <button class="btn btn-secondary" 
@@ -568,7 +538,7 @@
                                 📥 PDF
                             </button>
                             <button class="btn btn-secondary2" 
-                                    onclick="confirmarEliminarReporte({{ $reporte->id }})"
+                                    onclick="confirmarEliminarReporte({{ $reporte->anio }}, {{ $reporte->bimestre }})"
                                     style="background: #f44336;">
                                 🗑️
                             </button>
@@ -588,6 +558,7 @@
             </div> 
             @endforelse
         </div>
+
     </div>
 </div>
 
@@ -649,12 +620,12 @@ function cambiarTab(tab) {
 
 function cambiarAnio(direccion) {
     anioActual += direccion;
-    window.location = '{{ route("grupotrabajo.reportes") }}?anio=' + anioActual + '&bimestre=' + bimestreActual;
+    window.location = '{{ route("grupotrabajo.reporte") }}?anio=' + anioActual + '&bimestre=' + bimestreActual;
 }
 
 function cambiarBimestre(bimestre) {
     bimestreActual = bimestre;
-    window.location = '{{ route("grupotrabajo.reportes") }}?anio=' + anioActual + '&bimestre=' + bimestre;
+    window.location = '{{ route("grupotrabajo.reporte") }}?anio=' + anioActual + '&bimestre=' + bimestre;
 }
 
 function abrirModalGuardar() {
@@ -682,12 +653,12 @@ function cerrarModalBtn() {
     document.getElementById('modal-guardar').classList.remove('active');
 }
 
-function confirmarEliminarReporte(reporteId) {
+function confirmarEliminarReporte(anio, bimestre) {
     if (confirm('¿Estás seguro de eliminar este reporte? Esta acción no se puede deshacer.')) {
         // Crear formulario y enviar
         const form = document.createElement('form');
         form.method = 'POST';
-        form.action = '{{ url("grupos-trabajo/reportes") }}/' + reporteId;
+        form.action = '{{ url("grupos-trabajo/reportes") }}/' + anio + '/' + bimestre;
         
         const csrf = document.createElement('input');
         csrf.type = 'hidden';

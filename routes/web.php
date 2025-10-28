@@ -35,7 +35,7 @@ Route::get('/', [GrupoTrabajoController::class, 'index'])->name('index');
 Route::get('/grupos-trabajo/reportes', [GrupoTrabajoController::class, 'reportes'])->name('grupotrabajo.reportes');
 // Rutas: routes/web.php (continuación)
 Route::post('/grupos-trabajo/reportes/guardar', [GrupoTrabajoController::class, 'guardarReporte'])->name('grupotrabajo.guardarReporte');
-Route::delete('/grupos-trabajo/reportes/{id}', [GrupoTrabajoController::class, 'eliminarReporte'])->name('grupotrabajo.eliminarReporte');
+Route::delete('/grupos-trabajo/reportes/{anio}/{bimestre}', [GrupoTrabajoController::class, 'eliminarReporte'])->name('grupotrabajo.eliminarReporte');
 
 Route::resource('grupotrabajo', App\Http\Controllers\GrupoTrabajoController::class);
 

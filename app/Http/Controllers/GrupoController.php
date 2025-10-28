@@ -12,12 +12,30 @@ class GrupoController extends Controller
 {
     public function index()
     {
-        $grupos = Grupo::orderBy('nombre')->get();
+        // Cargar tipos de grupo desde 'grupos' con fallback si la tabla no existe
+        $grupos = collect();
+        if (Schema::hasTable('grupos')) {
+            try {
+                $grupos = Grupo::orderBy('nombre')->get();
+            } catch (\Throwable $e) {
+                $grupos = collect();
+            }
+        }
 
-        // Combinar nombres de tipos de grupo y de grupos de trabajo existentes
+        // Combinar nombres de tipos y de grupos de trabajo existentes, con fallbacks seguros
         $nombresTipos = $grupos->pluck('nombre');
-        $nombresTrabajo = GrupoTrabajo::orderBy('nombre')->pluck('nombre');
-        $nombresGrupos = $nombresTipos->merge($nombresTrabajo)
+
+        $nombresTrabajo = collect();
+        if (Schema::hasTable('grupo_trabajos')) {
+            try {
+                $nombresTrabajo = GrupoTrabajo::orderBy('nombre')->pluck('nombre');
+            } catch (\Throwable $e) {
+                $nombresTrabajo = collect();
+            }
+        }
+
+        $nombresGrupos = $nombresTipos
+            ->merge($nombresTrabajo)
             ->filter()
             ->unique()
             ->sort()
@@ -28,6 +46,11 @@ class GrupoController extends Controller
 
     public function store(Request $request)
     {
+        // Impedir operaciones si la tabla de 'grupos' no existe
+        if (!Schema::hasTable('grupos')) {
+            return redirect()->route('grupos.index')->with('error', 'No se puede crear: la tabla "grupos" no existe.');
+        }
+
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
@@ -36,41 +59,62 @@ class GrupoController extends Controller
         ]);
 
         $validated['activo'] = $request->boolean('activo');
-        // Asignar consecutivo para columna 'no' si existe y es obligatoria
-        if (Schema::hasColumn('grupos', 'no') && !isset($validated['no'])) {
+        // Asignar consecutivo para columna 'no' si existe
+        if (Schema::hasTable('grupos') && Schema::hasColumn('grupos', 'no') && !isset($validated['no'])) {
             $validated['no'] = ((int) DB::table('grupos')->max('no')) + 1;
         }
         // Establecer unidad de medida por defecto si la columna existe
-        if (Schema::hasColumn('grupos', 'unidad_medida') && empty($validated['unidad_medida'])) {
+        if (Schema::hasTable('grupos') && Schema::hasColumn('grupos', 'unidad_medida') && empty($validated['unidad_medida'])) {
             $validated['unidad_medida'] = 'Reunión';
         }
-        Grupo::create($validated);
+
+        try {
+            Grupo::create($validated);
+        } catch (\Throwable $e) {
+            return redirect()->route('grupos.index')->with('error', 'Error al crear el tipo de grupo: ' . $e->getMessage());
+        }
 
         return redirect()->route('grupos.index')->with('success');
     }
 
     public function update(Request $request, $id)
     {
+        if (!Schema::hasTable('grupos')) {
+            return redirect()->route('grupos.index')->with('error', 'No se puede actualizar: la tabla "grupos" no existe.');
+        }
+
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'descripcion' => 'nullable|string',
             'activo' => 'nullable|boolean',
         ]);
 
-        $grupo = Grupo::findOrFail($id);
-        $grupo->update([
-            'nombre' => $validated['nombre'],
-            'descripcion' => $validated['descripcion'] ?? null,
-            'activo' => $request->boolean('activo'),
-        ]);
+        try {
+            $grupo = Grupo::findOrFail($id);
+            $grupo->update([
+                'nombre' => $validated['nombre'],
+                'descripcion' => $validated['descripcion'] ?? null,
+                'activo' => $request->boolean('activo'),
+            ]);
+        } catch (\Throwable $e) {
+            return redirect()->route('grupos.index')->with('error', 'Error al actualizar: ' . $e->getMessage());
+        }
 
         return redirect()->route('grupos.index')->with('success');
     }
 
     public function destroy($id)
     {
-        $grupo = Grupo::findOrFail($id);
-        $grupo->delete();
+        if (!Schema::hasTable('grupos')) {
+            return redirect()->route('grupos.index')->with('error', 'No se puede eliminar: la tabla "grupos" no existe.');
+        }
+
+        try {
+            $grupo = Grupo::findOrFail($id);
+            $grupo->delete();
+        } catch (\Throwable $e) {
+            return redirect()->route('grupos.index')->with('error', 'Error al eliminar: ' . $e->getMessage());
+        }
         return redirect()->route('grupos.index')->with('success');
     }
 }

@@ -10,6 +10,7 @@ class GrupoTrabajo extends Model
     
     protected $fillable = [
         'nombre',
+        'anio_meta',
         'meta_anual',
         'meta_bimestre_1',
         'meta_bimestre_2',
