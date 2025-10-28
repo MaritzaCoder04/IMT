@@ -21,8 +21,17 @@ class GrupoTrabajoController extends Controller
     // Vista 2: Formulario para crear grupo
     public function create()
     {
-        $grupos = Grupo::activos()->orderBy('nombre')->get();
-        return view('grupotrabajo.create', compact('grupos'));
+        // Lista combinada de nombres: tipos activos de Grupo y nombres existentes en GrupoTrabajo
+        $nombresGrupos = Grupo::activos()->orderBy('nombre')->pluck('nombre');
+        $nombresGrupos = $nombresGrupos
+            ->merge(GrupoTrabajo::orderBy('nombre')->pluck('nombre'))
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('grupotrabajo.create', [
+            'nombresGrupos' => $nombresGrupos,
+        ]);
     }
 
     // Guardar grupo de trabajo
@@ -347,8 +356,18 @@ class GrupoTrabajoController extends Controller
     public function edit($id)
     {
         $grupo = GrupoTrabajo::findOrFail($id);
-        $grupos = Grupo::activos()->orderBy('nombre')->get();
-        return view('grupotrabajo.edit', compact('grupo', 'grupos'));
+        // Combinar nombres desde tipos de Grupo activos y nombres existentes en GrupoTrabajo
+        $nombresGrupos = Grupo::activos()->orderBy('nombre')->pluck('nombre');
+        $nombresGrupos = $nombresGrupos
+            ->merge(GrupoTrabajo::orderBy('nombre')->pluck('nombre'))
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('grupotrabajo.edit', [
+            'grupo' => $grupo,
+            'nombresGrupos' => $nombresGrupos,
+        ]);
     }
 
     public function update(Request $request, $id)
@@ -356,6 +375,12 @@ class GrupoTrabajoController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'meta_anual' => 'required|integer|min:0',
+            'meta_bimestre_1' => 'required|integer|min:0',
+            'meta_bimestre_2' => 'required|integer|min:0',
+            'meta_bimestre_3' => 'required|integer|min:0',
+            'meta_bimestre_4' => 'required|integer|min:0',
+            'meta_bimestre_5' => 'required|integer|min:0',
+            'meta_bimestre_6' => 'required|integer|min:0',
         ]);
 
         $grupo = GrupoTrabajo::findOrFail($id);

@@ -25,6 +25,7 @@
             <input type="text" 
                    name="nombre" 
                    placeholder="Nombre" 
+                   list="nombres-grupos"
                    required 
                    style="flex: 1; min-width: 200px; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
                    onfocus="this.style.borderColor='#3b82f6'" 
@@ -52,6 +53,13 @@
                 Guardar
             </button>
         </form>
+
+        <!-- Sugerencias de nombres combinados -->
+        <datalist id="nombres-grupos">
+            @foreach($nombresGrupos as $nombre)
+                <option value="{{ $nombre }}"></option>
+            @endforeach
+        </datalist>
     </div>
 
     <!-- Tabla -->
@@ -82,6 +90,7 @@
                                 <input type="text" 
                                        name="nombre" 
                                        value="{{ $g->nombre }}" 
+                                       list="nombres-grupos"
                                        required 
                                        style="width: 100%; padding: 0.375rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
                                        onfocus="this.style.borderColor='#3b82f6'" 

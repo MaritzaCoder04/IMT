@@ -7,11 +7,18 @@ use Illuminate\Database\Eloquent\Model;
 class Grupo extends Model
 {
     protected $table = 'grupos';
+    public $timestamps = false;
     
     protected $fillable = [
+        'no',
         'nombre',
         'descripcion',
-        'activo'
+        'activo',
+        'unidad_medida'
+    ];
+
+    protected $attributes = [
+        'unidad_medida' => 'Reunión',
     ];
 
     protected $casts = [

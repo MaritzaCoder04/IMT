@@ -11,13 +11,12 @@
             
             <div class="form-group">
                 <label for="nombre">Nombre del Grupo</label>
-                <select id="nombre" name="nombre" required onchange="actualizarEtiquetas()">
-                    <option value="">Selecciona un grupo...</option>
-                    @foreach($grupos as $grupo)
-                        <option value="{{ $grupo->nombre }}">{{ $grupo->nombre }}</option>
+                <input type="text" id="nombre" name="nombre" list="grupos-list" required placeholder="Escribe un grupo o selecciona uno" oninput="actualizarEtiquetas()">
+                <datalist id="grupos-list">
+                    @foreach($nombresGrupos as $nombre)
+                        <option value="{{ $nombre }}"></option>
                     @endforeach
-                    
-                </select>
+                </datalist>
             </div>
 
             <div class="form-group">
