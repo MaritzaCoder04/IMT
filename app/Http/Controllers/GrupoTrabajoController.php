@@ -818,7 +818,49 @@ class GrupoTrabajoController extends Controller
         // Unir fijos + regulares (sin secciones de coordinación)
         $todosLosGrupos = collect($gruposFijos)->merge($grupos);
 
-        $pdf = Pdf::loadView('grupotrabajo.pdf', compact('todosLosGrupos', 'anioSeleccionado', 'bimestreActual'));
+        // Recuperar las notas del reporte guardado para el período actual (g.3) si la tabla existe
+        $notasReporte = null;
+        if (Schema::hasTable('grupo_trabajo_reportes')) {
+            try {
+                $notasReporte = GrupoTrabajoReporte::where('anio', $anioSeleccionado)
+                    ->where('bimestre', $bimestreActual)
+                    ->orderBy('updated_at', 'desc')
+                    ->value('notas');
+            } catch (\Exception $e) {
+                $notasReporte = null;
+            }
+        }
+        // Permitir override con lo que está visible en la vista
+        if ($request->has('notas')) {
+            $notasReporte = $request->get('notas');
+        }
+
+        // Observaciones del bloque (6.1.4 → g)) tal cual se ve
+        $observacionesBloque = null;
+        if ($request->has('observaciones_bloque')) {
+            $observacionesBloque = $request->get('observaciones_bloque');
+        } else {
+            $observacionesBloque = collect($todosLosGrupos ?? [])->where('id','gt1')->first()->observaciones ?? '';
+        }
+
+        // Sincronizar la observación del bloque con el grupo fijo gt1 para que la vista lo refleje
+        try {
+            $todosLosGrupos = collect($todosLosGrupos ?? [])->map(function ($g) use ($observacionesBloque) {
+                $gid = is_array($g) ? ($g['id'] ?? null) : ($g->id ?? null);
+                if ($gid === 'gt1') {
+                    if (is_array($g)) {
+                        $g['observaciones'] = $observacionesBloque;
+                    } else {
+                        $g->observaciones = $observacionesBloque;
+                    }
+                }
+                return $g;
+            });
+        } catch (\Throwable $e) {
+            // En caso de estructura inesperada, continuar sin bloquear la descarga
+        }
+
+        $pdf = Pdf::loadView('grupotrabajo.pdf', compact('todosLosGrupos', 'anioSeleccionado', 'bimestreActual', 'notasReporte', 'observacionesBloque'));
         return $pdf->download('reporte-grupos-trabajo-' . $anioSeleccionado . '-b' . $bimestreActual . '.pdf');
     }
 
