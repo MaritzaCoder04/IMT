@@ -15,14 +15,7 @@
 @endif
 
 <style>
-.header-section {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 15px;
-}
+
 
 .actions {
     display: flex;
@@ -198,12 +191,8 @@
 <div class="all-form">
     <div class="form-container">
         <div class="header-section">
-            <div class="section-title">👥 Grupos de Trabajo</div>
-            <div class="actions">
-                
-                <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.create') }}'">
-                    Agregar Grupo
-                </button>
+            <div class="section-header">
+                <h2 class="section-title"> Programación</h2>
             </div>
         </div>
 
@@ -266,6 +255,9 @@
         <form method="GET" action="{{ route('grupotrabajo.index') }}" class="search-box">
             <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
             <button type="submit" class="btn btn-secondary">Buscar</button>
+            <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.create') }}'">
+                    Agregar Grupo
+                </button>
             @if(request('busqueda'))
                 <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('grupotrabajo.index') }}'">Limpiar</button>
             @endif

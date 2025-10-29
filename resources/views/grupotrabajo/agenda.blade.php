@@ -21,18 +21,7 @@
     padding: 15px;
 }
 
-.calendario-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-    flex-wrap: wrap;
-    gap: 15px;
-}
 
-.section-title {
-    margin: 0;
-}
 
 .grupo-card {
     background: white;
@@ -348,24 +337,28 @@
 }
 </style>
 
+        <div class="form-container">
+
 <div class="calendario-container">
-    <div class="calendario-header">
-        <div>
-            <h2 class="section-title">📅 Agenda de Reuniones {{ $anio }}</h2>
+        <div class="section-header">
+            <h2 class="section-title">Agenda De Reuniones</h2>
         </div>
+        <div class="search-container">
+                                <div class="search-row">
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="cp">Buscar Grupo</label>
+                                            <input type="text" id="cp" wire:model.live="busqueda">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="cp">Buscar Por Año</label>
+                                            <input type="number" name="anio" placeholder="Año" value="{{ $anio }}">                                            
+                                        </div>
+                                    </div>
+                                </div> 
+                            </div>
         
-        <div style="display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
-            <form method="GET" action="{{ route('grupotrabajo.agenda') }}" class="form-busqueda">
-                <input type="text" name="busqueda" placeholder="Buscar grupo..." value="{{ $busqueda }}">
-                <input type="number" name="anio" placeholder="Año" value="{{ $anio }}">
-                <button type="submit" class="btn btn-secondary">🔍 Buscar</button>
-                @if(request('busqueda'))
-                    <button type="button" class="btn-secondary" onclick="window.location='{{ route('grupotrabajo.agenda', ['anio' => $anio]) }}'" style="background: #6c757d;">
-                        ✖️ Limpiar
-                    </button>
-                @endif
-            </form>
-        </div>
+        
     </div>
 
     @if($grupos->isEmpty())
@@ -596,6 +589,8 @@
             </div>
         </div>
     </div>
+    </div>
+        </div>
 </div>
 
 <!-- Info flotante de ayuda 

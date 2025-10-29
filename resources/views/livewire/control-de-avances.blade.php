@@ -43,15 +43,8 @@
                             </div>
                         </section>
                     </main>
-                </div>
             </div>
         </div>
-    </div>
-
-    &nbsp
-    &nbsp
-            
-    <div class="docs-container">
         <div class="docs-table-wrapper2"> 
             <table class="docs-table">
                 <thead>

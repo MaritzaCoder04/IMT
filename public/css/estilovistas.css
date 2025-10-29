@@ -40,6 +40,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     order: 2;
+    color: white;
     }
 
     .btn-logout {
@@ -81,6 +82,7 @@
     /* Orden explicito si quisieras reorganizar en mobile */
     .user-title{
     order: 3;
+    color: white;
     }
 
     .space-title{

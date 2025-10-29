@@ -263,7 +263,9 @@
 
 <div class="all-form">
     <div class="form-container">
-        <div class="section-title">📊 Reportes de Grupos de Trabajo</div>
+        <div class="section-header">
+            <h2 class="section-title"> Reporte Bimestral</h2>
+        </div>
 
         <!--
         <div class="tabs-container">

@@ -1,7 +1,7 @@
 /* Estilos generales para los formularios */
 .all-form {
     padding: 10px;
-    max-width: 1200px;
+    max-width: 2000px;
     margin: 0 auto;
 }
 
@@ -181,7 +181,7 @@ tr.archivado {
     align-items: center;
     justify-content: space-between;
     padding: 10px 10px;
-    background-color: #e5eaf4;
+    background-color: #04638b;
     border-bottom: 1px solid #ddd;
     flex-wrap: nowrap;
     position: fixed;
@@ -494,14 +494,14 @@ td {
 }
 
 .docs-table-wrapper {
-  max-height: 46vh; 
+  max-height: 63vh; 
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
 }
 
 .docs-table-wrapper2 {
-  max-height: 60vh; 
+  max-height: 62vh; 
   overflow-y: auto;
   border: 1px solid #ddd;
   border-radius: 8px;
@@ -516,3 +516,146 @@ td {
 }
 
 
+/* Ajustes para el sidebar colapsado */
+        .sidebar {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: visible;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+        }
+
+        .sidebar.collapsed {
+            width: 70px;
+        }
+
+        .sidebar.collapsed .scrollable ul li a {
+            justify-content: center;
+            padding: 15px 10px;
+            overflow: visible;
+        }
+
+        .sidebar.collapsed .scrollable ul li a img {
+            margin: 0;
+            transition: transform 0.2s ease;
+        }
+
+        .sidebar.collapsed .scrollable ul li a:hover img {
+            transform: scale(1.15);
+        }
+
+        .sidebar .link-text {
+            display: inline;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+            color: white;
+        }
+
+        .sidebar.collapsed .link-text {
+            opacity: 0;
+            width: 0;
+            overflow: hidden;
+            display: inline-block;
+        }
+
+        /* Ajuste del contenido principal cuando el sidebar está colapsado */
+        .contenido {
+            transition: margin-left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        body.sidebar-collapsed .contenido {
+            margin-left: 70px !important;
+        }
+
+        /* Efecto hover mejorado para items del sidebar colapsado */
+        .sidebar.collapsed .scrollable ul li {
+            position: relative;
+        }
+
+        .sidebar.collapsed .scrollable ul li a {
+            position: relative;
+            border-radius: 8px;
+            margin: 5px;
+        }
+
+        /* Tooltip mejorado para mostrar el nombre cuando está colapsado */
+        .sidebar.collapsed .scrollable ul li a::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            left: calc(100% + 15px);
+            top: 50%;
+            transform: translateY(-50%) translateX(-10px);
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 10px 16px;
+            border-radius: 8px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .sidebar.collapsed .scrollable ul li a::before {
+            content: '';
+            position: absolute;
+            left: calc(100% + 8px);
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 6px 7px 6px 0;
+            border-color: transparent #2c3e50 transparent transparent;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1001;
+        }
+
+        .sidebar.collapsed .scrollable ul li a:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) translateX(0);
+        }
+
+        .sidebar.collapsed .scrollable ul li a:hover::before {
+            opacity: 1;
+        }
+
+        /* Indicador visual de que es colapsable */
+        .sidebar .collapse-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+            text-align: center;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .sidebar.collapsed .collapse-hint {
+            opacity: 0;
+        }
+
+        /* Animación suave para iconos */
+        .sidebar .scrollable ul li a img {
+            filter: brightness(1);
+            transition: filter 0.2s ease, transform 0.2s ease;
+        }
+
+        .sidebar .scrollable ul li a:hover img {
+            filter: brightness(1.2);
+        }
+
+        /* Efecto de pulso sutil al colapsar/expandir */
+        @keyframes subtlePulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .sidebar.collapsing img {
+            animation: subtlePulse 0.3s ease;
+        }

@@ -32,14 +32,9 @@
                     </main>
                 </div>
             </div>
-        </div>
-    </div>
 
-    &nbsp
-    &nbsp
+            &nbsp
 
-    <div class="docs-container">
-        <div class="all-form"> 
             <div class="docs-table-wrapper">
             <table class="docs-table">
                 <thead>

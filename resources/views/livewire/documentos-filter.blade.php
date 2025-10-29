@@ -41,15 +41,13 @@
                 </div>
                 </div>
             </div>
+            
         </div>
         
         <div id="resultadosBusqueda"></div>
     </section>
 
     <!-- Tabla de Documentos -->
-    <div class="all-form"> 
-        <div class="form-container">
-            <div class="docs-container">
                 <div class="docs-table-wrapper">
                     <table class="docs-table">
                         <thead>
@@ -90,7 +88,4 @@
                         </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-    </div>
 </div>
