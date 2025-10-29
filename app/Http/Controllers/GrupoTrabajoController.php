@@ -79,7 +79,8 @@ class GrupoTrabajoController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'anio_meta' => 'sometimes|integer',
-            'meta_anual' => 'required|integer|min:0',
+            // meta_anual se calculará automáticamente a partir de las metas bimestrales
+            'meta_anual' => 'sometimes|integer|min:0',
             'meta_bimestre_1' => 'required|integer|min:0',
             'meta_bimestre_2' => 'required|integer|min:0',
             'meta_bimestre_3' => 'required|integer|min:0',
@@ -90,6 +91,16 @@ class GrupoTrabajoController extends Controller
 
         // Asignar año de la meta (por defecto, año actual si no viene explícito)
         $validated['anio_meta'] = $request->get('anio_meta', (int)date('Y'));
+
+        // Calcular meta anual como suma de metas bimestrales
+        $validated['meta_anual'] = (
+            ($validated['meta_bimestre_1'] ?? 0) +
+            ($validated['meta_bimestre_2'] ?? 0) +
+            ($validated['meta_bimestre_3'] ?? 0) +
+            ($validated['meta_bimestre_4'] ?? 0) +
+            ($validated['meta_bimestre_5'] ?? 0) +
+            ($validated['meta_bimestre_6'] ?? 0)
+        );
 
         GrupoTrabajo::create($validated);
 
@@ -897,7 +908,8 @@ class GrupoTrabajoController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
             'anio_meta' => 'sometimes|integer',
-            'meta_anual' => 'required|integer|min:0',
+            // meta_anual se calculará automáticamente a partir de las metas bimestrales
+            'meta_anual' => 'sometimes|integer|min:0',
             'meta_bimestre_1' => 'required|integer|min:0',
             'meta_bimestre_2' => 'required|integer|min:0',
             'meta_bimestre_3' => 'required|integer|min:0',
@@ -909,6 +921,17 @@ class GrupoTrabajoController extends Controller
         $grupo = GrupoTrabajo::findOrFail($id);
         // Mantener el año de meta anterior si no se envía uno nuevo
         $validated['anio_meta'] = $request->get('anio_meta', $grupo->anio_meta ?? (int)date('Y'));
+
+        // Calcular meta anual como suma de metas bimestrales
+        $validated['meta_anual'] = (
+            ($validated['meta_bimestre_1'] ?? 0) +
+            ($validated['meta_bimestre_2'] ?? 0) +
+            ($validated['meta_bimestre_3'] ?? 0) +
+            ($validated['meta_bimestre_4'] ?? 0) +
+            ($validated['meta_bimestre_5'] ?? 0) +
+            ($validated['meta_bimestre_6'] ?? 0)
+        );
+
         $grupo->update($validated);
 
         return redirect()->route('grupotrabajo.index')->with('success');

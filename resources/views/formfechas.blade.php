@@ -12,10 +12,22 @@
             <span1 id="completadas">0</span1> de <span1 id="total">15</span1> fechas completadas
         </div>
 
+        <style>
+            /* Mostrar sólo día y mes en inputs de fecha (Chromium/Edge/Chrome) */
+            .date-input::-webkit-datetime-edit-year-field { display: none; }
+            .date-input::-webkit-clear-button, 
+            .date-input::-webkit-inner-spin-button { display: none; }
+            .date-input { width: 140px; }
+        </style>
+
         <form id="fechasForm" action="{{ route('fechas.guardar', ['ID_doc' => $documento->ID_doc]) }}" method="POST">
             @csrf
             <table>
                 <thead>
+                    <tr>
+                        <th></th>
+                        <th colspan="3" style="text-align:center;">Año <span id="year-head">{{ date('Y') }}</span></th>
+                    </tr>
                     <tr>
                         <th></th>
                         <th>Fecha Inicio</th>
@@ -123,6 +135,12 @@
             input.addEventListener('change', function() {
                 fechasData[this.name] = this.value;
                 actualizarEstadisticas();
+
+                // Actualizar año mostrado una sola vez arriba
+                const yearHead = document.getElementById('year-head');
+                if (yearHead && this.value) {
+                    yearHead.textContent = this.value.substring(0,4);
+                }
             });
         });
 

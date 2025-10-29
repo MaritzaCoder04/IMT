@@ -18,6 +18,8 @@
         </div>
 
         
+        
+        
         <form id="fechasForm" action="{{ route('fechas.guardar', $documento->ID_doc) }}" method="POST">
             @csrf
         

@@ -49,9 +49,10 @@
                         <th rowspan="2">Nombre</th>
                         <th rowspan="2">Nueva/Actualización</th>
                         <th rowspan="2">Última Fecha</th>
-                        <th colspan="5">Fecha Terminación</th>
+                        <th colspan="6">Fecha Terminación</th>
                     </tr>
                     <tr>
+                        <th>Año</th>
                         <th>APT</th>
                         <th>AFT</th>
                         <th>PPT</th>
@@ -67,14 +68,39 @@
                         <td>{{ $documento->info->designacion ?? '--' }}</td>
                         <td>{{ $documento->nombre ?? '--' }}</td>
                         <td>{{ ucfirst($documento->tipo_ultima_fecha ?? '--') }}</td>
+                        @php
+                            $etapas = $documento->etapas ?? null;
+                            $anoTerm = '-';
+                            if ($etapas) {
+                                $camposTerm = ['3a','3b','3c','3d','3e'];
+                                $yearsCount = [];
+                                foreach ($camposTerm as $campo) {
+                                    $val = $etapas->{$campo} ?? null;
+                                    if (!empty($val)) {
+                                        $y = date('Y', strtotime($val));
+                                        $yearsCount[$y] = isset($yearsCount[$y]) ? $yearsCount[$y] + 1 : 1;
+                                    }
+                                }
+                                if (!empty($yearsCount)) {
+                                    $maxCount = max($yearsCount);
+                                    $candidates = [];
+                                    foreach ($yearsCount as $year => $count) {
+                                        if ($count === $maxCount) { $candidates[] = $year; }
+                                    }
+                                    $anoTerm = max($candidates);
+                                }
+                            }
+                        @endphp
+                        
                         <td>{{ $documento->ultima_fecha ?? '--' }}</td>
+                        <td>{{ $anoTerm }}</td>
 
                         {{-- Fechas de Terminación --}}
-                        <td>{{ $documento->etapas->{'3a'} ?? '--' }}</td>
-                        <td>{{ $documento->etapas->{'3b'} ?? '--' }}</td>
-                        <td>{{ $documento->etapas->{'3c'} ?? '--' }}</td>
-                        <td>{{ $documento->etapas->{'3d'} ?? '--' }}</td>
-                        <td>{{ $documento->etapas->{'3e'} ?? '--' }}</td>
+                        <td>{{ !empty($documento->etapas->{'3a'}) ? date('d/m', strtotime($documento->etapas->{'3a'})) : '--' }}</td>
+                        <td>{{ !empty($documento->etapas->{'3b'}) ? date('d/m', strtotime($documento->etapas->{'3b'})) : '--' }}</td>
+                        <td>{{ !empty($documento->etapas->{'3c'}) ? date('d/m', strtotime($documento->etapas->{'3c'})) : '--' }}</td>
+                        <td>{{ !empty($documento->etapas->{'3d'}) ? date('d/m', strtotime($documento->etapas->{'3d'})) : '--' }}</td>
+                        <td>{{ !empty($documento->etapas->{'3e'}) ? date('d/m', strtotime($documento->etapas->{'3e'})) : '--' }}</td>
                     </tr>
                     @empty
                     <tr>

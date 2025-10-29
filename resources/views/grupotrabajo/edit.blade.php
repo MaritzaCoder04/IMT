@@ -41,20 +41,6 @@
             </select>
         </div>
 
-        <!-- Meta anual -->
-        <div style="margin-bottom: 2rem;">
-            <label for="meta_anual" style="display: block; color: #475569; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
-                Meta anual
-            </label>
-            <input type="number" 
-                   id="meta_anual" 
-                   name="meta_anual" 
-                   value="{{ $grupo->meta_anual }}"
-                   style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
-                   onfocus="this.style.borderColor='#3b82f6'" 
-                   onblur="this.style.borderColor='#cbd5e1'">
-        </div>
-
         <!-- Separador -->
         <div style="border-top: 1px solid #e2e8f0; margin: 2rem 0;"></div>
 

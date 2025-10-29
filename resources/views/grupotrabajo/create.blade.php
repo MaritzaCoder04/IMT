@@ -19,13 +19,7 @@
                 </datalist>
             </div>
 
-            <div class="form-group">
-                <label for="meta_anual" id="label_meta_anual">Meta Anual</label>
-                <input type="number" id="meta_anual" name="meta_anual" min="0" required>
-                <small id="help_meta_anual" class="form-text text-muted"></small>
-            </div>
 
-            <div class="section-title" id="titulo_metas_bimestrales">Metas Bimestrales</div>
 
             <div class="form-row">
                 <div class="form-group">
@@ -110,6 +104,26 @@ function actualizarEtiquetas() {
         document.getElementById('label_bimestre_6').textContent = 'Bimestre 6 (Nov-Dic)';
     }
 }
+// Calcular meta anual automáticamente a partir de metas bimestrales
+function calcularMetaAnual() {
+    const val = (id) => parseInt(document.getElementById(id)?.value || '0', 10);
+    const total = val('meta_bimestre_1') + val('meta_bimestre_2') + val('meta_bimestre_3') +
+                  val('meta_bimestre_4') + val('meta_bimestre_5') + val('meta_bimestre_6');
+    const metaAnualInput = document.getElementById('meta_anual');
+    if (metaAnualInput) metaAnualInput.value = total;
+}
+
+['meta_bimestre_1','meta_bimestre_2','meta_bimestre_3','meta_bimestre_4','meta_bimestre_5','meta_bimestre_6']
+    .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            el.addEventListener('input', calcularMetaAnual);
+            el.addEventListener('change', calcularMetaAnual);
+        }
+    });
+
+// Inicializar cálculo al cargar
+document.addEventListener('DOMContentLoaded', calcularMetaAnual);
 </script>
 
 @endsection
