@@ -316,11 +316,6 @@
                         <td>
                             <div class="table-actions">
                                 <button type="button" class="btn-icon" 
-                                        onclick="window.location='{{ route('grupotrabajo.agenda') }}?busqueda={{ urlencode($grupo->nombre) }}'"
-                                        title="Ver agenda del grupo">
-                                    📅
-                                </button>
-                                <button type="button" class="btn-icon" 
                                         onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'"
                                         title="Editar grupo">
                                     ✏️

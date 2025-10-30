@@ -360,25 +360,14 @@
                         <tr style="{{ isset($grupo->es_fijo) && $grupo->es_fijo ? 'background-color: #f8f9fa; border-left: 4px solid #007bff;' : '' }}">
                             <td>{{ $index + 1 }}</td>
                             <td>
-                                <strong>{{ $grupo->nombre }}</strong>
-                                @if(isset($grupo->es_fijo) && $grupo->es_fijo)
-                                    <span style="font-size: 0.8em; color: #007bff; font-weight: normal;">(Grupo Fijo)</span>
-                                @endif
+                                {{ $grupo->nombre }}
                             </td>
                             <td>{{ $unidadMedida }}</td>
                             <td>{{ $grupo->meta_anual }}</td>
                             <td>{{ $metaBimestral }}</td>
-                            <td><strong>{{ $realizadoBimestre }}</strong></td>
-                            <td>
-                                <span style="color: {{ $porcBimestral >= 100 ? '#4caf50' : ($porcBimestral >= 70 ? '#ff9800' : '#f44336') }}; font-weight: 600;">
-                                    {{ $porcBimestral }}%
-                                </span>
-                            </td>
-                            <td>
-                                <span style="color: {{ $porcAnual >= 100 ? '#4caf50' : ($porcAnual >= 70 ? '#ff9800' : '#f44336') }}; font-weight: 600;">
-                                    {{ $porcAnual }}%
-                                </span>
-                            </td>
+                            <td>{{ $realizadoBimestre }}</td>
+                            <td>{{ $porcBimestral }}%</td>
+                            <td>{{ $porcAnual }}%</td>
                         </tr>
                         @empty
                         <tr>

@@ -11,6 +11,28 @@
         </div>
     @endif
 
+    <style>
+        /* Botones de acción estilo grupotrabajo index */
+        .btn-icon {
+            padding: 5px 10px;
+            font-size: 0.9em;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.2s;
+        }
+        .btn-icon:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+        .table-actions {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+        }
+    </style>
+
     <div class="all-form"> 
         <div class="form-container">
             <div class="container">
@@ -49,17 +71,15 @@
             <table class="docs-table">
                 <thead>
                     <tr>
-                        <th rowspan="2">Etapas</th>
                         <th rowspan="2">Designación</th>
                         <th rowspan="2">Nombre</th>
                         <th rowspan="2">Nueva/Actualización</th>
-                        <th rowspan="2">Año</th>
+                        <!--<th rowspan="2">Año</th>-->
                         <th colspan="5">Fecha Inicio</th>
                         <th colspan="5">Fecha Entrega</th>
                         <th colspan="5">Fecha Terminación</th>
                         <th rowspan="2">Avance</th>
-                        <th rowspan="2">Modificar</th>
-                        <th rowspan="2">Eliminar</th>
+                        <th rowspan="2">Acciones</th>
                     </tr>
                     <tr>
                         <th>APT</th>
@@ -82,7 +102,6 @@
                 <tbody>
                     @forelse($documentos as $documento)
                     <tr class="{{ $documento->vigente == 0 ? 'archivado' : '' }}">
-                        <td><button type="button" class="btn-action btn-etapas" onclick="window.location='{{ route('documentos.etapas', $documento->ID_doc) }}'"> 📅  </button> </td>
                         <td>{{ $documento->info->designacion ?? '--' }}</td>
                         <td class="up">{{ $documento->nombre ?? '--' }}</td>
                         <td>{{ $documento->nueva ? 'Nueva' : 'Actualización' }}</td>
@@ -109,7 +128,7 @@
                                 }
                             }
                         @endphp
-                        <td>{{ $ano }}</td>
+                        <!--<td>{{ $ano }}</td>-->
                         <td class="up">{{ !empty($documento->etapas->{'1a'}) ? date('d/m', strtotime($documento->etapas->{'1a'})) : '-' }}</td>
                         <td class="up">{{ !empty($documento->etapas->{'1b'}) ? date('d/m', strtotime($documento->etapas->{'1b'})) : '-' }}</td>
                         <td class="up">{{ !empty($documento->etapas->{'1c'}) ? date('d/m', strtotime($documento->etapas->{'1c'})) : '-' }}</td>
@@ -150,21 +169,17 @@
                                     <small>{{ $porcentaje }}%</small>
                                 </td>
                                 <td>
-                                    <button type="button" class="btn-action btn-edit" onclick="window.location='{{ route('documentos.edit', $documento->ID_doc) }}'">
-                                        ✏️
-                                    </button>
+                                    <div class="table-actions">
+                                        <button type="button" class="btn-icon" title="Ver etapas" onclick="window.location='{{ route('documentos.etapas', $documento->ID_doc) }}'">📅</button>
+                                        <button type="button" class="btn-icon" title="Editar documento" onclick="window.location='{{ route('documentos.edit', $documento->ID_doc) }}'">✏️</button>
+                                        <button type="button" class="btn-icon" title="Eliminar documento" wire:click="eliminar({{ $documento->ID_doc }})" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">🗑️</button>
+                                    </div>
                                 </td>
-                                <td>
-                                    <button type="button" class="btn-action btn-delete" 
-                                            wire:click="eliminar({{ $documento->ID_doc }})"
-                                            onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">
-                                        🗑️ 
-                                    </button>
-                                </td>
+                                
                             </tr>
                             @empty
                             <tr>
-                <td colspan="23" class="empty-state">
+                <td colspan="21" class="empty-state">
                     <p>No hay documentos registrados</p>
                 </td>
             </tr>
