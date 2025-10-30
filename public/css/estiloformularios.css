@@ -507,6 +507,13 @@ td {
   border-radius: 8px;
 }
 
+.docs-table-wrapper3 {
+  max-height: 65vh; 
+  overflow-y: auto;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
 .docs-table thead th {
   position: sticky;
   top: 0;
@@ -659,3 +666,200 @@ td {
         .sidebar.collapsing img {
             animation: subtlePulse 0.3s ease;
         }
+
+
+
+
+/*#04638b*/
+
+
+
+
+
+        .button-section {
+            margin-bottom: 40px;
+        }
+
+
+        .button-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(56, 239, 125, 0.4);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #ee0979 0%, #ff6a00 100%);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(238, 9, 121, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(242, 153, 74, 0.4);
+        }
+
+        /* Botones Outline */
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-success {
+            background: transparent;
+            border: 2px solid #11998e;
+            color: #11998e;
+        }
+
+        .btn-outline-success:hover {
+            background: #11998e;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        /* Botones con Iconos */
+        .btn-icon {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-icon svg {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Botones Redondeados */
+        .btn-rounded {
+            border-radius: 50px;
+            padding: 12px 35px;
+        }
+
+        /* Botones con Efecto Glassmorphism */
+        .btn-glass {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #333;
+        }
+
+        .btn-glass:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Botones 3D */
+        .btn-ejemplo {
+            background: #2889a7;
+            color: white;
+            box-shadow: 0 6px 0 #206f87, 0 8px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            top: 0;
+        }
+
+        .btn-ejemplo:hover {
+            top: 2px;
+            box-shadow: 0 4px 0 #185466, 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-ejemplo:active {
+            top: 6px;
+            box-shadow: 0 0 0 #185466, 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+         .btn-ejemplo2 {
+            background: #6c6c6c;
+            color: white;
+            box-shadow: 0 6px 0 #4e4e4e, 0 8px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            top: 0;
+        }
+
+        .btn-ejemplo2:hover {
+            top: 2px;
+            box-shadow: 0 4px 0 #343434, 0 6px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-ejemplo2:active {
+            top: 6px;
+            box-shadow: 0 0 0 #343434, 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Botones Neomórficos */
+        .btn-neo {
+            background: #e0e5ec;
+            color: #333;
+            box-shadow: 9px 9px 16px rgba(163, 177, 198, 0.6), 
+                        -9px -9px 16px rgba(255, 255, 255, 0.5);
+        }
+
+        .btn-neo:hover {
+            box-shadow: inset 9px 9px 16px rgba(163, 177, 198, 0.6), 
+                        inset -9px -9px 16px rgba(255, 255, 255, 0.5);
+        }
+
+        /* Botones con Animación de Brillo */
+        .btn-shine {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-shine::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn-shine:hover::before {
+            left: 100%;
+        }
+
+       
+
+
+
+        

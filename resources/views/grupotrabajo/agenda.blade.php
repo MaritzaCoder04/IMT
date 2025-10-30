@@ -32,12 +32,11 @@
 }
 
 .grupo-header {
-    background: #04638b;
+    
     padding: 12px 15px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    color: white;
 }
 
 .grupo-info h3 {
@@ -69,7 +68,7 @@
 }
 
 .bimestre-header {
-    background: #4a90e2;
+    background: #2889a7;
     color: white;
     padding: 8px 10px;
     text-align: center;
@@ -152,7 +151,7 @@
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: #2889a7;
     color: white;
     padding: 15px 20px;
     border-radius: 8px 8px 0 0;
@@ -382,107 +381,109 @@
     </div>
     @endif
 
-    @foreach($grupos as $grupo)
-    <div class="grupo-card">
-        <div class="grupo-header">
-            <div class="grupo-info">
-                <h3>{{ $grupo->nombre }}</h3>
-                <div class="grupo-stats">
-                    🎯 Meta: {{ $grupo->meta_anual }} | ✅ Realizadas: {{ $grupoViewModels[$grupo->id]['stats']['total'] ?? 0 }} | 
-                    📊 {{ $grupoViewModels[$grupo->id]['stats']['progreso'] ?? 0 }}%
-                    @if(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) >= $grupo->meta_anual)
-                        <span style="margin-left: 10px;">🎉 ¡Meta cumplida!</span>
-                    @elseif(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) > 0)
-                        <span style="margin-left: 10px;">⚡ {{ $grupo->meta_anual - ($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) }} pendientes</span>
-                    @else
-                        <span style="margin-left: 10px;">⏳ Sin reuniones aún</span>
-                    @endif
-                </div>
-            </div>
-            <div style="display: flex; gap: 8px; align-items: center;">
-                <button type="button" class="btn-agregar" onclick="abrirModal({{ $grupo->id }})">
-                    ➕ Nueva Reunión
-                </button>
-                <button type="button" class="btn-icon" onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'" 
-                        style="background: rgba(255,255,255,0.2); color: white; padding: 7px 12px;" title="Editar grupo">
-                    ⚙️
-                </button>
-            </div>
-        </div>
-
-        <div class="meses-grid">
-            @php
-                $bimestres = [
-                    ['Ene-Feb', [1, 2]],
-                    ['Mar-Abr', [3, 4]],
-                    ['May-Jun', [5, 6]],
-                    ['Jul-Ago', [7, 8]],
-                    ['Sep-Oct', [9, 10]],
-                    ['Nov-Dic', [11, 12]]
-                ];
-            @endphp
-
-            @foreach($bimestres as $index => $bimestre)
-            @php
-                $metaBimestre = $grupo->{'meta_bimestre_' . ($index + 1)};
-            @endphp
-            <div class="bimestre-columna">
-                <div class="bimestre-header">
-                    {{ $bimestre[0] }}
-                    <small style="display: block; font-size: 0.75em; opacity: 0.9; margin-top: 2px;">Meta: {{ $metaBimestre }}</small>
-                </div>
-                <div class="bimestre-contenido">
-                    @php 
-                        $reunionesBimestre = $grupoViewModels[$grupo->id]['reuniones_bimestres'][$index + 1] ?? [];
-                        $cumpleMeta = count($reunionesBimestre) >= $metaBimestre;
-                    @endphp
-                    
-                    @if(count($reunionesBimestre) > 0)
-                        @if($cumpleMeta)
-                            <div style="text-align: center; padding: 3px; background: #e8f5e9; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #2e7d32; font-weight: 600;">
-                                ✓ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
-                            </div>
+    <div class="docs-table-wrapper2"> 
+        @foreach($grupos as $grupo)
+        <div class="grupo-card">
+            <div class="grupo-header">
+                <div class="grupo-info">
+                    <h3>{{ $grupo->nombre }}</h3>
+                    <div class="grupo-stats">
+                        Meta: {{ $grupo->meta_anual }} | Realizadas: {{ $grupoViewModels[$grupo->id]['stats']['total'] ?? 0 }} | 
+                        
+                        @if(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) >= $grupo->meta_anual)
+                            <span style="margin-left: 10px;">¡Meta cumplida!</span>
+                        @elseif(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) > 0)
+                            <span style="margin-left: 10px;">⚡ {{ $grupo->meta_anual - ($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) }} pendientes</span>
                         @else
-                            <div style="text-align: center; padding: 3px; background: #fff3e0; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #f57c00; font-weight: 600;">
-                                ⚡ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
-                            </div>
+                            <span style="margin-left: 10px;">Sin reuniones aún</span>
                         @endif
-                    @endif
-                    
-                    @forelse($reunionesBimestre as $reunion)
-                        <div class="reunion-badge {{ !$reunion['programada'] ? 'fuera-programacion' : '' }}" 
-                             onclick="verDetalleReunion({{ json_encode([
-                                 'id' => $reunion['id'],
-                                 'fecha' => $reunion['fecha_full'],
-                                 'programada' => $reunion['programada'],
-                                 'motivo' => $reunion['motivo'],
-                                 'grupo' => $grupo->nombre
-                             ]) }})"
-                             title="Click para ver detalles">
-                            <span class="reunion-fecha">{{ $reunion['fecha_display'] }}</span>
-                            <span class="reunion-icon">{{ $reunion['programada'] ? '✓' : '⚠' }}</span>
-                        </div>
-                    @empty
-                        <div class="empty-bimestre">
-                            @if($metaBimestre > 0)
-                                Sin reuniones<br>
-                                <small style="color: #f57c00;">Falta: {{ $metaBimestre }}</small>
-                            @else
-                                --
-                            @endif
-                        </div>
-                    @endforelse
+                    </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn btn-ejemplo" onclick="abrirModal({{ $grupo->id }})">
+                        Nueva Reunión
+                    </button>
+                    <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'" 
+                            style="padding: 7px 12px;" title="Editar grupo">
+                        ⚙️
+                    </button>
                 </div>
             </div>
-            @endforeach
+
+            <div class="meses-grid">
+                @php
+                    $bimestres = [
+                        ['Ene-Feb', [1, 2]],
+                        ['Mar-Abr', [3, 4]],
+                        ['May-Jun', [5, 6]],
+                        ['Jul-Ago', [7, 8]],
+                        ['Sep-Oct', [9, 10]],
+                        ['Nov-Dic', [11, 12]]
+                    ];
+                @endphp
+
+                @foreach($bimestres as $index => $bimestre)
+                @php
+                    $metaBimestre = $grupo->{'meta_bimestre_' . ($index + 1)};
+                @endphp
+                <div class="bimestre-columna">
+                    <div class="bimestre-header">
+                        {{ $bimestre[0] }}
+                        <small style="display: block; font-size: 0.75em; opacity: 0.9; margin-top: 2px;">Meta: {{ $metaBimestre }}</small>
+                    </div>
+                    <div class="bimestre-contenido">
+                        @php 
+                            $reunionesBimestre = $grupoViewModels[$grupo->id]['reuniones_bimestres'][$index + 1] ?? [];
+                            $cumpleMeta = count($reunionesBimestre) >= $metaBimestre;
+                        @endphp
+                        
+                        @if(count($reunionesBimestre) > 0)
+                            @if($cumpleMeta)
+                                <div style="text-align: center; padding: 3px; background: #e8f5e9; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #2e7d32; font-weight: 600;">
+                                    ✓ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
+                                </div>
+                            @else
+                                <div style="text-align: center; padding: 3px; background: #fff3e0; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #f57c00; font-weight: 600;">
+                                    ⚡ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
+                                </div>
+                            @endif
+                        @endif
+                        
+                        @forelse($reunionesBimestre as $reunion)
+                            <div class="reunion-badge {{ !$reunion['programada'] ? 'fuera-programacion' : '' }}" 
+                                onclick="verDetalleReunion({{ json_encode([
+                                    'id' => $reunion['id'],
+                                    'fecha' => $reunion['fecha_full'],
+                                    'programada' => $reunion['programada'],
+                                    'motivo' => $reunion['motivo'],
+                                    'grupo' => $grupo->nombre
+                                ]) }})"
+                                title="Click para ver detalles">
+                                <span class="reunion-fecha">{{ $reunion['fecha_display'] }}</span>
+                                <span class="reunion-icon">{{ $reunion['programada'] ? '✓' : '⚠' }}</span>
+                            </div>
+                        @empty
+                            <div class="empty-bimestre">
+                                @if($metaBimestre > 0)
+                                    Sin reuniones<br>
+                                    <small style="color: #f57c00;">Falta: {{ $metaBimestre }}</small>
+                                @else
+                                    --
+                                @endif
+                            </div>
+                        @endforelse
+                    </div>
+                </div>
+                @endforeach
+            </div>
         </div>
-    </div>
+    
 
     <!-- Modal para agregar reunión -->
     <div id="modal-{{ $grupo->id }}" class="modal-overlay" onclick="cerrarModal(event, {{ $grupo->id }})">
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
-                <h3>➕ Agregar Reunión - {{ $grupo->nombre }}</h3>
+                <h3>Agregar Reunión - {{ $grupo->nombre }}</h3>
             </div>
             <div class="modal-body">
                 <form action="{{ route('grupotrabajo.guardarReunion') }}" method="POST">
@@ -490,30 +491,30 @@
                     <input type="hidden" name="grupo_trabajo_id" value="{{ $grupo->id }}">
                     
                     <div class="form-group">
-                        <label>📅 Fecha de Reunión *</label>
+                        <label>Fecha de Reunión</label>
                         <input type="date" name="fecha" required>
                     </div>
 
                     <div class="form-group">
                         <label>
                             ¿Esta reunión fue programada o fuera de programación? *
-                            <span class="info-tooltip" title="Indica si la reunión estaba en la agenda original">ℹ️</span>
+                            <!--<span class="info-tooltip" title="Indica si la reunión estaba en la agenda original">ℹ️</span>-->
                         </label>
                         <div class="radio-group">
                             <label class="radio-option">
                                 <input type="radio" name="programada" value="1" required onchange="toggleMotivo(this, {{ $grupo->id }})">
-                                ✅ Sí, fue programada
+                                Sí, fue programada
                             </label>
                             <label class="radio-option">
                                 <input type="radio" name="programada" value="0" required onchange="toggleMotivo(this, {{ $grupo->id }})">
-                                ⚠️ No, fuera de programación
+                                No, fuera de programación
                             </label>
                         </div>
                     </div>
 
                     <div id="motivo-programada-{{ $grupo->id }}" style="display: none;">
                         <div class="form-group">
-                            <label>✅ ¿Por qué fue agregada esta reunión?</label>
+                            <label>¿Por qué fue agregada esta reunión?</label>
                             <textarea name="motivo_programada" rows="3" placeholder="Ej: Reunión mensual planificada, seguimiento de proyecto X, etc."></textarea>
                             <small style="color: #666; display: block; margin-top: 5px;">Explica brevemente el propósito de esta reunión programada</small>
                         </div>
@@ -522,7 +523,7 @@
                     <div id="motivo-noprogramada-{{ $grupo->id }}" style="display: none;">
                         <div class="motivo-section">
                             <div class="form-group" style="margin-bottom: 0;">
-                                <label>⚠️ ¿Por qué fue fuera de programación? *</label>
+                                <label>¿Por qué fue fuera de programación? *</label>
                                 <textarea name="motivo_noprogramada" rows="4" placeholder="Ej: Urgencia por incidente crítico, solicitud del cliente, cambio de última hora, etc." required></textarea>
                                 <small style="color: #666; display: block; margin-top: 5px;">Es importante documentar por qué esta reunión no estaba planificada</small>
                             </div>
@@ -530,25 +531,27 @@
                     </div>
 
                     <div class="modal-actions">
-                        <button type="submit" class="btn btn-primary">💾 Guardar Reunión</button>
-                        <button type="button" class="btn btn-secondary" onclick="cerrarModalBtn({{ $grupo->id }})">❌ Cancelar</button>
+                        <button type="submit" class="btn btn-ejemplo">Guardar Reunión</button>
+                        <button type="button" class="btn btn-ejemplo2" onclick="cerrarModalBtn({{ $grupo->id }})">Cancelar</button>
                     </div>
                 </form>
                 
                 <!-- Resumen de reuniones del grupo -->
+                 <!--
                 @if(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) > 0)
                 <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
-                    <h4 style="margin: 0 0 10px 0; font-size: 0.95em; color: #666;">📊 Resumen de Reuniones</h4>
+                    <h4 style="margin: 0 0 10px 0; font-size: 0.95em; color: #666;">Resumen de Reuniones</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; font-size: 0.85em;">
                         <div style="background: #e8f5e9; padding: 8px; border-radius: 4px;">
-                            <strong style="color: #2e7d32;">✅ Programadas:</strong> {{ $grupoViewModels[$grupo->id]['stats']['programadas'] ?? 0 }}
+                            <strong style="color: #2e7d32;">Programadas:</strong> {{ $grupoViewModels[$grupo->id]['stats']['programadas'] ?? 0 }}
                         </div>
                         <div style="background: #fff3e0; padding: 8px; border-radius: 4px;">
-                            <strong style="color: #f57c00;">⚠️ Fuera de prog.:</strong> {{ $grupoViewModels[$grupo->id]['stats']['fuera'] ?? 0 }}
+                            <strong style="color: #f57c00;">Fuera de prog.:</strong> {{ $grupoViewModels[$grupo->id]['stats']['fuera'] ?? 0 }}
                         </div>
                     </div>
                 </div>
                 @endif
+                                -->
             </div>
         </div>
     </div>
@@ -559,7 +562,7 @@
 <div id="modal-detalle" class="modal-overlay" onclick="cerrarModalDetalle(event)">
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 500px;">
         <div class="modal-header">
-            <h3>📋 Detalles de la Reunión</h3>
+            <h3>Detalles de la Reunión</h3>
         </div>
         <div class="modal-body">
             <div class="form-group">

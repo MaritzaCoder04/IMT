@@ -72,13 +72,12 @@
 }
 
 .bimestre-btn:hover {
-    border-color: #667eea;
+    border-color: #206f87;
     background: #f5f5ff;
 }
 
 .bimestre-btn.active {
-    border-color: #667eea;
-    background: #667eea;
+    background: #2889a7;
     color: white;
 }
 
@@ -152,8 +151,11 @@
 }
 
 .year-btn {
-    background: #667eea;
+    background: #2889a7;
     color: white;
+    box-shadow: 0 6px 0 #206f87, 0 8px 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    top: 0;
     border: none;
     padding: 8px 16px;
     border-radius: 6px;
@@ -162,7 +164,8 @@
 }
 
 .year-btn:hover {
-    background: #5568d3;
+    top: 2px;
+    box-shadow: 0 4px 0 #185466, 0 6px 8px rgba(0, 0, 0, 0.3);
 }
 
 .current-year {
@@ -261,6 +264,8 @@
 }
 </style>
 
+
+
 <div class="all-form">
     <div class="form-container">
         <div class="section-header">
@@ -290,8 +295,8 @@
                     <!--<button type="button" class="btn btn-secondary" onclick="abrirModalGuardar()">
                         💾 Guardar Reporte
                     </button>-->
-                    <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.pdf', ['anio' => $anioSeleccionado ?? date('Y'), 'bimestre' => $bimestreSeleccionado ?? 1]) }}'">
-                        📥 Descargar PDF
+                    <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.pdf', ['anio' => $anioSeleccionado ?? date('Y'), 'bimestre' => $bimestreSeleccionado ?? 1]) }}'">
+                        Descargar PDF
                     </button>
                 </div>
             </div>
@@ -373,9 +378,6 @@
                         <tr>
                             <td colspan="10" class="empty-state">
                                 <p>No hay grupos de trabajo registrados</p>
-                                <button class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.create') }}'">
-                                    ➕ Crear Primer Grupo
-                                </button>
                             </td>
                         </tr>
                         @endforelse
@@ -384,13 +386,13 @@
             </div>
         </div>
 
-        <!-- Sección 6.1.4 - Normativa Técnica de la SICT -->
+        <!-- REPORTE DE AVANCE DEL PROGRAMA DE LA ELABORACION DE NORMAS -->
         <div style="margin-top: 40px;">
             <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
                 <h3 style="text-align: center; font-weight: bold; margin: 0;">REPORTE DE AVANCE DEL PROGRAMA DE LA ELABORACIÓN DE NORMAS</h3>
             </div>
             
-            <table class="table table-bordered" style="width: 100%; border-collapse: collapse; font-size: 12px;">
+            <table class="table docs-table" style="width: 100%; border-collapse: collapse; font-size: 12px;">
                 <thead>
                     <tr style="background-color: #f8f9fa;">
                         <th rowspan="3" style="border: 1px solid #000; padding: 8px; text-align: center; vertical-align: middle; width: 5%;">No.</th>

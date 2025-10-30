@@ -31,6 +31,24 @@
             gap: 5px;
             justify-content: center;
         }
+        /* Alineación horizontal de inputs y botones en la búsqueda */
+        #busqueda .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+        }
+        #busqueda .form-group {
+            min-width: 260px;
+        }
+        #busqueda .actions2 {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        #busqueda .search-container {
+            margin-bottom: 16px; /* separa la búsqueda de la tabla */
+        }
     </style>
 
     <div class="all-form"> 
@@ -54,11 +72,11 @@
                                             <label for="palabraExacta">Palabra exacta</label>
                                             <input type="text" wire:model.live="palabraExacta" id="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
                                         </div>
+                                            <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>
                                         <div class="actions2">
                                             @if($busqueda || $palabraExacta)
                                                 <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
                                             @endif
-                                            <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>
                                         </div>
                                     </div>
                                 </div> 

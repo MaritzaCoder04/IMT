@@ -254,17 +254,17 @@
         <!-- Buscador -->
         <form method="GET" action="{{ route('grupotrabajo.index') }}" class="search-box">
             <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
-            <button type="submit" class="btn btn-secondary">Buscar</button>
-            <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.create') }}'">
+            <button type="submit" class="btn btn-ejemplo">Buscar</button>
+            <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.create') }}'">
                     Agregar Grupo
                 </button>
             @if(request('busqueda'))
                 <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('grupotrabajo.index') }}'">Limpiar</button>
             @endif
-            <a href="{{ route('grupos.index') }}" class="btn btn-primary" style="margin-left:8px;">Editar tipos de datos</a>
+            <a href="{{ route('grupos.index') }}" class="btn btn-ejemplo" style="margin-left:8px;">i</a>
         </form>
 
-        <div class="docs-table-wrapper">
+        <div class="docs-table-wrapper3">
             <table class="docs-table">
                 <thead>
                     <tr>
