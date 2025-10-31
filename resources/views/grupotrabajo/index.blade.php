@@ -335,7 +335,6 @@
                             <div class="progress-bar" style="margin-top: 5px;">
                                 <div class="progress-fill" style="width: {{ $progreso }}%; background: {{ $progreso >= 75 ? '#4caf50' : ($progreso >= 50 ? '#ff9800' : '#f44336') }};"></div>
                             </div>
-                            <div class="progress-text">{{ $progreso }}%</div>
                         </td>
                         
                         <td>

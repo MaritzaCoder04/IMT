@@ -73,6 +73,27 @@
         .clear-input:hover { color: #000; }
         /* Ocultar la X cuando el campo está vacío usando placeholder-shown */
         .input-clearable input:placeholder-shown + .clear-input { display: none; }
+
+        /* Estilos para la barra de progreso */
+        .progress-mini {
+            position: relative;
+            width: 100%;
+            height: 9px;
+            background: #f0f0f0;
+            overflow: hidden;
+            margin-top: 15px;
+        }
+        
+        .progress-bar-mini {
+            height: 100%;
+            transition: width 0.3s;
+        }
+        
+        .progress-text {
+            font-size: 0.8em;
+            color: #666;
+            text-align: center;
+        }
     </style>
 
     <div class="all-form"> 
@@ -208,9 +229,9 @@
                                     @endphp
                                     
                                     <div class="progress-mini" title="{{ $fechasCompletadas }}/{{ $totalFechas }} fechas">
-                                        <div class="progress-bar-mini" style="width: {{ $porcentaje }}%"></div>
+                                        <div class="progress-bar-mini" style="width: {{ $porcentaje }}%; background: {{ $porcentaje >= 75 ? '#4caf50' : ($porcentaje >= 50 ? '#ff9800' : '#f44336') }};"></div>
                                     </div>
-                                    <small>{{ $porcentaje }}%</small>
+                                    <div class="progress-text">{{ $porcentaje }}%</div>
                                 </td>
                                 <td>
                                     <div class="table-actions">
