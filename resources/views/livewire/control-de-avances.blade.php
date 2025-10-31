@@ -26,6 +26,12 @@
             background: #f0f0f0;
             transform: scale(1.1);
         }
+        .btn-icon img {
+            width: 25px;
+            height: 25px;
+            display: inline-block;
+            vertical-align: middle;
+        }
         .table-actions {
             display: flex;
             gap: 5px;
@@ -49,6 +55,24 @@
         #busqueda .search-container {
             margin-bottom: 16px; /* separa la búsqueda de la tabla */
         }
+        /* Input con botón de limpiar (X) */
+        .input-clearable { position: relative; }
+        .input-clearable input { padding-right: 2rem; }
+        .clear-input {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #666;
+        }
+        .clear-input:hover { color: #000; }
+        /* Ocultar la X cuando el campo está vacío usando placeholder-shown */
+        .input-clearable input:placeholder-shown + .clear-input { display: none; }
     </style>
 
     <div class="all-form"> 
@@ -66,18 +90,20 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="busqueda">Cualquier Palabra</label>
-                                            <input type="text" wire:model.live="busqueda" id="busqueda" placeholder="Ingrese cualquier palabra">
+                                            <div class="input-clearable">
+                                                <input type="text" wire:model.live="busqueda" id="busqueda" placeholder="Ingrese cualquier palabra">
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="palabraExacta">Palabra exacta</label>
-                                            <input type="text" wire:model.live="palabraExacta" id="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                                            <div class="input-clearable">
+                                                <input type="text" wire:model.live="palabraExacta" id="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                            </div>
                                         </div>
                                             <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>
-                                        <div class="actions2">
-                                            @if($busqueda || $palabraExacta)
-                                                <button type="button" wire:click="limpiar" class="btn btn-secondary2">Limpiar</button>
-                                            @endif
-                                        </div>
+                                        
                                     </div>
                                 </div> 
                             </div>
@@ -188,9 +214,15 @@
                                 </td>
                                 <td>
                                     <div class="table-actions">
-                                        <button type="button" class="btn-icon" title="Ver etapas" onclick="window.location='{{ route('documentos.etapas', $documento->ID_doc) }}'">📅</button>
-                                        <button type="button" class="btn-icon" title="Editar documento" onclick="window.location='{{ route('documentos.edit', $documento->ID_doc) }}'">✏️</button>
-                                        <button type="button" class="btn-icon" title="Eliminar documento" wire:click="eliminar({{ $documento->ID_doc }})" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">🗑️</button>
+                    <button type="button" class="btn-icon" title="Ver etapas" onclick="window.location='{{ route('documentos.etapas', $documento->ID_doc) }}'">
+                        <img src="{{ asset('img/notebook.png') }}" alt="Ver etapas">
+                    </button>
+                    <button type="button" class="btn-icon" title="Editar documento" onclick="window.location='{{ route('documentos.edit', $documento->ID_doc) }}'">
+                        <img src="{{ asset('img/pencil.png') }}" alt="Editar documento">
+                    </button>
+                    <button type="button" class="btn-icon" title="Eliminar documento" wire:click="eliminar({{ $documento->ID_doc }})" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">
+                        <img src="{{ asset('img/delete.png') }}" alt="Eliminar documento">
+                    </button>
                                     </div>
                                 </td>
                                 

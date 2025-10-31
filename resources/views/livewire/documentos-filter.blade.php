@@ -1,4 +1,23 @@
 <div>
+    <style>
+        /* Input con botón de limpiar (X) */
+        .input-clearable { position: relative; display: inline-block; width: 100%; }
+        .input-clearable input { padding-right: 2rem; width: 100%; }
+        .clear-input {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #666;
+        }
+        .clear-input:hover { color: #000; }
+        .input-clearable input:placeholder-shown + .clear-input { display: none; }
+    </style>
     <!-- Sección Búsqueda -->
     <section id="busqueda" class="section active">
         <div class="section-header">
@@ -10,15 +29,24 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="palabra">Cualquier Palabra</label>
-                        <input type="text" id="palabra" wire:model.live="palabra" placeholder="Ingrese cualquier palabra">
+                        <div class="input-clearable">
+                            <input type="text" id="palabra" wire:model.live="palabra" placeholder="Ingrese cualquier palabra">
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="palabraExacta">Palabra exacta</label>
-                        <input type="text" id="palabraExacta" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                        <div class="input-clearable">
+                            <input type="text" id="palabraExacta" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="designacion">Designación</label>
-                        <input type="text" id="designacion" wire:model.live="designacion" placeholder="Ingrese designación">
+                        <div class="input-clearable">
+                            <input type="text" id="designacion" wire:model.live="designacion" placeholder="Ingrese designación">
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label for="libro">Libro</label>
@@ -31,14 +59,14 @@
                     </div>
                     <div class="form-group">
                         <label for="anio">Año</label>
-                        <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
+                        <div class="input-clearable">
+                            <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                        </div>
                     </div>
                     <div class="actions">
-                    @if($palabra || $palabraExacta || $designacion || $libro || $anio)
-                        <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
-                    @endif
                     <!--<button wire:click="descargarSQL" class="btn btn-success">Descargar SQL</button>-->
-                </div>
+                    </div>
                 </div>
             </div>
             

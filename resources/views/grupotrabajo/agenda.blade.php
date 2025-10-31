@@ -188,6 +188,27 @@
     width: 90px;
 }
 
+/* Input clearable con botón "x" */
+.input-clearable { position: relative; display: inline-block; width: 100%; }
+.input-clearable input { padding-right: 2rem; width: 100%; }
+.clear-input {
+    position: absolute;
+    right: 6px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent;
+    border: none;
+    color: #999;
+    font-size: 1rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    display: none;
+}
+.clear-input:hover { color: #000; }
+.input-clearable input:placeholder-shown + .clear-input { display: none; }
+.input-clearable input:not(:placeholder-shown) + .clear-input { display: inline; }
+
 .form-busqueda button {
     padding: 8px 18px;
     white-space: nowrap;
@@ -343,19 +364,25 @@
             <h2 class="section-title">Agenda De Reuniones</h2>
         </div>
         <div class="search-container">
-                                <div class="search-row">
-                                    <div class="form-row">
-                                        <div class="form-group">
-                                            <label for="cp">Buscar Grupo</label>
-                                            <input type="text" id="cp" wire:model.live="busqueda">
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="cp">Buscar Por Año</label>
-                                            <input type="number" name="anio" placeholder="Año" value="{{ $anio }}">                                            
-                                        </div>
-                                    </div>
-                                </div> 
-                            </div>
+            <form method="GET" action="{{ route('grupotrabajo.agenda') }}" class="form-busqueda">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="cp">Buscar Grupo</label>
+                        <div class="input-clearable">
+                            <input type="text" id="cp" name="busqueda" placeholder="Buscar Grupo" value="{{ request('busqueda') }}">
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="anio">Buscar Por Año</label>
+                        <input type="number" id="anio" name="anio" placeholder="Año" value="{{ $anio }}" min="2000" max="2100">
+                    </div>
+                    <div class="form-group" style="align-self:flex-end;">
+                        <button type="submit" class="btn btn-ejemplo">Buscar</button>
+                    </div>
+                </div>
+            </form>
+        </div>
         
         
     </div>
@@ -405,7 +432,7 @@
                     </button>
                     <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'" 
                             style="padding: 7px 12px;" title="Editar grupo">
-                        ⚙️
+                        <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo" style="width:16px;height:16px;" />
                     </button>
                 </div>
             </div>
@@ -745,6 +772,69 @@ document.addEventListener('click', function(event) {
     
     if (!ayudaBtn && !ayudaPanel.contains(event.target) && ayudaPanel.style.display === 'block') {
         ayudaPanel.style.display = 'none';
+    }
+});
+
+// Filtro en tiempo real por nombre de grupo
+document.addEventListener('DOMContentLoaded', function() {
+    const input = document.getElementById('cp');
+    const yearInput = document.getElementById('anio');
+    const searchForm = document.querySelector('.form-busqueda');
+    const cards = Array.from(document.querySelectorAll('.grupo-card'));
+    if (!input || cards.length === 0) return;
+
+    const filter = () => {
+        const q = input.value.trim().toLowerCase();
+        let visible = 0;
+        cards.forEach(card => {
+            const nameEl = card.querySelector('.grupo-header .grupo-info h3');
+            const name = (nameEl ? nameEl.textContent : '').toLowerCase();
+            const show = !q || name.includes(q);
+            card.style.display = show ? '' : 'none';
+            if (show) visible++;
+        });
+        let msg = document.getElementById('no-results-agenda');
+        if (!msg) {
+            msg = document.createElement('div');
+            msg.id = 'no-results-agenda';
+            msg.textContent = 'No se encontraron grupos';
+            msg.style.textAlign = 'center';
+            msg.style.padding = '20px';
+            msg.style.display = 'none';
+            const wrap = document.querySelector('.docs-table-wrapper2');
+            if (wrap) wrap.appendChild(msg);
+        }
+        msg.style.display = (!visible && q) ? 'block' : 'none';
+    };
+
+    input.addEventListener('input', filter);
+    filter();
+
+    const clearBtn = input && input.parentElement ? input.parentElement.querySelector('.clear-input') : null;
+    if (clearBtn) {
+        clearBtn.addEventListener('click', function() {
+            input.value = '';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.focus();
+        });
+    }
+
+    // Cambio de año: recarga con parámetros GET para aplicar filtro del servidor
+    if (yearInput && searchForm) {
+        const submitWithParams = () => {
+            try {
+                const params = new URLSearchParams(window.location.search);
+                const yearVal = yearInput.value || '';
+                const nameVal = input.value || '';
+                if (yearVal) params.set('anio', yearVal); else params.delete('anio');
+                if (nameVal) params.set('busqueda', nameVal); else params.delete('busqueda');
+                window.location = '{{ route('grupotrabajo.agenda') }}' + '?' + params.toString();
+            } catch (e) {
+                searchForm.submit();
+            }
+        };
+        yearInput.addEventListener('change', submitWithParams);
+        yearInput.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') { ev.preventDefault(); submitWithParams(); } });
     }
 });
 </script>

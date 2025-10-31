@@ -49,37 +49,37 @@
         <ul>
           <li>
             <a href="{{ route('todoslosdocumentos') }}" data-tooltip="Todos los documentos">
-              <img src="{{asset('/img/invent_bl.png')}}" alt="">
+              <img src="{{asset('/img/document.png')}}" alt="">
               <span class="link-text">&nbsp;Todos los documentos</span>
             </a>
           </li>
-          <li>
+          <li> 
             <a href="{{ route('controldeavances') }}" data-tooltip="Control de Avances">
-              <img src="{{asset('/img/invent_bl.png')}}" alt="">
+              <img src="{{asset('/img/arrows.png')}}" alt="">
               <span class="link-text">&nbsp;Control de Avances</span>
             </a>
           </li>
           <li>
             <a href="{{ route('productosterminados') }}" data-tooltip="Productos Terminados">
-              <img src="{{asset('/img/invent_bl.png')}}" alt="">
+              <img src="{{asset('/img/check-mark.png')}}" alt="">
               <span class="link-text">&nbsp;Productos Terminados</span>
             </a>
           </li>
           <li>
             <a href="{{ route('grupotrabajo.index') }}" data-tooltip="Programaciones">
-              <img src="{{asset('/img/config.png')}}" alt="">
+              <img src="{{asset('/img/blueprint.png')}}" alt="">
               <span class="link-text">&nbsp;Programaciones</span>
             </a>
           </li>
           <li>
             <a href="{{ route('grupotrabajo.agenda') }}" data-tooltip="Representaciones">
-              <img src="{{asset('/img/config.png')}}" alt="">
+              <img src="{{asset('/img/calendar.png')}}" alt="">
               <span class="link-text">&nbsp;Representaciones</span>
             </a>
           </li>
           <li>
             <a href="{{ route('grupotrabajo.reporte') }}" data-tooltip="Informe Anual">
-              <img src="{{asset('/img/config.png')}}" alt="">
+              <img src="{{asset('/img/learning.png')}}" alt="">
               <span class="link-text">&nbsp;Informe Anual</span>
             </a>
           </li>

@@ -1,4 +1,23 @@
 <div>
+    <style>
+        /* Input con botón de limpiar (X) */
+        .input-clearable { position: relative; display: inline-block; width: 100%; }
+        .input-clearable input { padding-right: 2rem; width: 100%; }
+        .clear-input {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            border: none;
+            background: transparent;
+            font-size: 1.1rem;
+            line-height: 1;
+            cursor: pointer;
+            color: #666;
+        }
+        .clear-input:hover { color: #000; }
+        .input-clearable input:placeholder-shown + .clear-input { display: none; }
+    </style>
     <div class="all-form"> 
         <div class="form-container">
             <div class="container">
@@ -14,17 +33,19 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="cp">Cualquier Palabra</label>
-                                            <input type="text" id="cp" wire:model.live="busqueda" placeholder="Ingrese cualquier palabra">
+                                            <div class="input-clearable">
+                                                <input type="text" id="cp" wire:model.live="busqueda" placeholder="Ingrese cualquier palabra">
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                            </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="pe">Palabra exacta</label>
-                                            <input type="text" id="pe" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                                            <div class="input-clearable">
+                                                <input type="text" id="pe" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                            </div>
                                         </div>
-                                        <div class="actions2">
-                                            @if($busqueda || $palabraExacta)
-                                                <button type="button" class="btn btn-secondary2" wire:click="limpiar">Limpiar</button>
-                                            @endif
-                                        </div>
+                                        
                                     </div>
                                 </div> 
                             </div>

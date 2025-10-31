@@ -143,6 +143,14 @@
     transform: scale(1.1);
 }
 
+/* Iconos dentro de botones de acción */
+.btn-icon img {
+    width: 25px;
+    height: 25px;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .search-box {
     display: flex;
     gap: 10px;
@@ -156,6 +164,24 @@
     border-radius: 4px;
     font-size: 0.9em;
 }
+
+/* Input con botón de limpiar (X) */
+.search-box .input-clearable { position: relative; flex: 1; }
+.search-box .input-clearable input { padding-right: 2rem; width: 100%; }
+.search-box .clear-input {
+    position: absolute;
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    color: #666;
+}
+.search-box .clear-input:hover { color: #000; }
+.search-box .input-clearable input:placeholder-shown + .clear-input { display: none; }
 
 .tooltip-info {
     position: relative;
@@ -253,14 +279,13 @@
 
         <!-- Buscador -->
         <form method="GET" action="{{ route('grupotrabajo.index') }}" class="search-box">
-            <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
-            <button type="submit" class="btn btn-ejemplo">Buscar</button>
+            <div class="input-clearable">
+                <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
+                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
+            </div>
             <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.create') }}'">
                     Agregar Grupo
                 </button>
-            @if(request('busqueda'))
-                <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('grupotrabajo.index') }}'">Limpiar</button>
-            @endif
             <a href="{{ route('grupos.index') }}" class="btn btn-ejemplo" style="margin-left:8px;">i</a>
         </form>
 
@@ -318,7 +343,7 @@
                                 <button type="button" class="btn-icon" 
                                         onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'"
                                         title="Editar grupo">
-                                    ✏️
+                                    <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo">
                                 </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
@@ -327,7 +352,7 @@
                                     @csrf
                                     @method('DELETE')
                                     <button type="submit" class="btn-icon" title="Eliminar grupo">
-                                        🗑️
+                                        <img src="{{ asset('img/delete.png') }}" alt="Eliminar grupo">
                                     </button>
                                 </form>
                             </div>
@@ -345,6 +370,53 @@
                 </tbody>
             </table>
         </div>
+        <script>
+        document.addEventListener('DOMContentLoaded', function() {
+          const input = document.querySelector('.search-box input[name="busqueda"]');
+          const tbody = document.querySelector('.docs-table tbody');
+          if (!input || !tbody) return;
+
+          const rows = Array.from(tbody.querySelectorAll('tr'));
+          let noRow = document.getElementById('no-results-row');
+          if (!noRow) {
+            noRow = document.createElement('tr');
+            noRow.id = 'no-results-row';
+            const td = document.createElement('td');
+            td.colSpan = 10;
+            td.className = 'empty-state';
+            td.textContent = 'No se encontraron grupos';
+            noRow.appendChild(td);
+            noRow.style.display = 'none';
+            tbody.appendChild(noRow);
+          }
+
+          const filter = () => {
+            const q = input.value.trim().toLowerCase();
+            let anyVisible = false;
+            rows.forEach(row => {
+              if (row.id === 'no-results-row') return;
+              const nameCell = row.querySelector('td:first-child');
+              const text = nameCell ? nameCell.textContent.toLowerCase() : '';
+              const show = !q || text.includes(q);
+              row.style.display = show ? '' : 'none';
+              if (show) anyVisible = true;
+            });
+            noRow.style.display = (!anyVisible && q) ? '' : 'none';
+          };
+
+          input.addEventListener('input', filter);
+          filter();
+
+          const clearBtn = document.querySelector('.search-box .clear-input');
+          if (clearBtn) {
+            clearBtn.addEventListener('click', function() {
+              input.value = '';
+              input.dispatchEvent(new Event('input', { bubbles: true }));
+              input.focus();
+            });
+          }
+        });
+        </script>
     </div>
 </div>
 
