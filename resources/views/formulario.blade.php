@@ -38,7 +38,7 @@
                     </select>
                     @error('ID_libro') <small class="text-danger">{{ $message }}</small> @enderror
                     <div style="margin-top:6px;">
-                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="window.location='{{ route('libros.index') }}'" title="Editar libros" aria-label="Editar libros">
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="abrirModalLibros('{{ route('libros.index') }}')" title="Editar libros" aria-label="Editar libros">
                           <img src="{{ asset('img/pencil.png') }}" alt="Editar libros" style="width:16px;height:16px;" />
                         </button>
                     </div>
@@ -55,7 +55,7 @@
                         @endisset
                     </select>
                     <div style="margin-top:6px;">
-                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="window.location='{{ route('temas.index') }}'" title="Editar temas" aria-label="Editar temas">
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="abrirModalTemas('{{ route('temas.index') }}')" title="Editar temas" aria-label="Editar temas">
                           <img src="{{ asset('img/pencil.png') }}" alt="Editar temas" style="width:16px;height:16px;" />
                         </button>
                     </div>
@@ -94,7 +94,7 @@
                         @endisset
                     </select>
                     <div style="margin-top:6px;">
-                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="window.location='{{ route('origenes.index') }}'" title="Editar orígenes" aria-label="Editar orígenes">
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="abrirModalOrigenes('{{ route('origenes.index') }}')" title="Editar orígenes" aria-label="Editar orígenes">
                           <img src="{{ asset('img/pencil.png') }}" alt="Editar orígenes" style="width:16px;height:16px;" />
                         </button>
                     </div>
@@ -132,6 +132,45 @@
   </div>
   </div>
 
+<!-- Modal para editar/agregar libros -->
+<div id="modal-overlay-libros" class="modal-overlay" onclick="cerrarModalLibrosClick(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Libros</h3>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalLibros()">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="modal-iframe-libros" src="about:blank" title="Libros"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar/agregar temas -->
+<div id="modal-overlay-temas" class="modal-overlay" onclick="cerrarModalTemasClick(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Temas</h3>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalTemas()">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="modal-iframe-temas" src="about:blank" title="Temas"></iframe>
+    </div>
+  </div>
+</div>
+
+<!-- Modal para editar/agregar orígenes -->
+<div id="modal-overlay-origenes" class="modal-overlay" onclick="cerrarModalOrigenesClick(event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Orígenes</h3>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalOrigenes()">×</button>
+    </div>
+    <div class="modal-body">
+      <iframe id="modal-iframe-origenes" src="about:blank" title="Orígenes"></iframe>
+    </div>
+  </div>
+</div>
+
 <script>
 function abrirModalTipos(url){
   try{
@@ -153,9 +192,63 @@ window.addEventListener('message', function(ev){
   const d = ev && ev.data ? ev.data : {};
   if(d.type === 'modal-close' || d.type === 'close-modal'){
     cerrarModalTipos();
+    cerrarModalLibros();
+    cerrarModalTemas();
+    cerrarModalOrigenes();
     if (d.reload || d.saved) { window.location.reload(); }
   }
 });
+
+function abrirModalLibros(url){
+  try{
+    const iframe = document.getElementById('modal-iframe-libros');
+    iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    document.getElementById('modal-overlay-libros').classList.add('active');
+  }catch(e){}
+}
+function cerrarModalLibros(){
+  try{
+    const overlay = document.getElementById('modal-overlay-libros');
+    const iframe = document.getElementById('modal-iframe-libros');
+    overlay.classList.remove('active');
+    iframe.src = 'about:blank';
+  }catch(e){}
+}
+function cerrarModalLibrosClick(event){ if(event && event.target && event.target.id==='modal-overlay-libros'){ cerrarModalLibros(); } }
+
+function abrirModalTemas(url){
+  try{
+    const iframe = document.getElementById('modal-iframe-temas');
+    iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    document.getElementById('modal-overlay-temas').classList.add('active');
+  }catch(e){}
+}
+function cerrarModalTemas(){
+  try{
+    const overlay = document.getElementById('modal-overlay-temas');
+    const iframe = document.getElementById('modal-iframe-temas');
+    overlay.classList.remove('active');
+    iframe.src = 'about:blank';
+  }catch(e){}
+}
+function cerrarModalTemasClick(event){ if(event && event.target && event.target.id==='modal-overlay-temas'){ cerrarModalTemas(); } }
+
+function abrirModalOrigenes(url){
+  try{
+    const iframe = document.getElementById('modal-iframe-origenes');
+    iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    document.getElementById('modal-overlay-origenes').classList.add('active');
+  }catch(e){}
+}
+function cerrarModalOrigenes(){
+  try{
+    const overlay = document.getElementById('modal-overlay-origenes');
+    const iframe = document.getElementById('modal-iframe-origenes');
+    overlay.classList.remove('active');
+    iframe.src = 'about:blank';
+  }catch(e){}
+}
+function cerrarModalOrigenesClick(event){ if(event && event.target && event.target.id==='modal-overlay-origenes'){ cerrarModalOrigenes(); } }
 </script>
 
 @endsection

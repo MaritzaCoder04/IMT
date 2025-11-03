@@ -2,31 +2,7 @@
 
 @section('contenido')
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <h2 style="color: #1e40af; font-weight: 600; font-size: 1.75rem; margin-bottom: 0.5rem;">
-            Manual/Norma (Tipos de documento)
-        </h2>
-        <a href="{{ route('formulario') }}" 
-           style="display: inline-flex; align-items: center; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;"
-           onmouseover="this.style.color='#1e40af'" 
-           onmouseout="this.style.color='#64748b'">
-            ← Volver al formulario
-        </a>
-        @if(request('modal'))
-        <script>
-        document.addEventListener('DOMContentLoaded', function(){
-          try {
-            var params = new URLSearchParams(window.location.search);
-            var isIframe = window.top !== window.self;
-            if (isIframe && params.get('saved') === '1') {
-              window.parent && window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
-            }
-          } catch(e) {}
-        });
-        </script>
-        @endif
-    </div>
+    
 
     <!-- Formulario Agregar -->
     <div style="background: white; border: 1px solid #e0e7ff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
@@ -82,7 +58,7 @@
                 @forelse($tipos as $t)
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem 1.5rem;">
-                            <form method="POST" action="{{ route('tipos.update', $t->ID_tipo) }}">
+                            <form method="POST" action="{{ route('tipos.update', $t->ID_tipo) }}" style="display: contents;">
                                 @csrf
                                 @method('PUT')
                                 <input type="text" 
@@ -106,3 +82,19 @@
                             <div style="display: flex; gap: 0.5rem;">
                                 <button type="submit" 
                                         style="background: #3b82f6; color: white; padding: 0.375rem 0.875rem; border: none; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
+                                        onmouseover="this.style.background='#2563eb'" 
+                                        onmouseout="this.style.background='#3b82f6'">Guardar</button>
+                            </div>
+                            </form>
+                        </td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="3" style="padding: 1rem 1.5rem; color: #64748b;">No hay tipos configurados.</td>
+                    </tr>
+                @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+@endsection

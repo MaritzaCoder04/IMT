@@ -2,18 +2,7 @@
 
 @section('contenido')
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <h2 style="color: #1e40af; font-weight: 600; font-size: 1.75rem; margin-bottom: 0.5rem;">
-            Gestión de Libros
-        </h2>
-        <a href="{{ route('formulario') }}" 
-           style="display: inline-flex; align-items: center; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;"
-           onmouseover="this.style.color='#1e40af'" 
-           onmouseout="this.style.color='#64748b'">
-            ← Volver al formulario
-        </a>
-    </div>
+    
 
     <!-- Formulario Agregar -->
     <div style="background: white; border: 1px solid #e0e7ff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
