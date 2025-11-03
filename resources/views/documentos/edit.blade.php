@@ -26,22 +26,38 @@
 
             <div class="form-group">
                 <label for="libro">Libro</label>
-                <input type="number" id="libro" name="libro" value="{{ $documento->libro }}" required>
+                <select id="libro" name="libro" required>
+                    <option value="">Selecciona un libro</option>
+                    @foreach($libros as $l)
+                        <option value="{{ $l->ID_libro }}" {{ (string)$documento->libro === (string)$l->ID_libro ? 'selected' : '' }}>
+                            {{ $l->desc }} {{ $l->clave ? '(' . $l->clave . ')' : '' }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">
                 <label for="tema">Tema</label>
-                <input type="number" id="tema" name="tema" value="{{ $documento->tema }}" required>
+                <select id="tema" name="tema" required>
+                    <option value="">Selecciona un tema</option>
+                    @foreach($temas as $t)
+                        <option value="{{ $t->ID_tema }}" {{ (string)$documento->tema === (string)$t->ID_tema ? 'selected' : '' }}>
+                            {{ $t->desc }} {{ $t->clave ? '(' . $t->clave . ')' : '' }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">
-                <label for="parte">Parte</label>
-                <input type="number" id="parte" name="parte" value="{{ $documento->parte }}" required>
+                <label for="parteDesc">Parte</label>
+                <input type="text" id="parteDesc" value="{{ $documento->parteRelacion->desc ?? '' }}" readonly>
+                <input type="hidden" name="parte" value="{{ $documento->parte }}">
             </div>
 
             <div class="form-group">
-                <label for="titulo">Titulo</label>
-                <input type="number" id="titulo" name="titulo" value="{{ $documento->titulo }}" required>
+                <label for="tituloDesc">Titulo</label>
+                <input type="text" id="tituloDesc" value="{{ $documento->tituloRelacion->desc ?? '' }}" readonly>
+                <input type="hidden" name="titulo" value="{{ $documento->titulo }}">
             </div>
 
             <div class="form-group">
@@ -51,7 +67,14 @@
 
             <div class="form-group">
                 <label for="origen">Origen</label>
-                <input type="number" id="origen" name="origen" value="{{ $documento->origen }}" required>
+                <select id="origen" name="origen" required>
+                    <option value="">Selecciona un origen</option>
+                    @foreach($origenes as $o)
+                        <option value="{{ $o->ID_origen }}" {{ (string)$documento->origen === (string)$o->ID_origen ? 'selected' : '' }}>
+                            {{ $o->desc }}
+                        </option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">

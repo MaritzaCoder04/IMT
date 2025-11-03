@@ -8,6 +8,10 @@ use App\Models\Etapa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
 use App\Models\Parte;
+use App\Models\Libro;
+use App\Models\Tema;
+use App\Models\Origen;
+use App\Models\Titulo;
 
 class DocumentoController extends Controller
 {
@@ -143,8 +147,16 @@ class DocumentoController extends Controller
     
     public function edit($ID_doc)
     {
-        $documento = Documento::findOrFail($ID_doc);
-        return view('documentos.edit', compact('documento'));
+        $documento = Documento::with(['libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion'])
+            ->findOrFail($ID_doc);
+
+        $libros = Libro::select(['ID_libro','desc','clave'])->orderBy('desc')->get();
+        $temas = Tema::select(['ID_tema','desc','clave'])->orderBy('desc')->get();
+        $origenes = Origen::select(['ID_origen','desc'])->orderBy('desc')->get();
+        $partes = Parte::select(['ID_parte','desc'])->orderBy('ID_parte')->get();
+        $titulos = Titulo::select(['ID_titulo','desc'])->orderBy('ID_titulo')->get();
+
+        return view('documentos.edit', compact('documento','libros','temas','origenes','partes','titulos'));
     }
 
     public function update(Request $request, $ID_doc)
@@ -154,6 +166,11 @@ class DocumentoController extends Controller
         $documento->nombre = $request->nombre;
         $documento->tipo = $request->tipoDocumento;
         $documento->libro = $request->libro;
+        $documento->tema = $request->tema ?? 0;
+        $documento->origen = $request->origen ?? $documento->origen;
+        $documento->parte = (int)($request->parte ?? $documento->parte);
+        $documento->titulo = (int)($request->titulo ?? $documento->titulo);
+        $documento->capitulo = (int)($request->capitulo ?? $documento->capitulo);
         
         $anio = $request->fechaPublicacion ?? date('Y');
         $documento->anio = $anio;
