@@ -1,5 +1,6 @@
 @extends('home')
 @section('contenido')
+<link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 
 @if(request('modal'))
 <script>

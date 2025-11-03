@@ -287,7 +287,9 @@
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
                 Agregar Grupo
             </button>
-            <a href="{{ route('grupos.index') }}" class="btn btn-ejemplo" style="margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}'); return false;">Tipos de Grupo</a>
+            <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px; margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">
+              <img src="{{ asset('img/pencil.png') }}" alt="Tipos de Grupo" style="width:16px;height:16px;" />
+            </button>
         </form>
 
         <div class="docs-table-wrapper3">

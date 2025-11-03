@@ -4,11 +4,11 @@
   inset: 0;
   width: 100vw;
   height: 100vh;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0,0,0,0.6);
   display: none;
   align-items: center;
   justify-content: center;
-  z-index: 9999;
+  z-index: 1000;
   padding: 16px;
 }
 
@@ -17,9 +17,9 @@
 .modal-content {
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  width: min(95vw, 900px);
-  max-height: 90vh;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+  width: min(95vw, 550px);
+  max-height: 85vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -29,14 +29,15 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 16px;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 15px 20px;
+  background: #2889a7;
+  color: #fff;
 }
 
 .modal-header h3 {
   margin: 0;
-  font-size: 1rem;
-  color: #111827;
+  font-size: 1.1em;
+  color: #fff;
 }
 
 .close-modal-btn {
@@ -44,9 +45,10 @@
   background: transparent;
   font-size: 1.25rem;
   cursor: pointer;
-  color: #6b7280;
+  color: #fff;
+  opacity: 0.85;
 }
-.close-modal-btn:hover { color: #111827; }
+.close-modal-btn:hover { opacity: 1; }
 
 .modal-body {
   padding: 0;
@@ -58,3 +60,19 @@
   border: none;
   display: block;
 }
+
+/* Botón pequeño de ícono */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.icon-btn img { width: 16px; height: 16px; display:block; }
+.icon-btn:hover { background: rgba(0,0,0,0.06); }

@@ -1,5 +1,6 @@
 @extends('home')
 @section('contenido')
+<link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -201,43 +202,6 @@
     font-size: 0.9em;
 }
 
-.modal-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-}
-
-.modal-overlay.active {
-    display: flex;
-}
-
-.modal-content {
-    background: white;
-    border-radius: 8px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 85vh;
-    overflow-y: auto;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.3);
-}
-
-.modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 20px;
-    border-radius: 8px 8px 0 0;
-}
-
-.modal-body {
-    padding: 20px;
-}
 
 .form-group {
     margin-bottom: 15px;

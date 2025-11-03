@@ -20,7 +20,9 @@
                         @endisset
                     </select>
                     <div style="margin-top:6px;">
-                        <a href="{{ route('tipos.index') }}" class="btn btn-secondary2" onclick="abrirModalTipos('{{ route('tipos.index') }}'); return false;">Editar tipos</a>
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="abrirModalTipos('{{ route('tipos.index') }}')" title="Editar tipos" aria-label="Editar tipos">
+                          <img src="{{ asset('img/pencil.png') }}" alt="Editar tipos" style="width:16px;height:16px;" />
+                        </button>
                     </div>
                 </div>
 
@@ -36,7 +38,9 @@
                     </select>
                     @error('ID_libro') <small class="text-danger">{{ $message }}</small> @enderror
                     <div style="margin-top:6px;">
-                        <a href="{{ route('libros.index') }}" class="btn btn-secondary2">Editar libros</a>
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="window.location='{{ route('libros.index') }}'" title="Editar libros" aria-label="Editar libros">
+                          <img src="{{ asset('img/pencil.png') }}" alt="Editar libros" style="width:16px;height:16px;" />
+                        </button>
                     </div>
                 </div>
                 
@@ -51,7 +55,9 @@
                         @endisset
                     </select>
                     <div style="margin-top:6px;">
-                        <a href="{{ route('temas.index') }}" class="btn btn-secondary2">Editar temas</a>
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="window.location='{{ route('temas.index') }}'" title="Editar temas" aria-label="Editar temas">
+                          <img src="{{ asset('img/pencil.png') }}" alt="Editar temas" style="width:16px;height:16px;" />
+                        </button>
                     </div>
                 </div>
             </div>
@@ -88,7 +94,9 @@
                         @endisset
                     </select>
                     <div style="margin-top:6px;">
-                        <a href="{{ route('origenes.index') }}" class="btn btn-secondary2">Editar orígenes</a>
+                        <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="window.location='{{ route('origenes.index') }}'" title="Editar orígenes" aria-label="Editar orígenes">
+                          <img src="{{ asset('img/pencil.png') }}" alt="Editar orígenes" style="width:16px;height:16px;" />
+                        </button>
                     </div>
                 </div>
 

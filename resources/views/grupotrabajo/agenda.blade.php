@@ -2,6 +2,7 @@
 
 @section('contenido')
 
+<link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -840,51 +841,13 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <!-- Modal Overlay para Editar Grupo de Trabajo (iframe) -->
-<style>
-.modal-overlay-iframe {
-    display: none;
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 1000;
-    align-items: center;
-    justify-content: center;
-    padding: 16px;
-}
-.modal-overlay-iframe.active { display: flex; }
-.modal-content-iframe {
-    background: white;
-    border-radius: 8px;
-    width: min(95vw, 900px);
-    max-height: 90vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-}
-.modal-header-iframe {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 16px;
-    border-bottom: 1px solid #e5e7eb;
-    background: #2889a7;
-    color: white;
-}
-.modal-header-iframe h3 { margin: 0; font-size: 1rem; }
-.close-modal-btn { border: none; background: transparent; font-size: 1.25rem; cursor: pointer; color: #fff; opacity: 0.85; }
-.close-modal-btn:hover { opacity: 1; }
-.modal-body-iframe { padding: 0; }
-.modal-body-iframe iframe { width: 100%; height: 70vh; border: none; display: block; }
-</style>
-
-<div id="modal-overlay-edit-grupo" class="modal-overlay-iframe" onclick="cerrarModalEditOverlayClick(event)">
-    <div class="modal-content-iframe" onclick="event.stopPropagation()">
-        <div class="modal-header-iframe">
+<div id="modal-overlay-edit-grupo" class="modal-overlay" onclick="cerrarModalEditOverlayClick(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
             <h3>Editar Grupo de Trabajo</h3>
             <button type="button" class="close-modal-btn" onclick="cerrarModalEdit()">×</button>
         </div>
-        <div class="modal-body-iframe">
+        <div class="modal-body">
             <iframe id="modal-iframe-edit-grupo" src="about:blank" title="Editar grupo"></iframe>
         </div>
     </div>

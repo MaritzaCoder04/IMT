@@ -260,21 +260,11 @@
                 </div>
             </div>
 
-    <style>
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; }
-        .modal-overlay.active { display:flex; }
-        .modal-window { background:#fff; width:95%; max-width:1000px; height:85vh; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.3); display:flex; flex-direction:column; overflow:hidden; }
-        .modal-header { background:#2889a7; color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
-        .modal-header h3 { margin:0; font-size:1em; }
-        .modal-close { background:transparent; border:none; color:#fff; font-size:1.3em; cursor:pointer; }
-        .modal-body { flex:1; }
-        .modal-body iframe { width:100%; height:100%; border:0; }
-    </style>
-    <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
-        <div class="modal-window" role="dialog" aria-modal="true">
+    <div id="modalOverlay" class="modal-overlay" aria-hidden="true" onclick="if(event && event.target && event.target.id==='modalOverlay'){ cerrarModal(); }">
+        <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3>Acción</h3>
-                <button class="modal-close" onclick="cerrarModal()" aria-label="Cerrar">×</button>
+                <button class="close-modal-btn" onclick="cerrarModal()" aria-label="Cerrar">×</button>
             </div>
             <div class="modal-body">
                 <iframe id="modalIframe" src="about:blank"></iframe>
