@@ -612,10 +612,10 @@
             <div class="modal-actions">
                 <button type="button" class="btn btn-secondary" onclick="cerrarModalDetalleBtn()">Cerrar</button>
                 <button type="button" class="btn btn-primary" onclick="editarReunion()" style="background: #ff9800;">
-                    ✏️ Editar
+                    Editar
                 </button>
                 <button type="button" class="btn" onclick="eliminarReunion()" style="background: #f44336; color: white;">
-                    🗑️ Eliminar
+                    Eliminar
                 </button>
             </div>
         </div>
@@ -688,12 +688,12 @@ function verDetalleReunion(datos) {
     document.getElementById('detalle-fecha').textContent = datos.fecha;
     
     if (datos.programada) {
-        estadoDiv.innerHTML = '<span style="color: #4caf50; font-weight: 600;">✅ Reunión Programada</span>';
+        estadoDiv.innerHTML = '<span style="color: #4caf50; font-weight: 600;">Reunión Programada</span>';
         estadoDiv.style.background = '#e8f5e9';
         estadoDiv.style.borderLeft = '3px solid #4caf50';
         motivoLabel.textContent = '¿Por qué fue agregada?';
     } else {
-        estadoDiv.innerHTML = '<span style="color: #ff9800; font-weight: 600;">⚠️ Fuera de Programación</span>';
+        estadoDiv.innerHTML = '<span style="color: #ff9800; font-weight: 600;">Fuera de Programación</span>';
         estadoDiv.style.background = '#fff3e0';
         estadoDiv.style.borderLeft = '3px solid #ff9800';
         motivoLabel.textContent = '¿Por qué fue fuera de programación?';
