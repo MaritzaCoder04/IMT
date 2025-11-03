@@ -7,12 +7,6 @@
         <h2 style="color: #1e40af; font-weight: 600; font-size: 1.75rem; margin-bottom: 0.5rem;">
             Editar Grupo de Trabajo
         </h2>
-        <a href="{{ route('grupotrabajo.index') }}" 
-           style="display: inline-flex; align-items: center; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;"
-           onmouseover="this.style.color='#1e40af'" 
-           onmouseout="this.style.color='#64748b'">
-            ← Volver a grupos de trabajo
-        </a>
     </div>
 
     <!-- Formulario -->
@@ -20,6 +14,9 @@
           style="background: white; border: 1px solid #e0e7ff; border-radius: 8px; padding: 2rem;">
         @csrf
         @method('PUT')
+        @if(request('modal'))
+        <input type="hidden" name="modal" value="1">
+        @endif
 
         <!-- Nombre del grupo -->
         <div style="margin-bottom: 1.5rem;">
@@ -144,12 +141,22 @@
 
         <!-- Botón guardar -->
         <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+            @if(request('modal'))
+            <a href="#" 
+               onclick="try{window.parent && window.parent.postMessage({ type: 'modal-close' }, '*');}catch(e){} return false;"
+               style="padding: 0.625rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block;"
+               onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#94a3b8'" 
+               onmouseout="this.style.background='white'; this.style.borderColor='#cbd5e1'">
+                Cancelar
+            </a>
+            @else
             <a href="{{ route('grupotrabajo.index') }}" 
                style="padding: 0.625rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block;"
                onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#94a3b8'" 
                onmouseout="this.style.background='white'; this.style.borderColor='#cbd5e1'">
                 Cancelar
             </a>
+            @endif
             <button type="submit" 
                     style="background: #3b82f6; color: white; padding: 0.625rem 1.5rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
                     onmouseover="this.style.background='#2563eb'" 

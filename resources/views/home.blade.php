@@ -24,6 +24,14 @@
       <link rel="stylesheet" href="{{ asset('/css/estiloformularios.css') }}">
     {{-- Estilos IMT Fin --}}
 
+    @if(request()->has('modal'))
+    <style>
+      /* Ocultar elementos de layout dentro de iframes modal */
+      header.responsive-header, nav.sidebar, footer, .header-icon, .space-title { display: none !important; }
+      body { margin: 0 !important; padding: 0 !important; background: transparent; }
+      main.contenido { width: 100% !important; margin: 0 !important; padding: 0 !important; min-height: auto !important; }
+    </style>
+    @endif
         
 
 </head>

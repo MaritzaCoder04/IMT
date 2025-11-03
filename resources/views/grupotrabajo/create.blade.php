@@ -3,11 +3,10 @@
 @section('contenido')
 
 <div class="all-form">
-    <div class="form-container">
-        <div class="section-title">Nuevo Grupo de Trabajo</div>
         
         <form action="{{ route('grupotrabajo.store') }}" method="POST">
             @csrf
+            <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             
             <div class="form-group">
                 <label for="nombre">Nombre del Grupo</label>
@@ -57,7 +56,7 @@
 
             <div class="actions">
                 <button type="submit" class="btn btn-secondary">Guardar</button>
-                <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('grupotrabajo.index') }}'">Cancelar</button>
+                <button type="button" class="btn btn-secondary2" onclick="(function(){var p=new URLSearchParams(location.search); var isModal=p.get('modal')==='1' || window.top!==window.self; if(isModal){ try{ window.parent && window.parent.postMessage({ type:'modal-close', saved:false }, '*'); }catch(e){} } else { window.location='{{ route('grupotrabajo.index') }}'; } })()">Cancelar</button>
             </div>
         </form>
     </div>
@@ -66,9 +65,8 @@
 <script>
 function actualizarEtiquetas() {
     const select = document.getElementById('nombre');
-    const selectedValue = select.value;
+    const selectedValue = select ? select.value : '';
     
-    // Grupos fijos que manejan documentos
     const gruposFijos = [
         'Anteproyecto Preliminar',
         'Anteproyecto Final', 
@@ -78,30 +76,28 @@ function actualizarEtiquetas() {
     
     const esGrupoFijo = gruposFijos.includes(selectedValue);
     
+    const setText = (id, text) => { const el = document.getElementById(id); if (el) el.textContent = text; };
+    
     if (esGrupoFijo) {
-        // Cambiar etiquetas para documentos
-        document.getElementById('label_meta_anual').textContent = 'Meta Anual de Documentos';
-        document.getElementById('help_meta_anual').textContent = 'Número de documentos que se planea terminar en el año';
-        document.getElementById('titulo_metas_bimestrales').textContent = 'Metas Bimestrales de Documentos';
-        
-        document.getElementById('label_bimestre_1').textContent = 'Documentos Bimestre 1 (Ene-Feb)';
-        document.getElementById('label_bimestre_2').textContent = 'Documentos Bimestre 2 (Mar-Abr)';
-        document.getElementById('label_bimestre_3').textContent = 'Documentos Bimestre 3 (May-Jun)';
-        document.getElementById('label_bimestre_4').textContent = 'Documentos Bimestre 4 (Jul-Ago)';
-        document.getElementById('label_bimestre_5').textContent = 'Documentos Bimestre 5 (Sep-Oct)';
-        document.getElementById('label_bimestre_6').textContent = 'Documentos Bimestre 6 (Nov-Dic)';
+        setText('label_meta_anual', 'Meta Anual de Documentos');
+        setText('help_meta_anual', 'Número de documentos que se planea terminar en el año');
+        setText('titulo_metas_bimestrales', 'Metas Bimestrales de Documentos');
+        setText('label_bimestre_1', 'Documentos Bimestre 1 (Ene-Feb)');
+        setText('label_bimestre_2', 'Documentos Bimestre 2 (Mar-Abr)');
+        setText('label_bimestre_3', 'Documentos Bimestre 3 (May-Jun)');
+        setText('label_bimestre_4', 'Documentos Bimestre 4 (Jul-Ago)');
+        setText('label_bimestre_5', 'Documentos Bimestre 5 (Sep-Oct)');
+        setText('label_bimestre_6', 'Documentos Bimestre 6 (Nov-Dic)');
     } else {
-        // Etiquetas por defecto para reuniones
-        document.getElementById('label_meta_anual').textContent = 'Meta Anual';
-        document.getElementById('help_meta_anual').textContent = '';
-        document.getElementById('titulo_metas_bimestrales').textContent = 'Metas Bimestrales';
-        
-        document.getElementById('label_bimestre_1').textContent = 'Bimestre 1 (Ene-Feb)';
-        document.getElementById('label_bimestre_2').textContent = 'Bimestre 2 (Mar-Abr)';
-        document.getElementById('label_bimestre_3').textContent = 'Bimestre 3 (May-Jun)';
-        document.getElementById('label_bimestre_4').textContent = 'Bimestre 4 (Jul-Ago)';
-        document.getElementById('label_bimestre_5').textContent = 'Bimestre 5 (Sep-Oct)';
-        document.getElementById('label_bimestre_6').textContent = 'Bimestre 6 (Nov-Dic)';
+        setText('label_meta_anual', 'Meta Anual');
+        setText('help_meta_anual', '');
+        setText('titulo_metas_bimestrales', 'Metas Bimestrales');
+        setText('label_bimestre_1', 'Bimestre 1 (Ene-Feb)');
+        setText('label_bimestre_2', 'Bimestre 2 (Mar-Abr)');
+        setText('label_bimestre_3', 'Bimestre 3 (May-Jun)');
+        setText('label_bimestre_4', 'Bimestre 4 (Jul-Ago)');
+        setText('label_bimestre_5', 'Bimestre 5 (Sep-Oct)');
+        setText('label_bimestre_6', 'Bimestre 6 (Nov-Dic)');
     }
 }
 // Calcular meta anual automáticamente a partir de metas bimestrales

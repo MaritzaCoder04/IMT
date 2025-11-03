@@ -61,6 +61,10 @@ class EtapaController extends Controller
         
         $etapas->save();
         
-        return redirect()->route('controldeavances')->with('success');
+        $target = route('controldeavances');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1')->with('success');
+        }
+        return redirect()->to($target)->with('success');
     }
 }

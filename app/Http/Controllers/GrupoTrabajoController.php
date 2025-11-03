@@ -104,7 +104,11 @@ class GrupoTrabajoController extends Controller
 
         GrupoTrabajo::create($validated);
 
-        return redirect()->route('grupotrabajo.index')->with('success');
+        $target = route('grupotrabajo.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1')->with('success');
+        }
+        return redirect()->to($target)->with('success');
     }
 
     // Vista 3: Agenda/Calendario
@@ -934,7 +938,11 @@ class GrupoTrabajoController extends Controller
 
         $grupo->update($validated);
 
-        return redirect()->route('grupotrabajo.index')->with('success');
+        $target = route('grupotrabajo.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1')->with('success');
+        }
+        return redirect()->to($target)->with('success');
     }
 
     public function destroy($id)

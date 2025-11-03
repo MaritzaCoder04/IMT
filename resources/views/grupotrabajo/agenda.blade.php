@@ -430,7 +430,7 @@
                     <button type="button" class="btn btn-ejemplo" onclick="abrirModal({{ $grupo->id }})">
                         Nueva Reunión
                     </button>
-                    <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'" 
+                    <button type="button" class="btn btn-ejemplo" onclick="abrirModalEditUrl('{{ route('grupotrabajo.edit', $grupo->id) }}')" 
                             style="padding: 7px 12px;" title="Editar grupo">
                         <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo" style="width:16px;height:16px;" />
                     </button>
@@ -836,6 +836,84 @@ document.addEventListener('DOMContentLoaded', function() {
         yearInput.addEventListener('change', submitWithParams);
         yearInput.addEventListener('keydown', function(ev){ if (ev.key === 'Enter') { ev.preventDefault(); submitWithParams(); } });
     }
+});
+</script>
+
+<!-- Modal Overlay para Editar Grupo de Trabajo (iframe) -->
+<style>
+.modal-overlay-iframe {
+    display: none;
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+}
+.modal-overlay-iframe.active { display: flex; }
+.modal-content-iframe {
+    background: white;
+    border-radius: 8px;
+    width: min(95vw, 900px);
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+}
+.modal-header-iframe {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+    background: #2889a7;
+    color: white;
+}
+.modal-header-iframe h3 { margin: 0; font-size: 1rem; }
+.close-modal-btn { border: none; background: transparent; font-size: 1.25rem; cursor: pointer; color: #fff; opacity: 0.85; }
+.close-modal-btn:hover { opacity: 1; }
+.modal-body-iframe { padding: 0; }
+.modal-body-iframe iframe { width: 100%; height: 70vh; border: none; display: block; }
+</style>
+
+<div id="modal-overlay-edit-grupo" class="modal-overlay-iframe" onclick="cerrarModalEditOverlayClick(event)">
+    <div class="modal-content-iframe" onclick="event.stopPropagation()">
+        <div class="modal-header-iframe">
+            <h3>Editar Grupo de Trabajo</h3>
+            <button type="button" class="close-modal-btn" onclick="cerrarModalEdit()">×</button>
+        </div>
+        <div class="modal-body-iframe">
+            <iframe id="modal-iframe-edit-grupo" src="about:blank" title="Editar grupo"></iframe>
+        </div>
+    </div>
+    </div>
+
+<script>
+function abrirModalEditUrl(url){
+  try{
+    const iframe = document.getElementById('modal-iframe-edit-grupo');
+    iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    document.getElementById('modal-overlay-edit-grupo').classList.add('active');
+  }catch(e){}
+}
+function cerrarModalEdit(){
+  try{
+    const overlay = document.getElementById('modal-overlay-edit-grupo');
+    const iframe = document.getElementById('modal-iframe-edit-grupo');
+    overlay.classList.remove('active');
+    iframe.src = 'about:blank';
+  }catch(e){}
+}
+function cerrarModalEditOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-edit-grupo'){ cerrarModalEdit(); } }
+// Escuchar mensajes desde el iframe para cerrar y recargar
+window.addEventListener('message', function(ev){
+  const d = ev && ev.data ? ev.data : {};
+  if(d.type === 'modal-close' || d.type === 'close-modal'){
+    cerrarModalEdit();
+    if (d.reload || d.saved) { window.location.reload(); }
+  }
 });
 </script>
 

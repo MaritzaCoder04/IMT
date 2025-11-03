@@ -7,12 +7,19 @@
         <h2 style="color: #1e40af; font-weight: 600; font-size: 1.75rem; margin-bottom: 0.5rem;">
             Tipos de Grupo de Trabajo
         </h2>
-        <a href="{{ route('grupotrabajo.index') }}" 
-           style="display: inline-flex; align-items: center; color: #64748b; text-decoration: none; font-size: 0.875rem; transition: color 0.2s;"
-           onmouseover="this.style.color='#1e40af'" 
-           onmouseout="this.style.color='#64748b'">
-            ← Volver a Grupos de trabajo
-        </a>
+        @if(request('modal'))
+        <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          try {
+            var params = new URLSearchParams(window.location.search);
+            var isIframe = window.top !== window.self;
+            if (isIframe && params.get('saved') === '1') {
+              window.parent && window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
+            }
+          } catch(e) {}
+        });
+        </script>
+        @endif
     </div>
 
     <!-- Formulario Agregar -->
@@ -22,6 +29,9 @@
         </h4>
         <form method="POST" action="{{ route('grupos.store') }}" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
             @csrf
+            @if(request('modal'))
+            <input type="hidden" name="modal" value="1">
+            @endif
             <input type="text" 
                    name="nombre" 
                    placeholder="Nombre" 
@@ -116,6 +126,9 @@
                                 <form id="form-update-{{ $g->id }}" method="POST" action="{{ route('grupos.update', $g->id) }}" style="display:inline;">
                                     @csrf
                                     @method('PUT')
+                                    @if(request('modal'))
+                                    <input type="hidden" name="modal" value="1">
+                                    @endif
                                     <button type="submit" 
                                             style="background: #3b82f6; color: white; padding: 0.375rem 0.875rem; border: none; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
                                             onmouseover="this.style.background='#2563eb'" 
@@ -126,6 +139,9 @@
                                 <form method="POST" action="{{ route('grupos.destroy', $g->id) }}" style="display:inline;">
                                     @csrf
                                     @method('DELETE')
+                                    @if(request('modal'))
+                                    <input type="hidden" name="modal" value="1">
+                                    @endif
                                     <button type="submit" 
                                             onclick="return confirm('¿Eliminar este tipo?')" 
                                             style="background: white; color: #dc2626; padding: 0.375rem 0.875rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"

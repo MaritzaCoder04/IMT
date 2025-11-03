@@ -21,7 +21,11 @@ class TipoController extends Controller
         ]);
 
         Tipo::create($validated);
-        return redirect()->route('tipos.index');
+        $target = route('tipos.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function update(Request $request, $id)

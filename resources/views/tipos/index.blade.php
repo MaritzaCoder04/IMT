@@ -13,6 +13,19 @@
            onmouseout="this.style.color='#64748b'">
             ← Volver al formulario
         </a>
+        @if(request('modal'))
+        <script>
+        document.addEventListener('DOMContentLoaded', function(){
+          try {
+            var params = new URLSearchParams(window.location.search);
+            var isIframe = window.top !== window.self;
+            if (isIframe && params.get('saved') === '1') {
+              window.parent && window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
+            }
+          } catch(e) {}
+        });
+        </script>
+        @endif
     </div>
 
     <!-- Formulario Agregar -->
@@ -22,6 +35,7 @@
         </h4>
         <form method="POST" action="{{ route('tipos.store') }}" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
             @csrf
+            <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             <input type="text" 
                    name="desc" 
                    placeholder="Descripción" 

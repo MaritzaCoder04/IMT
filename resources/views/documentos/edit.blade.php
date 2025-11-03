@@ -8,6 +8,7 @@
         <form action="{{ route('documentos.update', $documento->ID_doc) }}" method="POST">
             @csrf
             @method('PUT')
+            <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             
             <div class="form-group">
                 <label for="tipoDocumento">Manual/Norma</label>
@@ -60,7 +61,7 @@
 
             <div class="actions">
                 <button type="submit" class="btn btn-secondary">Guardar Cambios</button>
-                <button type="button" class="btn btn-secondary2" onclick="window.location='{{ route('controldeavances') }}'">Cancelar</button>
+                <button type="button" class="btn btn-secondary2" onclick="(function(){var p=new URLSearchParams(location.search); if(p.get('modal')==='1'){ window.parent && window.parent.postMessage({type:'modal-close'}, '*'); } else { window.location='{{ route('controldeavances') }}'; } })()">Cancelar</button>
             </div>
         </form>
     </div>

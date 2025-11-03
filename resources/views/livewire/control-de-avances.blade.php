@@ -123,7 +123,7 @@
                                                 <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
                                             </div>
                                         </div>
-                                            <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('formulario') }}'"> Agregar Nuevo Manual/Norma </button>
+                                            <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('formulario') }}')"> Agregar Nuevo Manual/Norma </button>
                                         
                                     </div>
                                 </div> 
@@ -235,10 +235,10 @@
                                 </td>
                                 <td>
                                     <div class="table-actions">
-                    <button type="button" class="btn-icon" title="Ver etapas" onclick="window.location='{{ route('documentos.etapas', $documento->ID_doc) }}'">
+                    <button type="button" class="btn-icon" title="Ver etapas" onclick="abrirModalUrl('{{ route('documentos.etapas', $documento->ID_doc) }}')">
                         <img src="{{ asset('img/notebook.png') }}" alt="Ver etapas">
                     </button>
-                    <button type="button" class="btn-icon" title="Editar documento" onclick="window.location='{{ route('documentos.edit', $documento->ID_doc) }}'">
+                    <button type="button" class="btn-icon" title="Editar documento" onclick="abrirModalUrl('{{ route('documentos.edit', $documento->ID_doc) }}')">
                         <img src="{{ asset('img/pencil.png') }}" alt="Editar documento">
                     </button>
                     <button type="button" class="btn-icon" title="Eliminar documento" wire:click="eliminar({{ $documento->ID_doc }})" onclick="return confirm('¿Estás seguro de que deseas eliminar este documento?')">
@@ -259,4 +259,55 @@
                     </table>
                 </div>
             </div>
+
+    <style>
+        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.6); z-index:1000; align-items:center; justify-content:center; }
+        .modal-overlay.active { display:flex; }
+        .modal-window { background:#fff; width:95%; max-width:1000px; height:85vh; border-radius:8px; box-shadow:0 5px 20px rgba(0,0,0,0.3); display:flex; flex-direction:column; overflow:hidden; }
+        .modal-header { background:#2889a7; color:#fff; padding:10px 14px; display:flex; justify-content:space-between; align-items:center; }
+        .modal-header h3 { margin:0; font-size:1em; }
+        .modal-close { background:transparent; border:none; color:#fff; font-size:1.3em; cursor:pointer; }
+        .modal-body { flex:1; }
+        .modal-body iframe { width:100%; height:100%; border:0; }
+    </style>
+    <div id="modalOverlay" class="modal-overlay" aria-hidden="true">
+        <div class="modal-window" role="dialog" aria-modal="true">
+            <div class="modal-header">
+                <h3>Acción</h3>
+                <button class="modal-close" onclick="cerrarModal()" aria-label="Cerrar">×</button>
+            </div>
+            <div class="modal-body">
+                <iframe id="modalIframe" src="about:blank"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function abrirModalUrl(url) {
+            const overlay = document.getElementById('modalOverlay');
+            const iframe = document.getElementById('modalIframe');
+            const sep = url.includes('?') ? '&' : '?';
+            iframe.src = url + sep + 'modal=1';
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        function cerrarModal() {
+            const overlay = document.getElementById('modalOverlay');
+            const iframe = document.getElementById('modalIframe');
+            overlay.classList.remove('active');
+            iframe.src = 'about:blank';
+            document.body.style.overflow = '';
+        }
+        window.addEventListener('message', function(e){
+            try {
+                const data = e.data || {};
+                if (data && data.type === 'modal-close') {
+                    cerrarModal();
+                    window.location.reload();
+                }
+            } catch(err) {}
+        });
+        window.addEventListener('keydown', function(e){ if(e.key==='Escape'){ cerrarModal(); } });
+    </script>
+
 </div>

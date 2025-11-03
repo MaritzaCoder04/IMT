@@ -74,7 +74,11 @@ class GrupoController extends Controller
             return redirect()->route('grupos.index')->with('error', 'Error al crear el tipo de grupo: ' . $e->getMessage());
         }
 
-        return redirect()->route('grupos.index')->with('success');
+        $target = route('grupos.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target)->with('success');
     }
 
     public function update(Request $request, $id)
@@ -100,10 +104,14 @@ class GrupoController extends Controller
             return redirect()->route('grupos.index')->with('error', 'Error al actualizar: ' . $e->getMessage());
         }
 
-        return redirect()->route('grupos.index')->with('success');
+        $target = route('grupos.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target)->with('success');
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         if (!Schema::hasTable('grupos')) {
             return redirect()->route('grupos.index')->with('error', 'No se puede eliminar: la tabla "grupos" no existe.');
@@ -115,6 +123,10 @@ class GrupoController extends Controller
         } catch (\Throwable $e) {
             return redirect()->route('grupos.index')->with('error', 'Error al eliminar: ' . $e->getMessage());
         }
-        return redirect()->route('grupos.index')->with('success');
+        $target = route('grupos.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target)->with('success');
     }
 }

@@ -131,7 +131,11 @@ class FormularioController extends Controller
         // No bloquear el flujo si documentoinfo falla; se puede corregir después
     }
 
-    return redirect()->route('controldeavances')->with('success');
+    $target = route('controldeavances');
+    if ($request->boolean('modal')) {
+        return redirect()->to($target.'?modal=1&saved=1')->with('success');
+    }
+    return redirect()->to($target)->with('success');
     }
 
     // Extrae número y descripción de una cadena "NN. Texto" o "NN Texto"

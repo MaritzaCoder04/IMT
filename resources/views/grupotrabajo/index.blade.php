@@ -2,6 +2,7 @@
 
 @section('contenido')
 
+<link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 @if(session('success'))
     <div class="alert alert-success">
         {{ session('success') }}
@@ -283,10 +284,10 @@
                 <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
                 <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
             </div>
-            <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.create') }}'">
-                    Agregar Grupo
-                </button>
-            <a href="{{ route('grupos.index') }}" class="btn btn-ejemplo" style="margin-left:8px;">i</a>
+            <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
+                Agregar Grupo
+            </button>
+            <a href="{{ route('grupos.index') }}" class="btn btn-ejemplo" style="margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}'); return false;">Tipos de Grupo</a>
         </form>
 
         <div class="docs-table-wrapper3">
@@ -340,7 +341,7 @@
                         <td>
                             <div class="table-actions">
                                 <button type="button" class="btn-icon" 
-                                        onclick="window.location='{{ route('grupotrabajo.edit', $grupo->id) }}'"
+                                        onclick="abrirModalUrl('{{ route('grupotrabajo.edit', $grupo->id) }}')"
                                         title="Editar grupo">
                                     <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo">
                                 </button>
@@ -415,6 +416,85 @@
             });
           }
         });
+        </script>
+        
+        <!-- Modal Overlay para Crear Grupo -->
+        <div id="modal-overlay-gt" class="modal-overlay" onclick="cerrarModalGTOverlayClick(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>Nuevo Grupo de Trabajo</h3>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">×</button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="modal-iframe-gt" src="about:blank" title="Crear grupo"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Overlay para Tipos de Grupo de Trabajo -->
+        <div id="modal-overlay-grupos" class="modal-overlay" onclick="cerrarModalGruposOverlayClick(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3>Tipos de Grupo de Trabajo</h3>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGrupos()">×</button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="modal-iframe-grupos" src="about:blank" title="Tipos de grupo"></iframe>
+                </div>
+            </div>
+        </div>
+        
+        <script>
+        function abrirModalUrl(url){
+          try{
+            const iframe = document.getElementById('modal-iframe-gt');
+            iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            document.getElementById('modal-overlay-gt').classList.add('active');
+          }catch(e){}
+        }
+        function cerrarModalGT(){
+          try{
+            const overlay = document.getElementById('modal-overlay-gt');
+            const iframe = document.getElementById('modal-iframe-gt');
+            overlay.classList.remove('active');
+            iframe.src = 'about:blank';
+          }catch(e){}
+        }
+        function cerrarModalGTOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-gt'){ cerrarModalGT(); } }
+        function abrirModalGrupos(url){
+          try{
+            const iframe = document.getElementById('modal-iframe-grupos');
+            iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            document.getElementById('modal-overlay-grupos').classList.add('active');
+          }catch(e){}
+        }
+        function cerrarModalGrupos(){
+          try{
+            const overlay = document.getElementById('modal-overlay-grupos');
+            const iframe = document.getElementById('modal-iframe-grupos');
+            overlay.classList.remove('active');
+            iframe.src = 'about:blank';
+          }catch(e){}
+        }
+        function cerrarModalGruposOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-grupos'){ cerrarModalGrupos(); } }
+        window.addEventListener('message', function(ev){
+          const d = ev && ev.data ? ev.data : {};
+          if(d.type === 'modal-close' || d.type === 'close-modal'){
+            cerrarModalGT();
+            cerrarModalGrupos();
+            if (d.reload || d.saved) { window.location.reload(); }
+          }
+        });
+        // Autocierre cuando index se carga dentro de iframe con saved=1
+        (function(){
+          try {
+            const params = new URLSearchParams(window.location.search);
+            const isIframe = window.top !== window.self;
+            if (isIframe && params.get('modal') === '1' && params.get('saved') === '1') {
+              window.parent && window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
+            }
+          } catch (e) {}
+        })();
         </script>
     </div>
 </div>
