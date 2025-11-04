@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\GrupoTrabajoReporte;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class GrupoTrabajoController extends Controller
 {
@@ -17,6 +18,8 @@ class GrupoTrabajoController extends Controller
     public function index()
     {
         $grupos = GrupoTrabajo::with('reuniones')->get();
+        // Año seleccionado para calcular documentos terminados (por defecto, año actual)
+        $anioSeleccionado = request()->get('anio', (int)date('Y'));
 
         // Precalcular estadísticas por grupo para evitar lógica en la vista
         $statsByGroup = [];
@@ -34,14 +37,81 @@ class GrupoTrabajoController extends Controller
                 6 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [11,12]))->count(),
             ];
 
+            // Calcular documentos terminados por bimestre y total anual en función del nombre del grupo
+            $terminadosPorBimestre = null;
+            $terminadosTotal = null;
+
+            $campoEtapa = $this->campoEtapaPorNombre($grupo->nombre);
+            if ($campoEtapa) {
+                $terminadosPorBimestre = [];
+                for ($i = 1; $i <= 6; $i++) {
+                    $mesInicio = ($i - 1) * 2 + 1;
+                    $mesFin = $mesInicio + 1;
+
+                    $count = DB::table('etapas')
+                        ->whereNotNull($campoEtapa)
+                        ->whereRaw("MONTH(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) >= ?", [$mesInicio])
+                        ->whereRaw("MONTH(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) <= ?", [$mesFin])
+                        ->whereRaw("YEAR(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                        ->count();
+
+                    $terminadosPorBimestre[$i] = $count;
+                }
+
+                $terminadosTotal = DB::table('etapas')
+                    ->whereNotNull($campoEtapa)
+                    ->whereRaw("YEAR(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                    ->count();
+            }
+
             $statsByGroup[$grupo->id] = [
                 'total_realizadas' => $totalRealizadas,
                 'progreso' => $progreso,
                 'reuniones_por_bimestre' => $reunionesPorBimestre,
+                'terminados_por_bimestre' => $terminadosPorBimestre,
+                'terminados_total' => $terminadosTotal,
             ];
         }
 
         return view('grupotrabajo.index', compact('grupos', 'statsByGroup'));
+    }
+
+    /**
+     * Detecta el campo de fecha en tabla `etapas` según el nombre del grupo.
+     * Mapea APT/AFT/PPT/NP por acrónimo o texto normalizado.
+     */
+    private function campoEtapaPorNombre(string $nombre): ?string
+    {
+        $n = Str::ascii($nombre);
+        $n = Str::lower($n);
+        $n = preg_replace('/[^a-z0-9]/', '', $n);
+
+        // APT - Anteproyecto Preliminar
+        if (strpos($n, 'apt') !== false || strpos($n, 'anteproyectopreliminar') !== false) {
+            return '3a';
+        }
+        // AFT - Anteproyecto Final
+        if (strpos($n, 'aft') !== false || strpos($n, 'anteproyectofinal') !== false) {
+            return '3b';
+        }
+        // PPT - Proyecto Preliminar
+        if (strpos($n, 'ppt') !== false || strpos($n, 'proyectopreliminar') !== false) {
+            return '3c';
+        }
+        // NP - Publicación de Manuales/Normas (Normas/Manuales/Publicación)
+        if (
+            strpos($n, 'np') !== false ||
+            strpos($n, 'normas') !== false ||
+            strpos($n, 'manuales') !== false ||
+            strpos($n, 'publicacion') !== false ||
+            strpos($n, 'publicaciondemanualesnormas') !== false ||
+            strpos($n, 'publicaciondenormas') !== false ||
+            strpos($n, 'publicaciondemanuales') !== false
+        ) {
+            return '3e';
+        }
+
+        return null;
     }
 
     // Vista 2: Formulario para crear grupo

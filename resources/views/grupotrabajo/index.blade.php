@@ -311,10 +311,17 @@
                 <tbody>
                     @forelse($grupos as $grupo)
                     @php
-                        $stats = $statsByGroup[$grupo->id] ?? ['total_realizadas' => 0, 'progreso' => 0, 'reuniones_por_bimestre' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0]];
+                        $stats = $statsByGroup[$grupo->id] ?? [
+                            'total_realizadas' => 0,
+                            'progreso' => 0,
+                            'reuniones_por_bimestre' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0],
+                            'terminados_por_bimestre' => null,
+                            'terminados_total' => null,
+                        ];
                         $totalRealizadas = $stats['total_realizadas'];
                         $progreso = $stats['progreso'];
                         $reunionesPorBimestre = $stats['reuniones_por_bimestre'];
+                        $terminadosPorBimestre = $stats['terminados_por_bimestre'] ?? null;
                     @endphp
                     <tr>
                         <td><strong>{{ $grupo->nombre }}</strong></td>
@@ -327,16 +334,31 @@
                                 $statusClass = $realizadas >= $meta ? 'status-ok' : ($realizadas > 0 ? 'status-warning' : 'status-danger');
                             @endphp
                             <td class="bimestre-cell">
-                                <span class="reunion-count {{ $statusClass }}" title="Meta: {{ $meta }} | Realizadas: {{ $realizadas }}">
-                                    {{ $realizadas }}/{{ $meta }}
+                                @php
+                                    // Si hay datos de terminados para este grupo, mostrar terminados/meta;
+                                    // de lo contrario, mostrar realizadas/meta.
+                                    $terminadosCount = is_array($terminadosPorBimestre ?? null) ? ($terminadosPorBimestre[$i] ?? null) : null;
+                                    $usarTerminados = !is_null($terminadosCount);
+                                    $valorMostrar = $usarTerminados ? $terminadosCount : ($realizadas ?? 0);
+                                    $statusClassDisplay = $valorMostrar >= $meta ? 'status-ok' : ($valorMostrar > 0 ? 'status-warning' : 'status-danger');
+                                    $tituloMetric = $usarTerminados ? 'Terminados' : 'Realizadas';
+                                @endphp
+                                <span class="reunion-count {{ $statusClassDisplay }}" title="{{ $tituloMetric }}: {{ $valorMostrar }} | Meta: {{ $meta }}">
+                                    {{ $valorMostrar }}/{{ $meta }}
                                 </span>
                             </td>
                         @endfor
                         
                         <td class="bimestre-cell">
-                            <strong>{{ $totalRealizadas }}/{{ $grupo->meta_anual }}</strong>
+                            @php
+                                $terminadosTotal = $stats['terminados_total'] ?? null;
+                                $usarTerminadosTotal = !is_null($terminadosTotal);
+                                $valorMostrarTotal = $usarTerminadosTotal ? $terminadosTotal : $totalRealizadas;
+                                $progresoDisplay = $grupo->meta_anual > 0 ? round(($valorMostrarTotal / $grupo->meta_anual) * 100) : 0;
+                            @endphp
+                            <strong>{{ $valorMostrarTotal }}/{{ $grupo->meta_anual }}</strong>
                             <div class="progress-bar" style="margin-top: 5px;">
-                                <div class="progress-fill" style="width: {{ $progreso }}%; background: {{ $progreso >= 75 ? '#4caf50' : ($progreso >= 50 ? '#ff9800' : '#f44336') }};"></div>
+                                <div class="progress-fill" style="width: {{ $progresoDisplay }}%; background: {{ $progresoDisplay >= 75 ? '#4caf50' : ($progresoDisplay >= 50 ? '#ff9800' : '#f44336') }};"></div>
                             </div>
                         </td>
                         
