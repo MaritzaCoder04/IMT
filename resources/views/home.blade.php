@@ -41,8 +41,8 @@
             $currentYear = (int)date('Y');
             $selectedYear = request()->get('anio', $currentYear);
           @endphp
-          <div class="year-switcher" style="display:flex; align-items:center; gap:8px;">
-            <input type="number" id="global-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:100px;" />
+          <div class="year-switcher" style="display:flex; align-items:center; gap:8px; width:100px;">
+            <input type="number" id="global-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:70px;" />
           </div>
         <div class="header-icon left-icon">
           <img src="{{asset("/img/Logo_blanco.png")}}" alt="Icono Izquierdo">
