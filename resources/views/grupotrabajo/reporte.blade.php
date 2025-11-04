@@ -248,21 +248,7 @@
         -->
 
         <div id="tab-crear" class="tab-content active">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
-                <div class="year-navigation">
-                    <button class="year-btn" onclick="cambiarAnio(-1)">◀</button>
-                    <span class="current-year" id="anio-actual">{{ $anioSeleccionado ?? date('Y') }}</span>
-                    <button class="year-btn" onclick="cambiarAnio(1)">▶</button>
-                </div>
-
-                <div style="display: flex; gap: 10px;">
-                    <!--<button type="button" class="btn btn-secondary" onclick="abrirModalGuardar()">
-                        💾 Guardar Reporte
-                    </button>-->
-                    <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.pdf', ['anio' => $anioSeleccionado ?? date('Y'), 'bimestre' => $bimestreSeleccionado ?? 1]) }}'">
-                        Descargar PDF
-                    </button>
-                </div>
+            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
             </div>
 
             <div class="bimestre-selector">
@@ -278,20 +264,30 @@
                     $bimestreActual = $bimestreSeleccionado ?? 1;
                 @endphp
 
-                @foreach($bimestres as $num => $nombre)
-                    @php
-                        $reporteExiste = isset($reportesGuardados[$anioSeleccionado][$num]);
-                    @endphp
-                    <button class="bimestre-btn {{ $num == $bimestreActual ? 'active' : '' }} {{ $reporteExiste ? 'completado' : '' }}" 
-                            onclick="cambiarBimestre({{ $num }})"
-                            title="{{ $reporteExiste ? 'Reporte guardado' : 'Sin guardar' }}">
-                        {{ $nombre }}
-                        @if($reporteExiste)
-                            ✓
-                        @endif
-                    </button>
-                @endforeach
+                <div class="reporte-toolbar" style="display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px; width:100%;">
+                    <div class="bimestres-left" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                        @foreach($bimestres as $num => $nombre)
+                            @php
+                                $reporteExiste = isset($reportesGuardados[$anioSeleccionado][$num]);
+                            @endphp
+                            <button class="bimestre-btn {{ $num == $bimestreActual ? 'active' : '' }} {{ $reporteExiste ? 'completado' : '' }}" 
+                                    onclick="cambiarBimestre({{ $num }})"
+                                    title="{{ $reporteExiste ? 'Reporte guardado' : 'Sin guardar' }}">
+                                {{ $nombre }}
+                                @if($reporteExiste)
+                                    ✓
+                                @endif
+                            </button>
+                        @endforeach
+                    </div>
+                    <div class="descargar-right" style="display:flex; align-items:center;">
+                        <button type="button" class="btn btn-ejemplo" onclick="window.location='{{ route('grupotrabajo.pdf', ['anio' => $anioSeleccionado ?? date('Y'), 'bimestre' => $bimestreSeleccionado ?? 1]) }}'">
+                            Descargar PDF
+                        </button>
+                    </div>
+                </div>
             </div>
+            
 
             <div class="docs-table-wrapper">
                 <table class="docs-table">

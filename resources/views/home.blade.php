@@ -37,10 +37,20 @@
 </head>
 <body> 
     <header class="responsive-header">
+       @php
+            $currentYear = (int)date('Y');
+            $selectedYear = request()->get('anio', $currentYear);
+          @endphp
+          <div class="year-switcher" style="display:flex; align-items:center; gap:8px;">
+            <input type="number" id="global-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:100px;" />
+          </div>
         <div class="header-icon left-icon">
           <img src="{{asset("/img/Logo_blanco.png")}}" alt="Icono Izquierdo">
         </div>
-        <h1 class="header-title">Gestión de avances de la CNIT</h1>
+        <div class="title-group" style="display:flex; align-items:center; gap:12px; order:2; flex:1;">
+          <h1 class="header-title" style="margin:0;">Gestión de avances de la CNIT</h1>
+         
+        </div>
         <h4 class="user-title">Nombre de usuario</h4>
         <div class="space-title">&nbsp;&nbsp;</div>
         <div class="header-icon right-icon">
@@ -201,6 +211,34 @@
 
       // Restaurar scroll al cargar
       window.addEventListener('DOMContentLoaded', function() {
+          // Selector global de año (input): aplica ?anio= en tiempo real con debounce
+          try {
+            var yearInput = document.getElementById('global-year-input');
+            if (yearInput) {
+              var debounceTimer;
+              var applyYear = function(y){
+                var url = new URL(window.location.href);
+                var params = url.searchParams;
+                if (y) { params.set('anio', y); } else { params.delete('anio'); }
+                url.search = params.toString();
+                window.location.href = url.toString();
+              };
+              yearInput.addEventListener('input', function(){
+                var y = this.value && this.value.trim ? this.value.trim() : this.value;
+                if (!y) return;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(function(){ applyYear(y); }, 400);
+              });
+              yearInput.addEventListener('keydown', function(ev){
+                if (ev.key === 'Enter') {
+                  ev.preventDefault();
+                  clearTimeout(debounceTimer);
+                  applyYear(this.value);
+                }
+              });
+            }
+          } catch (e) {}
+
           const savedPosition = sessionStorage.getItem('scrollPosition');
           if (savedPosition !== null) {
               window.scrollTo(0, parseInt(savedPosition));
