@@ -1468,25 +1468,29 @@ public function editReunion($id)
     }
 }
 
-public function updateReunion(Request $request, $id)
-{
-    try {
-        $validated = $request->validate([
-            'grupo_trabajo_id' => 'required|exists:grupos_trabajo,id',
-            'fecha' => 'required|date',
-            'programada' => 'required|boolean',
-            'motivo' => 'nullable|string',
-        ]);
+    public function updateReunion(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'grupo_trabajo_id' => 'required|exists:grupos_trabajo,id',
+                'fecha' => 'required|date',
+                'programada' => 'required|boolean',
+                'motivo' => 'nullable|string',
+            ]);
 
-        $reunion = Reunion::findOrFail($id);
-        $reunion->update($validated);
+            $reunion = Reunion::findOrFail($id);
+            $reunion->update($validated);
 
-        return redirect()->route('grupotrabajo.agenda')
-            ->with('success');
-    } catch (\Exception $e) {
-        return back()->with('error', 'Error al actualizar la reunión: ' . $e->getMessage());
+            // Modal-aware redirect: if opened in an iframe, reload parent and close
+            if ($request->boolean('modal')) {
+                $target = route('grupotrabajo.editReunion', $id);
+                return redirect()->to($target.'?modal=1&saved=1')->with('success');
+            }
+            return redirect()->route('grupotrabajo.agenda')->with('success');
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al actualizar la reunión: ' . $e->getMessage());
+        }
     }
-}
 
 public function deleteReunion($id)
 {

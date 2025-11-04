@@ -4,7 +4,7 @@
 
 <div class="all-form">
     <div class="form-container">
-        <div class="section-title">✏️ Editar Reunión</div>
+        <div class="section-title">Editar Reunión</div>
         
         @if(session('success'))
             <div class="alert alert-success">
@@ -21,6 +21,9 @@
         <form action="{{ route('grupotrabajo.updateReunion', $reunion->id) }}" method="POST">
             @csrf
             @method('PUT')
+            @if(request('modal'))
+                <input type="hidden" name="modal" value="1">
+            @endif
             
             <div class="form-group">
                 <label for="grupo_trabajo_id">Grupo de Trabajo</label>
@@ -44,11 +47,11 @@
                 <div class="radio-group">
                     <label class="radio-option">
                         <input type="radio" name="programada" value="1" {{ $reunion->programada ? 'checked' : '' }} onchange="toggleMotivo(this)">
-                        <span>✅ Reunión Programada</span>
+                        Reunión Programada
                     </label>
                     <label class="radio-option">
                         <input type="radio" name="programada" value="0" {{ !$reunion->programada ? 'checked' : '' }} onchange="toggleMotivo(this)">
-                        <span>⚠️ Fuera de Programación</span>
+                        Fuera de Programación
                     </label>
                 </div>
             </div>
@@ -63,13 +66,9 @@
                 <textarea id="motivo_noprogramada" name="motivo" rows="3" placeholder="Explica por qué esta reunión fue fuera de la programación original..." {{ !$reunion->programada ? 'required' : '' }}>{{ !$reunion->programada ? $reunion->motivo : '' }}</textarea>
             </div>
 
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="window.history.back()">
-                    ❌ Cancelar
-                </button>
-                <button type="submit" class="btn btn-primary">
-                    ✅ Actualizar Reunión
-                </button>
+            <div class="form-actions" style="display:flex; justify-content:flex-end; gap:0.625rem; margin-top:1rem;">
+                <a href="{{ route('grupotrabajo.agenda') }}" onclick="try{window.parent && window.parent.postMessage({ type: 'modal-close' }, '*');}catch(e){} return false;" style="padding: 0.625rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#94a3b8'" onmouseout="this.style.background='white'; this.style.borderColor='#cbd5e1'">Cancelar</a>
+                <button type="submit" style="background: #3b82f6; color: white; padding: 0.625rem 1.5rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">Actualizar Reunión</button>
             </div>
         </form>
     </div>
@@ -96,6 +95,19 @@ function toggleMotivo(radio) {
         textareaProgramada.name = '';
     }
 }
+</script>
+
+<!-- Autocierre cuando se carga dentro de iframe con saved=1 -->
+<script>
+(function(){
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const isIframe = window.top !== window.self;
+    if (isIframe && params.get('modal') === '1' && params.get('saved') === '1') {
+      window.parent && window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
+    }
+  } catch (e) {}
+})();
 </script>
 
 @endsection

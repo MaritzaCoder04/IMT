@@ -729,9 +729,9 @@ function editarReunion() {
         alert('No hay reunión seleccionada');
         return;
     }
-    
-    // Redirigir a la página de edición con el ID de la reunión
-    window.location.href = '{{ route("grupotrabajo.editReunion", ":id") }}'.replace(':id', window.reunionActual.id);
+    // Abrir modal iframe para editar la reunión
+    const url = '{{ route("grupotrabajo.editReunion", ":id") }}'.replace(':id', window.reunionActual.id);
+    abrirModalEditReunionUrl(url);
 }
 
 function eliminarReunion() {
@@ -851,7 +851,7 @@ document.addEventListener('DOMContentLoaded', function() {
             <iframe id="modal-iframe-edit-grupo" src="about:blank" title="Editar grupo"></iframe>
         </div>
     </div>
-    </div>
+</div>
 
 <script>
 function abrirModalEditUrl(url){
@@ -875,9 +875,42 @@ window.addEventListener('message', function(ev){
   const d = ev && ev.data ? ev.data : {};
   if(d.type === 'modal-close' || d.type === 'close-modal'){
     cerrarModalEdit();
+    cerrarModalEditReunion();
     if (d.reload || d.saved) { window.location.reload(); }
   }
 });
+</script>
+
+<!-- Modal Overlay para Editar Reunión (iframe) -->
+<div id="modal-overlay-edit-reunion" class="modal-overlay" onclick="cerrarModalEditReunionOverlayClick(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="modal-header">
+            <h3>Editar Reunión</h3>
+            <button type="button" class="close-modal-btn" onclick="cerrarModalEditReunion()">×</button>
+        </div>
+        <div class="modal-body">
+            <iframe id="modal-iframe-edit-reunion" src="about:blank" title="Editar reunión"></iframe>
+        </div>
+    </div>
+</div>
+
+<script>
+function abrirModalEditReunionUrl(url){
+  try{
+    const iframe = document.getElementById('modal-iframe-edit-reunion');
+    iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    document.getElementById('modal-overlay-edit-reunion').classList.add('active');
+  }catch(e){}
+}
+function cerrarModalEditReunion(){
+  try{
+    const overlay = document.getElementById('modal-overlay-edit-reunion');
+    const iframe = document.getElementById('modal-iframe-edit-reunion');
+    overlay.classList.remove('active');
+    iframe.src = 'about:blank';
+  }catch(e){}
+}
+function cerrarModalEditReunionOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-edit-reunion'){ cerrarModalEditReunion(); } }
 </script>
 
 @endsection
