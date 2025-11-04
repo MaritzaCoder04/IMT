@@ -297,7 +297,6 @@
                 <thead>
                     <tr>
                         <th>Nombre del Grupo</th>
-                        <th>Meta Anual</th>
                         <th>Ene-Feb</th>
                         <th>Mar-Abr</th>
                         <th>May-Jun</th>
@@ -325,7 +324,6 @@
                     @endphp
                     <tr>
                         <td><strong>{{ $grupo->nombre }}</strong></td>
-                        <td class="bimestre-cell">{{ $grupo->meta_anual }}</td>
                         
                         @for($i = 1; $i <= 6; $i++)
                             @php

@@ -2,29 +2,10 @@
 
 @section('contenido')
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <h2 style="color: #1e40af; font-weight: 600; font-size: 1.75rem; margin-bottom: 0.5rem;">
-            Tipos de Grupo de Trabajo
-        </h2>
-        @if(request('modal'))
-        <script>
-        document.addEventListener('DOMContentLoaded', function(){
-          try {
-            var params = new URLSearchParams(window.location.search);
-            var isIframe = window.top !== window.self;
-            if (isIframe && params.get('saved') === '1') {
-              window.parent && window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
-            }
-          } catch(e) {}
-        });
-        </script>
-        @endif
-    </div>
 
     <!-- Formulario Agregar -->
     <div style="background: white; border: 1px solid #e0e7ff; border-radius: 8px; padding: 1.5rem; margin-bottom: 1.5rem;">
-        <h4 style="color: #1e40af; font-weight: 500; font-size: 1rem; margin-bottom: 1rem;">
+        <h4 style="font-weight: 500; font-size: 1rem; margin-bottom: 1rem;">
             Agregar nuevo tipo
         </h4>
         <form method="POST" action="{{ route('grupos.store') }}" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
@@ -41,25 +22,8 @@
                    onfocus="this.style.borderColor='#3b82f6'" 
                    onblur="this.style.borderColor='#cbd5e1'">
             
-            <input type="text" 
-                   name="descripcion" 
-                   placeholder="Descripción" 
-                   style="flex: 1; min-width: 200px; padding: 0.5rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
-                   onfocus="this.style.borderColor='#3b82f6'" 
-                   onblur="this.style.borderColor='#cbd5e1'">
-            
-            <label style="display: flex; align-items: center; gap: 0.5rem; color: #475569; font-size: 0.875rem; cursor: pointer;">
-                <input type="checkbox" 
-                       name="activo" 
-                       value="1" 
-                       style="width: 16px; height: 16px; accent-color: #3b82f6; cursor: pointer;">
-                Activo
-            </label>
-            
             <button type="submit" 
-                    style="background: #3b82f6; color: white; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
-                    onmouseover="this.style.background='#2563eb'" 
-                    onmouseout="this.style.background='#3b82f6'">
+                    style="background: #3b82f6; color: white; padding: 0.5rem 1.25rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s;">
                 Guardar
             </button>
         </form>
@@ -74,18 +38,12 @@
 
     <!-- Tabla -->
     <div style="background: white; border: 1px solid #e0e7ff; border-radius: 8px; overflow: hidden;">
-        <div style="padding: 1.5rem 1.5rem 1rem;">
-            <h4 style="color: #1e40af; font-weight: 500; font-size: 1rem; margin: 0;">
-                Tipos existentes
-            </h4>
-        </div>
         
         <div style="overflow-x: auto;">
             <table style="width: 100%; border-collapse: collapse;">
                 <thead>
                     <tr style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
                         <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff;">Nombre</th>
-                        <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff;">Descripción</th>
                         <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff;">Activo</th>
                         <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff; width: 180px;">Acciones</th>
                     </tr>
@@ -103,16 +61,6 @@
                                        style="width: 100%; padding: 0.375rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
                                        onfocus="this.style.borderColor='#3b82f6'" 
                                        onblur="this.style.borderColor='#e2e8f0'">
-                        </td>
-                        <td style="padding: 1rem 1.5rem;">
-                                <input type="text" 
-                                       name="descripcion" 
-                                       value="{{ $g->descripcion }}" 
-                                       form="form-update-{{ $g->id }}"
-                                       style="width: 100%; padding: 0.375rem 0.5rem; border: 1px solid #e2e8f0; border-radius: 4px; font-size: 0.875rem; outline: none; transition: border-color 0.2s;"
-                                       onfocus="this.style.borderColor='#3b82f6'" 
-                                       onblur="this.style.borderColor='#e2e8f0'">
-                        </td>
                         <td style="padding: 1rem 1.5rem;">
                                 <input type="checkbox" 
                                        name="activo" 
@@ -129,11 +77,8 @@
                                     @if(request('modal'))
                                     <input type="hidden" name="modal" value="1">
                                     @endif
-                                    <button type="submit" 
-                                            style="background: #3b82f6; color: white; padding: 0.375rem 0.875rem; border: none; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: background 0.2s;"
-                                            onmouseover="this.style.background='#2563eb'" 
-                                            onmouseout="this.style.background='#3b82f6'">
-                                        Actualizar
+                                    <button type="submit" class="btn-icon" title="Actualizar">
+                                        <img src="{{ asset('img/pencil.png') }}" alt="Actualizar">
                                     </button>
                                 </form>
                                 <form method="POST" action="{{ route('grupos.destroy', $g->id) }}" style="display:inline;">
@@ -142,12 +87,8 @@
                                     @if(request('modal'))
                                     <input type="hidden" name="modal" value="1">
                                     @endif
-                                    <button type="submit" 
-                                            onclick="return confirm('¿Eliminar este tipo?')" 
-                                            style="background: white; color: #dc2626; padding: 0.375rem 0.875rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
-                                            onmouseover="this.style.background='#fef2f2'; this.style.borderColor='#dc2626'" 
-                                            onmouseout="this.style.background='white'; this.style.borderColor='#fecaca'">
-                                        Eliminar
+                                    <button type="submit" class="btn-icon" title="Eliminar" onclick="return confirm('¿Eliminar este tipo?')">
+                                        <img src="{{ asset('img/delete.png') }}" alt="Eliminar">
                                     </button>
                                 </form>
                             </div>

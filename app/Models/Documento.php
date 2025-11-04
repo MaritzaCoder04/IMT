@@ -37,7 +37,7 @@ class Documento extends Model
 
     public function origenRelacion()
     {
-        return $this->belongsTo(Libro::class, 'origen', 'ID_origen');
+        return $this->belongsTo(Origen::class, 'origen', 'ID_origen');
     }
 
     public function libroRelacion()

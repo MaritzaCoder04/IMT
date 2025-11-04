@@ -1,17 +1,9 @@
 @extends('home')
 
 @section('contenido')
-<div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
-    <!-- Header -->
-    <div style="margin-bottom: 2rem;">
-        <h2 style="color: #1e40af; font-weight: 600; font-size: 1.75rem; margin-bottom: 0.5rem;">
-            Editar Grupo de Trabajo
-        </h2>
-    </div>
-
     <!-- Formulario -->
-    <form action="{{ route('grupotrabajo.update', $grupo->id) }}" method="POST" 
-          style="background: white; border: 1px solid #e0e7ff; border-radius: 8px; padding: 2rem;">
+    <form id="edit-grupo-form" action="{{ route('grupotrabajo.update', $grupo->id) }}" method="POST" 
+          style="background: white; border-radius: 8px; padding: 2rem;">
         @csrf
         @method('PUT')
         @if(request('modal'))
@@ -41,13 +33,9 @@
         <!-- Separador -->
         <div style="border-top: 1px solid #e2e8f0; margin: 2rem 0;"></div>
 
-        <!-- Título Metas Bimestrales -->
-        <h3 style="color: #1e40af; font-weight: 500; font-size: 1.125rem; margin-bottom: 1.5rem;">
-            Metas Bimestrales
-        </h3>
-
-        <!-- Grid de metas bimestrales -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
+        <!-- Metas bimestrales -->
+        <!-- Fila 1: Bimestres 1-3 -->
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 1.25rem;">
             <!-- Bimestre 1 -->
             <div>
                 <label for="meta_bimestre_1" style="display: block; color: #475569; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
@@ -92,7 +80,10 @@
                        onfocus="this.style.borderColor='#3b82f6'" 
                        onblur="this.style.borderColor='#cbd5e1'">
             </div>
+        </div>
 
+        <!-- Fila 2: Bimestres 4-6 -->
+        <div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.25rem; margin-bottom: 2rem;">
             <!-- Bimestre 4 -->
             <div>
                 <label for="meta_bimestre_4" style="display: block; color: #475569; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">
@@ -140,7 +131,7 @@
         </div>
 
         <!-- Botón guardar -->
-        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding-top: 1rem; border-top: 1px solid #e2e8f0;">
+        <div style="display: flex; gap: 0.75rem; justify-content: flex-end; padding-top: 1rem;">
             @if(request('modal'))
             <a href="#" 
                onclick="try{window.parent && window.parent.postMessage({ type: 'modal-close' }, '*');}catch(e){} return false;"

@@ -1020,7 +1020,10 @@ class GrupoTrabajoController extends Controller
         try {
             $grupo = GrupoTrabajo::findOrFail($id);
             $grupo->delete();
-
+            $target = route('grupotrabajo.index');
+            if (request()->boolean('modal')) {
+                return redirect()->to($target.'?modal=1&saved=1')->with('success');
+            }
             return redirect()->route('grupotrabajo.index')->with('success');
         } catch (\Exception $e) {
             return back()->with('error', 'Error al eliminar el grupo de trabajo: ' . $e->getMessage());

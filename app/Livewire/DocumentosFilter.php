@@ -29,7 +29,7 @@ class DocumentosFilter extends Component
         $libros = Libro::orderBy('desc')->get();
 
         // Construir la consulta con filtros
-        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'tipoRelacion']);
+        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'tipoRelacion', 'origenRelacion']);
 
         // Filtro por palabra (busca en nombre, origen y designación - coincidencia parcial)
         if (!empty($this->palabra)) {
@@ -124,7 +124,7 @@ class DocumentosFilter extends Component
     {
         // Obtener los mismos datos que se muestran en la tabla
         $libros = Libro::orderBy('desc')->get();
-        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'tipoRelacion']);
+        $query = Documento::with(['info', 'libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'tipoRelacion', 'origenRelacion']);
 
         // Aplicar los mismos filtros
         if (!empty($this->palabra)) {

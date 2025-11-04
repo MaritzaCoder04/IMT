@@ -229,7 +229,7 @@ class DocumentoController extends Controller
 
     public function productosterminados()
     {
-        $documentos = Documento::with(['libroRelacion', 'parteRelacion', 'etapas'])
+        $documentos = Documento::with(['libroRelacion', 'parteRelacion', 'etapas', 'origenRelacion'])
             ->where('vigente', 1)
             ->orderBy('libro')
             ->orderBy('tema')
