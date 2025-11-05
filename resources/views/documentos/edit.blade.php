@@ -56,13 +56,13 @@
 
             <div class="form-group">
                 <label for="parteDesc">Parte</label>
-                <input type="text" id="parteDesc" value="{{ $documento->parteRelacion->desc ?? '' }}" readonly>
+                <input type="text" id="parteDesc" value="{{ optional($documento->info)->desc_parte ?? ($documento->parteRelacion->desc ?? '') }}" readonly>
                 <input type="hidden" name="parte" value="{{ $documento->parte }}">
             </div>
 
             <div class="form-group">
                 <label for="tituloDesc">Titulo</label>
-                <input type="text" id="tituloDesc" value="{{ $documento->tituloRelacion->desc ?? '' }}" readonly>
+                <input type="text" id="tituloDesc" value="{{ optional($documento->info)->desc_titulo ?? ($documento->tituloRelacion->desc ?? '') }}" readonly>
                 <input type="hidden" name="titulo" value="{{ $documento->titulo }}">
             </div>
 </div>
