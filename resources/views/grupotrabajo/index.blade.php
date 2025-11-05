@@ -367,6 +367,12 @@
                                         title="Editar grupo">
                                     <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo">
                                 </button>
+                                <button type="button" class="btn-icon" 
+                                        data-nombre="{{ $grupo->nombre }}"
+                                        onclick="abrirAgendaDeGrupo(this)"
+                                        title="Ver agenda del grupo">
+                                    <img src="{{ asset('img/calendar.png') }}" alt="Agenda del grupo">
+                                </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
                                       style="display: inline;"
@@ -465,6 +471,19 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal Overlay para Agenda del Grupo -->
+        <div id="modal-overlay-agenda" class="modal-overlay" onclick="cerrarModalAgendaOverlayClick(event)">
+            <div class="modal-content" onclick="event.stopPropagation()">
+                <div class="modal-header">
+                    <h3 id="agenda-modal-title">Agenda del grupo</h3>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalAgenda()">×</button>
+                </div>
+                <div class="modal-body">
+                    <iframe id="modal-iframe-agenda" src="about:blank" title="Agenda del grupo"></iframe>
+                </div>
+            </div>
+        </div>
         
         <script>
         function abrirModalUrl(url){
@@ -499,11 +518,41 @@
           }catch(e){}
         }
         function cerrarModalGruposOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-grupos'){ cerrarModalGrupos(); } }
+        function abrirAgendaDeGrupo(el){
+          try{
+            const nombre = (el && el.dataset && el.dataset.nombre) ? el.dataset.nombre : '';
+            const base = "{{ route('grupotrabajo.agenda') }}";
+            const params = new URLSearchParams(window.location.search);
+            let anio = params.get('anio');
+            if(!anio){
+              try { anio = localStorage.getItem('anioGlobal'); } catch(e) {}
+            }
+            let url = base + '?modal=1';
+            if (anio) { url += '&anio=' + encodeURIComponent(anio); }
+            if (nombre) { url += '&busqueda=' + encodeURIComponent(nombre); }
+
+            const iframe = document.getElementById('modal-iframe-agenda');
+            const titleEl = document.getElementById('agenda-modal-title');
+            if (titleEl && nombre) { titleEl.textContent = 'Agenda: ' + nombre; }
+            iframe.src = url;
+            document.getElementById('modal-overlay-agenda').classList.add('active');
+          }catch(e){}
+        }
+        function cerrarModalAgenda(){
+          try{
+            const overlay = document.getElementById('modal-overlay-agenda');
+            const iframe = document.getElementById('modal-iframe-agenda');
+            overlay.classList.remove('active');
+            iframe.src = 'about:blank';
+          }catch(e){}
+        }
+        function cerrarModalAgendaOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-agenda'){ cerrarModalAgenda(); } }
         window.addEventListener('message', function(ev){
           const d = ev && ev.data ? ev.data : {};
           if(d.type === 'modal-close' || d.type === 'close-modal'){
             cerrarModalGT();
             cerrarModalGrupos();
+            cerrarModalAgenda();
             if (d.reload || d.saved) { window.location.reload(); }
           }
         });

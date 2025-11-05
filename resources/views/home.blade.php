@@ -211,7 +211,21 @@
 
       // Restaurar scroll al cargar
       window.addEventListener('DOMContentLoaded', function() {
-          // Selector global de año (input): aplica ?anio= en tiempo real con debounce
+          // Persistencia global del año seleccionado
+          try {
+            var url = new URL(window.location.href);
+            var params = url.searchParams;
+            var storedYear = localStorage.getItem('anioGlobal');
+            // Si no hay ?anio= en la URL pero existe en localStorage, aplicarlo automáticamente
+            if (!params.has('anio') && storedYear) {
+              params.set('anio', storedYear);
+              url.search = params.toString();
+              // replace para evitar acumular historial
+              window.location.replace(url.toString());
+            }
+          } catch (e) {}
+
+          // Selector global de año (input): aplica ?anio= en tiempo real con debounce y guarda en localStorage
           try {
             var yearInput = document.getElementById('global-year-input');
             if (yearInput) {
@@ -219,7 +233,8 @@
               var applyYear = function(y){
                 var url = new URL(window.location.href);
                 var params = url.searchParams;
-                if (y) { params.set('anio', y); } else { params.delete('anio'); }
+                if (y) { params.set('anio', y); localStorage.setItem('anioGlobal', String(y)); }
+                else { params.delete('anio'); localStorage.removeItem('anioGlobal'); }
                 url.search = params.toString();
                 window.location.href = url.toString();
               };
@@ -235,6 +250,20 @@
                   clearTimeout(debounceTimer);
                   applyYear(this.value);
                 }
+              });
+            }
+          } catch (e) {}
+
+          // Propagar ?anio= a enlaces del sidebar para mantener la selección en la navegación
+          try {
+            var persistedYear = (new URL(window.location.href)).searchParams.get('anio') || localStorage.getItem('anioGlobal');
+            if (persistedYear) {
+              document.querySelectorAll('nav.sidebar a[href]').forEach(function(a){
+                try {
+                  var u = new URL(a.href, window.location.origin);
+                  u.searchParams.set('anio', persistedYear);
+                  a.href = u.toString();
+                } catch(err) {}
               });
             }
           } catch (e) {}
