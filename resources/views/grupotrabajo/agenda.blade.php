@@ -497,6 +497,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3>Agregar Reunión - {{ $grupo->nombre }}</h3>
+                <button type="button" class="close-modal-btn" onclick="cerrarModalBtn({{ $grupo->id }})">×</button>
             </div>
             <div class="modal-body">
                 <form action="{{ route('grupotrabajo.guardarReunion') }}" method="POST">
@@ -545,7 +546,6 @@
 
                     <div class="modal-actions">
                         <button type="submit" class="btn btn-ejemplo">Guardar Reunión</button>
-                        <button type="button" class="btn btn-ejemplo2" onclick="cerrarModalBtn({{ $grupo->id }})">Cancelar</button>
                     </div>
                 </form>
                 
@@ -576,6 +576,7 @@
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 500px;">
         <div class="modal-header">
             <h3>Detalles de la Reunión</h3>
+            <button type="button" class="close-modal-btn" onclick="cerrarModalDetalleBtn()">×</button>
         </div>
         <div class="modal-body">
             <div class="form-group">
@@ -595,7 +596,6 @@
                 <div id="detalle-motivo" style="padding: 12px; background: #f9f9f9; border-left: 3px solid #ddd; border-radius: 4px; white-space: pre-wrap;"></div>
             </div>
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="cerrarModalDetalleBtn()">Cerrar</button>
                 <button type="button" class="btn btn-primary" onclick="editarReunion()" style="background: #ff9800;">
                     Editar
                 </button>
