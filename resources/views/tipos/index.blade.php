@@ -61,6 +61,7 @@
                             <form method="POST" action="{{ route('tipos.update', ['tipo' => $t->ID_tipo]) }}" style="display: contents;">
                                 @csrf
                                 @method('PUT')
+                                <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
                                 <input type="text" 
                                        name="desc" 
                                        value="{{ $t->desc }}" 

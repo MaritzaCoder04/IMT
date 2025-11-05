@@ -9,7 +9,9 @@ class TipoController extends Controller
 {
     public function index()
     {
-        $tipos = Tipo::orderBy('desc')->get();
+        $tipos = Tipo::whereNotNull('ID_tipo')
+            ->orderBy('desc')
+            ->get();
         return view('tipos.index', compact('tipos'));
     }
 
@@ -43,12 +45,20 @@ class TipoController extends Controller
         ]);
 
         $tipo->update($validated);
-        return redirect()->route('tipos.index');
+        $target = route('tipos.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function destroy(Tipo $tipo)
     {
         $tipo->delete();
-        return redirect()->route('tipos.index');
+        $target = route('tipos.index');
+        if (request()->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&deleted=1');
+        }
+        return redirect()->to($target);
     }
 }

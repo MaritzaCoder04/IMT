@@ -9,7 +9,9 @@ class TemaController extends Controller
 {
     public function index()
     {
-        $temas = Tema::orderBy('desc')->get();
+        $temas = Tema::whereNotNull('ID_tema')
+            ->orderBy('desc')
+            ->get();
         return view('temas.index', compact('temas'));
     }
 
@@ -44,13 +46,21 @@ class TemaController extends Controller
 
         $tema = Tema::findOrFail($id);
         $tema->update($validated);
-        return redirect()->route('temas.index');
+        $target = route('temas.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function destroy($id)
     {
         $tema = Tema::findOrFail($id);
         $tema->delete();
-        return redirect()->route('temas.index');
+        $target = route('temas.index');
+        if (request()->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&deleted=1');
+        }
+        return redirect()->to($target);
     }
 }

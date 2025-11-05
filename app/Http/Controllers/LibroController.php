@@ -9,7 +9,10 @@ class LibroController extends Controller
 {
     public function index()
     {
-        $libros = Libro::orderBy('desc')->get();
+        // Evitar errores al generar URLs cuando existan registros sin clave primaria
+        $libros = Libro::whereNotNull('ID_libro')
+            ->orderBy('desc')
+            ->get();
         return view('libros.index', compact('libros'));
     }
 
@@ -44,13 +47,21 @@ class LibroController extends Controller
 
         $libro = Libro::findOrFail($id);
         $libro->update($validated);
-        return redirect()->route('libros.index');
+        $target = route('libros.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function destroy($id)
     {
         $libro = Libro::findOrFail($id);
         $libro->delete();
-        return redirect()->route('libros.index');
+        $target = route('libros.index');
+        if (request()->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&deleted=1');
+        }
+        return redirect()->to($target);
     }
 }

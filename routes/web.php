@@ -176,6 +176,8 @@ Route::resource('grupos', App\Http\Controllers\GrupoController::class)->only(['i
 // Gestión de selectores del formulario
 Route::resource('libros', App\Http\Controllers\LibroController::class)->only(['index','store','update','destroy']);
 Route::resource('temas', App\Http\Controllers\TemaController::class)->only(['index','store','update','destroy']);
-Route::resource('origenes', App\Http\Controllers\OrigenController::class)->only(['index','store','update','destroy']);
+Route::resource('origenes', App\Http\Controllers\OrigenController::class)
+    ->parameters(['origenes' => 'origen'])
+    ->only(['index','store','update','destroy']);
 Route::resource('tipos', App\Http\Controllers\TipoController::class)->only(['index','store','update','destroy']);
  

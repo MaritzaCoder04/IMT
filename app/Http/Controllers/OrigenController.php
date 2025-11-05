@@ -9,7 +9,9 @@ class OrigenController extends Controller
 {
     public function index()
     {
-        $origenes = Origen::orderBy('desc')->get();
+        $origenes = Origen::whereNotNull('ID_origen')
+            ->orderBy('desc')
+            ->get();
         return view('origenes.index', compact('origenes'));
     }
 
@@ -28,7 +30,7 @@ class OrigenController extends Controller
 
         $target = route('origenes.index');
         if ($request->boolean('modal')) {
-            return redirect()->to($target+'?modal=1&saved=1');
+            return redirect()->to($target.'?modal=1&saved=1');
         }
         return redirect()->to($target);
     }
@@ -41,13 +43,21 @@ class OrigenController extends Controller
 
         $origen = Origen::findOrFail($id);
         $origen->update($validated);
-        return redirect()->route('origenes.index');
+        $target = route('origenes.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function destroy($id)
     {
         $origen = Origen::findOrFail($id);
         $origen->delete();
-        return redirect()->route('origenes.index');
+        $target = route('origenes.index');
+        if (request()->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&deleted=1');
+        }
+        return redirect()->to($target);
     }
 }

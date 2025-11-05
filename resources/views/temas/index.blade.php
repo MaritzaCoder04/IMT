@@ -60,6 +60,7 @@
                             <form method="POST" action="{{ route('temas.update', ['tema' => $t->ID_tema]) }}">
                                 @csrf
                                 @method('PUT')
+                                <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
                                 <input type="text" 
                                        name="desc" 
                                        value="{{ $t->desc }}" 
@@ -88,6 +89,7 @@
                             <form method="POST" action="{{ route('temas.destroy', $t->ID_tema) }}">
                                 @csrf
                                 @method('DELETE')
+                                <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
                                 <button type="submit" 
                                         onclick="return confirm('¿Eliminar este tema?')" 
                                         style="background: white; color: #dc2626; padding: 0.375rem 0.875rem; border: 1px solid #fecaca; border-radius: 4px; font-size: 0.8125rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
