@@ -1,10 +1,6 @@
-
 @extends('home')
-
 @section('contenido')
 <div class="all-form">
-    <div class="form-container">
-        <div class="section-title2">Gestión de Fechas</div>
         <div class="doc-summary" style="margin: 8px 0 12px 0; display: flex; gap: 24px; align-items: center;">
             <div><strong>Documento:</strong> {{ $documento->nombre ?? '--' }}</div>
             <div><strong>Designación:</strong> {{ $documento->info->designacion ?? '--' }}</div>
@@ -85,7 +81,6 @@
             <div class="actions">
                 <button type="submit" class="btn btn-secondary">Guardar</button>
                 <button type="button" class="btn btn-secondary2" onclick="limpiarFormulario()">Limpiar</button>
-                <button type="button" class="btn btn-secondary2" onclick="(function(){var p=new URLSearchParams(location.search); if(p.get('modal')==='1'){ window.parent && window.parent.postMessage({type:'modal-close'}, '*'); } else { window.location='{{ route('controldeavances') }}'; } })()">Cancelar</button>
             </div>
 
         </form>

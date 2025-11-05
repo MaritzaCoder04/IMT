@@ -1,15 +1,13 @@
 @extends('home')
-
 @section('contenido')
 <div class="all-form">
-    <div class="form-container">
-        <div class="section-title">Editar Documento</div>
         
         <form action="{{ route('documentos.update', $documento->ID_doc) }}" method="POST">
             @csrf
             @method('PUT')
             <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; ">
             <div class="form-group">
                 <label for="tipoDocumento">Manual/Norma</label>
                 <select id="tipoDocumento" name="tipoDocumento" required>
@@ -23,6 +21,10 @@
                 <label for="nombre">Nombre</label>
                 <input type="text" id="nombre" name="nombre" value="{{ $documento->nombre }}" required>
             </div>
+</div>
+
+
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem;">
 
             <div class="form-group">
                 <label for="libro">Libro</label>
@@ -47,6 +49,10 @@
                     @endforeach
                 </select>
             </div>
+</div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem; ">
+
 
             <div class="form-group">
                 <label for="parteDesc">Parte</label>
@@ -59,6 +65,10 @@
                 <input type="text" id="tituloDesc" value="{{ $documento->tituloRelacion->desc ?? '' }}" readonly>
                 <input type="hidden" name="titulo" value="{{ $documento->titulo }}">
             </div>
+</div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem;">
+
 
             <div class="form-group">
                 <label for="capitulo">Capitulo</label>
@@ -76,15 +86,19 @@
                     @endforeach
                 </select>
             </div>
+</div>
+
+            <div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.25rem;">
+
 
             <div class="form-group">
                 <label for="fechaPublicacion">Año de Publicación</label>
                 <input type="text" id="fechaPublicacion" name="fechaPublicacion" value="{{ $documento->anio }}" required>
             </div>
+</div>
 
             <div class="actions">
                 <button type="submit" class="btn btn-secondary">Guardar Cambios</button>
-                <button type="button" class="btn btn-secondary2" onclick="(function(){var p=new URLSearchParams(location.search); if(p.get('modal')==='1'){ window.parent && window.parent.postMessage({type:'modal-close'}, '*'); } else { window.location='{{ route('controldeavances') }}'; } })()">Cancelar</button>
             </div>
         </form>
     </div>

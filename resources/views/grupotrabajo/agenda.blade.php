@@ -415,25 +415,10 @@
             <div class="grupo-header">
                 <div class="grupo-info">
                     <h3>{{ $grupo->nombre }}</h3>
-                    <div class="grupo-stats">
-                        Meta: {{ $grupo->meta_anual }} | Realizadas: {{ $grupoViewModels[$grupo->id]['stats']['total'] ?? 0 }} | 
-                        
-                        @if(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) >= $grupo->meta_anual)
-                            <span style="margin-left: 10px;">¡Meta cumplida!</span>
-                        @elseif(($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) > 0)
-                            <span style="margin-left: 10px;">⚡ {{ $grupo->meta_anual - ($grupoViewModels[$grupo->id]['stats']['total'] ?? 0) }} pendientes</span>
-                        @else
-                            <span style="margin-left: 10px;">Sin reuniones aún</span>
-                        @endif
-                    </div>
                 </div>
                 <div style="display: flex; gap: 8px; align-items: center;">
                     <button type="button" class="btn btn-ejemplo" onclick="abrirModal({{ $grupo->id }})">
                         Nueva Reunión
-                    </button>
-                    <button type="button" class="btn btn-ejemplo" onclick="abrirModalEditUrl('{{ route('grupotrabajo.edit', $grupo->id) }}')" 
-                            style="padding: 7px 12px;" title="Editar grupo">
-                        <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo" style="width:16px;height:16px;" />
                     </button>
                 </div>
             </div>
