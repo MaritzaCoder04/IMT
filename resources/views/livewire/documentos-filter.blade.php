@@ -98,11 +98,11 @@
                                 <td>{{ $documento->tipoRelacion->desc ?? ($documento->tipo == 1 ? 'Manual' : 'Norma') }}</td>
                                 <td>{{ $documento->libroRelacion->clave ?? ($documento->libro ?? '-') }}</td>
                                 <td>{{ $documento->temaRelacion->clave ?? ($documento->tema == 0 ? '-' : $documento->tema) }}</td>
-                                <td>{{ $documento->info->desc_parte ?? ($documento->parte == 0 ? '-' : $documento->parte) }}</td>
-                                <td>{{ $documento->info->desc_titulo ?? ($documento->titulo == 0 ? '-' : $documento->titulo) }}</td>
-                                <td>{{ $documento->info->designacion ?? '-' }}</td>
+                                <td>{{ optional($documento->info)->desc_parte ?: ($documento->parteRelacion->desc ?? ($documento->parte == 0 ? '-' : $documento->parte)) }}</td>
+                                <td>{{ optional($documento->info)->desc_titulo ?: ($documento->tituloRelacion->desc ?? ($documento->titulo == 0 ? '-' : $documento->titulo)) }}</td>
+                                <td>{{ optional($documento->info)->designacion ?? '-' }}</td>
                                 <td>{{ $documento->nombre ?? '-' }}</td>
-                                <td>{{ $documento->origenRelacion->desc ?? $documento->info->origen ?? '-' }}</td>
+                                <td>{{ $documento->origenRelacion->desc ?? (optional($documento->info)->origen ?? '-') }}</td>
                                 <td>{{ $documento->fecha_nueva }}</td>
                                 <td>{{ $documento->fechas_actualizacion ?? '-' }}</td>
                             </tr>

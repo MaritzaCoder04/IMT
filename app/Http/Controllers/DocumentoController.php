@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Documento;
+use App\Models\DocumentoInfo;
 use App\Models\Etapa;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Response;
@@ -177,6 +178,62 @@ class DocumentoController extends Controller
         $documento->anio_simple = substr($anio, -2);
         
         $documento->save();
+
+        // Sincronizar información derivada en documentoinfo (designación, descripciones y origen)
+        try {
+            // Descripciones de parte/título tomando catálogo por clave compuesta
+            $temaPad = str_pad((string)($documento->tema ?? 0), 2, '0', STR_PAD_LEFT);
+            $partePad = str_pad((string)($documento->parte ?? 0), 2, '0', STR_PAD_LEFT);
+            $tituloPad = str_pad((string)($documento->titulo ?? 0), 2, '0', STR_PAD_LEFT);
+            $capituloPad = str_pad((string)($documento->capitulo ?? 0), 3, '0', STR_PAD_LEFT);
+
+            $tipoClaveDb = \App\Models\Tipo::where('ID_tipo', $documento->tipo)->value('clave');
+            $libroClaveDb = \App\Models\Libro::where('ID_libro', $documento->libro)->value('clave');
+            $temaClaveDb = \App\Models\Tema::where('ID_tema', $documento->tema)->value('clave');
+
+            // Buscar descripciones por ID directo (documento.parte/titulo contienen el ID compuesto)
+            $descParte = null;
+            $descTitulo = null;
+            if (!empty($documento->parte) && $documento->parte != 0) {
+                $descParte = \App\Models\Parte::where('ID_parte', $documento->parte)->value('desc');
+            }
+            if (!empty($documento->titulo) && $documento->titulo != 0) {
+                $descTitulo = \App\Models\Titulo::where('ID_titulo', $documento->titulo)->value('desc');
+            }
+
+            $componentes = [
+                $tipoClaveDb,
+                $libroClaveDb,
+                $temaClaveDb,
+                $documento->parte,
+                $tituloPad,
+                $capituloPad
+            ];
+            $componentesFiltrados = array_filter($componentes, function($v) {
+                return !is_null($v) && $v !== '' && $v !== 0 && $v !== '0' && $v !== '00' && $v !== '000';
+            });
+            $designacionGenerada = implode('-', $componentesFiltrados);
+
+            DocumentoInfo::updateOrCreate(
+                ['ID_doc' => $documento->ID_doc],
+                [
+                    'ID_doc' => $documento->ID_doc,
+                    'nombre' => $documento->nombre,
+                    'tipo' => (string)$documento->tipo,
+                    'libro' => (string)$documento->libro,
+                    'tema' => (string)$documento->tema,
+                    'parte' => (string)$documento->parte,
+                    // Evitar valores NULL para cumplir restricciones
+                    'desc_parte' => $descParte ?? '',
+                    'titulo' => (string)$documento->titulo,
+                    'desc_titulo' => $descTitulo ?? '',
+                    'capitulo' => (string)$documento->capitulo,
+                    'designacion' => $designacionGenerada ?: null,
+                ]
+            );
+        } catch (\Exception $e) {
+            // No bloquear si documentoinfo falla
+        }
         
         $target = route('controldeavances');
         if ($request->boolean('modal')) {

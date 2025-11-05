@@ -64,25 +64,14 @@ class FormularioController extends Controller
     $documento->anio = $anio;
     $documento->anio_simple = substr($anio, -2);
     
-    // Campos booleanos
-    $documento->terracerias = 0;
-    $documento->estructuras = 0;
-    $documento->drenaje = 0;
-    $documento->pavimentos = 0;
-    $documento->tuneles = 0;
-    $documento->cimentaciones = 0;
-    $documento->senalamiento = 0;
-    $documento->obras_marginales = 0;
-    $documento->SIT = 0;
-    $documento->novedades = "0";
+    // Campos existentes: solo marcar vigente
     $documento->vigente = 1;
     
     $documento->save();
 
     // Crear/actualizar registro en documentoinfo para que las vistas muestren descripciones y origen
     try {
-        $origenRow = Origen::find($request->origen);
-        $origenDesc = $origenRow ? $origenRow->desc : null;
+        // El campo 'origen' no existe en documentoinfo de este proyecto, no se guarda aquí
 
         // Obtener claves para construir la designación
         $tipoClaveDb = \App\Models\Tipo::where('ID_tipo', $documento->tipo)->value('clave');
@@ -122,9 +111,6 @@ class FormularioController extends Controller
                 'desc_titulo' => $tituloDesc,
                 'capitulo' => (string)$documento->capitulo,
                 'designacion' => $designacionGenerada ?: null,
-                'origen' => $origenDesc,
-                'anio_simple' => $documento->anio_simple,
-                'anio' => $documento->anio,
             ]
         );
     } catch (\Exception $e) {
