@@ -17,6 +17,12 @@
                     @endforeach
                 </datalist>
             </div>
+
+            <div style="margin-bottom: 1.5rem;">
+                <label for="anio_meta" style="display: block; color: #475569; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Año</label>
+                <input type="number" id="anio_meta" name="anio_meta" required placeholder="Ej: {{ date('Y') }}" value="{{ request('anio') }}" style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; outline: none; transition: border-color 0.2s; background: white;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
+                <small style="color:#64748b;">El grupo se guardará asociado a este año.</small>
+            </div>
             <div style="border-top: 1px solid #e2e8f0; margin: 2rem 0;"></div>
 
 
@@ -59,7 +65,7 @@
                 @if(request('modal'))
                 <a href="#" onclick="try{window.parent && window.parent.postMessage({ type: 'modal-close' }, '*');}catch(e){} return false;" style="padding: 0.625rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#94a3b8'" onmouseout="this.style.background='white'; this.style.borderColor='#cbd5e1'">Cancelar</a>
                 @else
-                <a href="{{ route('grupotrabajo.index') }}" style="padding: 0.625rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#94a3b8'" onmouseout="this.style.background='white'; this.style.borderColor='#cbd5e1'">Cancelar</a>
+                <a href="{{ route('grupotrabajo.index') }}@if(request('anio'))?anio={{ request('anio') }}@endif" style="padding: 0.625rem 1.5rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; font-weight: 500; color: #64748b; text-decoration: none; transition: all 0.2s; display: inline-block;" onmouseover="this.style.background='#f8fafc'; this.style.borderColor='#94a3b8'" onmouseout="this.style.background='white'; this.style.borderColor='#cbd5e1'">Cancelar</a>
                 @endif
                 <button type="submit" style="background: #3b82f6; color: white; padding: 0.625rem 1.5rem; border: none; border-radius: 6px; font-size: 0.875rem; font-weight: 500; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#2563eb'" onmouseout="this.style.background='#3b82f6'">Guardar</button>
             </div>
@@ -68,6 +74,21 @@
 </div>
 
 <script>
+// Prefijar el año con ?anio o localStorage si no viene en la URL
+document.addEventListener('DOMContentLoaded', function(){
+    const anioInput = document.getElementById('anio_meta');
+    if (anioInput && !anioInput.value) {
+        let anio = null;
+        try {
+            const params = new URLSearchParams(window.location.search);
+            anio = params.get('anio');
+            if (!anio) { anio = localStorage.getItem('anioGlobal'); }
+        } catch(e) {}
+        if (!anio) { anio = new Date().getFullYear(); }
+        anioInput.value = anio;
+    }
+});
+
 function actualizarEtiquetas() {
     const select = document.getElementById('nombre');
     const selectedValue = select ? select.value : '';

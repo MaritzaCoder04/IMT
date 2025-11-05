@@ -17,24 +17,31 @@ class GrupoTrabajoController extends Controller
     // Vista 1: Lista de grupos de trabajo
     public function index()
     {
-        $grupos = GrupoTrabajo::with('reuniones')->get();
-        // Año seleccionado para calcular documentos terminados (por defecto, año actual)
-        $anioSeleccionado = request()->get('anio', (int)date('Y'));
+        // Año seleccionado (por defecto, año actual)
+        $anioSeleccionado = (int) request()->get('anio', (int)date('Y'));
+
+        // Cargar solo los grupos del año seleccionado y sus reuniones de ese año
+        $grupos = GrupoTrabajo::with(['reuniones' => function($q) use ($anioSeleccionado) {
+                $q->whereYear('fecha', $anioSeleccionado);
+            }])
+            ->where('anio_meta', $anioSeleccionado)
+            ->get();
 
         // Precalcular estadísticas por grupo para evitar lógica en la vista
         $statsByGroup = [];
         foreach ($grupos as $grupo) {
+            // Contar reuniones solo del año seleccionado (ya vienen filtradas en la relación)
             $totalRealizadas = $grupo->reuniones->count();
             $progreso = $grupo->meta_anual > 0 ? round(($totalRealizadas / $grupo->meta_anual) * 100) : 0;
 
             // Calcular reuniones por bimestre (1..6)
             $reunionesPorBimestre = [
-                1 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [1,2]))->count(),
-                2 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [3,4]))->count(),
-                3 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [5,6]))->count(),
-                4 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [7,8]))->count(),
-                5 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [9,10]))->count(),
-                6 => $grupo->reuniones->filter(fn($r) => in_array($r->fecha->month, [11,12]))->count(),
+                1 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [1,2]))->count(),
+                2 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [3,4]))->count(),
+                3 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [5,6]))->count(),
+                4 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [7,8]))->count(),
+                5 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [9,10]))->count(),
+                6 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [11,12]))->count(),
             ];
 
             // Calcular documentos terminados por bimestre y total anual en función del nombre del grupo
@@ -187,9 +194,11 @@ class GrupoTrabajoController extends Controller
         $anio = $request->get('anio', date('Y'));
         $busqueda = $request->get('busqueda', '');
 
+        // Solo mostrar grupos creados para el año seleccionado
         $query = GrupoTrabajo::with(['reuniones' => function($q) use ($anio) {
-            $q->whereYear('fecha', $anio);
-        }]);
+                $q->whereYear('fecha', $anio);
+            }])
+            ->where('anio_meta', (int)$anio);
 
         // Excluir nombres no deseados de la agenda
         $excluirLower = [

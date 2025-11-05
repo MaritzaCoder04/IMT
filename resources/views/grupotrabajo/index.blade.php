@@ -489,7 +489,14 @@
         function abrirModalUrl(url){
           try{
             const iframe = document.getElementById('modal-iframe-gt');
-            iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            const params = new URLSearchParams(window.location.search);
+            let anio = params.get('anio');
+            if(!anio){
+              try { anio = localStorage.getItem('anioGlobal'); } catch(e) {}
+            }
+            let src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            if (anio) { src += '&anio=' + encodeURIComponent(anio); }
+            iframe.src = src;
             document.getElementById('modal-overlay-gt').classList.add('active');
           }catch(e){}
         }
