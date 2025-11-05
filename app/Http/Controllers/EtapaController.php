@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Documento;
 use App\Models\Etapa;
+use App\Models\EtapaEvento;
 use Illuminate\Http\Request;
 
 class EtapaController extends Controller
@@ -60,6 +61,25 @@ class EtapaController extends Controller
         ]);
         
         $etapas->save();
+
+        // Registrar eventos anualizados por etapa (terminaciones 3x)
+        $eventos = [
+            '3a' => $request->etapa1_periodo3,
+            '3b' => $request->etapa2_periodo3,
+            '3c' => $request->etapa3_periodo3,
+            '3d' => $request->etapa4_periodo3,
+            '3e' => $request->etapa5_periodo3,
+        ];
+
+        foreach ($eventos as $etapaClave => $fecha) {
+            if (!empty($fecha)) {
+                EtapaEvento::firstOrCreate([
+                    'ID_doc' => (int) $ID_doc,
+                    'etapa' => $etapaClave,
+                    'fecha' => $fecha,
+                ]);
+            }
+        }
         
         $target = route('controldeavances');
         if ($request->boolean('modal')) {

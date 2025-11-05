@@ -20,8 +20,19 @@ class LibroController extends Controller
             'clave' => 'nullable|string|max:50',
         ]);
 
-        Libro::create($validated);
-        return redirect()->route('libros.index');
+        // Ensure primary key exists to avoid UrlGenerationException when rendering update URLs
+        $nextId = (Libro::max('ID_libro') ?? 0) + 1;
+        $libro = new Libro();
+        $libro->ID_libro = $nextId;
+        $libro->desc = $validated['desc'];
+        $libro->clave = $validated['clave'] ?? null;
+        $libro->save();
+
+        $target = route('libros.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function update(Request $request, $id)

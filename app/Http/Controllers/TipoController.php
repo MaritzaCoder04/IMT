@@ -20,7 +20,14 @@ class TipoController extends Controller
             'clave' => 'required|string|max:50',
         ]);
 
-        Tipo::create($validated);
+        // Ensure primary key exists to avoid UrlGenerationException when rendering update URLs
+        $nextId = (Tipo::max('ID_tipo') ?? 0) + 1;
+        $tipo = new Tipo();
+        $tipo->ID_tipo = $nextId;
+        $tipo->desc = $validated['desc'];
+        $tipo->clave = $validated['clave'];
+        $tipo->save();
+
         $target = route('tipos.index');
         if ($request->boolean('modal')) {
             return redirect()->to($target.'?modal=1&saved=1');
@@ -28,21 +35,19 @@ class TipoController extends Controller
         return redirect()->to($target);
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, Tipo $tipo)
     {
         $validated = $request->validate([
             'desc' => 'required|string|max:255',
             'clave' => 'required|string|max:50',
         ]);
 
-        $tipo = Tipo::findOrFail($id);
         $tipo->update($validated);
         return redirect()->route('tipos.index');
     }
 
-    public function destroy($id)
+    public function destroy(Tipo $tipo)
     {
-        $tipo = Tipo::findOrFail($id);
         $tipo->delete();
         return redirect()->route('tipos.index');
     }

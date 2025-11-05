@@ -19,8 +19,18 @@ class OrigenController extends Controller
             'desc' => 'required|string|max:255',
         ]);
 
-        Origen::create($validated);
-        return redirect()->route('origenes.index');
+        // Ensure primary key exists to avoid UrlGenerationException when rendering update URLs
+        $nextId = (Origen::max('ID_origen') ?? 0) + 1;
+        $origen = new Origen();
+        $origen->ID_origen = $nextId;
+        $origen->desc = $validated['desc'];
+        $origen->save();
+
+        $target = route('origenes.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target+'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function update(Request $request, $id)

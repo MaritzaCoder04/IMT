@@ -11,6 +11,7 @@
         </h4>
         <form method="POST" action="{{ route('origenes.store') }}" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
             @csrf
+            <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             <input type="text" 
                    name="desc" 
                    placeholder="Descripción" 
@@ -48,7 +49,7 @@
                 @forelse($origenes as $o)
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem 1.5rem;">
-                            <form method="POST" action="{{ route('origenes.update', $o->ID_origen) }}">
+                            <form method="POST" action="{{ route('origenes.update', ['origen' => $o->ID_origen]) }}">
                                 @csrf
                                 @method('PUT')
                                 <input type="text" 

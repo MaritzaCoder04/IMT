@@ -55,19 +55,18 @@ class GrupoTrabajoController extends Controller
                     $mesInicio = ($i - 1) * 2 + 1;
                     $mesFin = $mesInicio + 1;
 
-                    $count = DB::table('etapas')
-                        ->whereNotNull($campoEtapa)
-                        ->whereRaw("MONTH(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) >= ?", [$mesInicio])
-                        ->whereRaw("MONTH(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) <= ?", [$mesFin])
-                        ->whereRaw("YEAR(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                    $count = DB::table('etapas_eventos')
+                        ->where('etapa', $campoEtapa)
+                        ->whereYear('fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
                         ->count();
 
                     $terminadosPorBimestre[$i] = $count;
                 }
 
-                $terminadosTotal = DB::table('etapas')
-                    ->whereNotNull($campoEtapa)
-                    ->whereRaw("YEAR(STR_TO_DATE({$campoEtapa}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                $terminadosTotal = DB::table('etapas_eventos')
+                    ->where('etapa', $campoEtapa)
+                    ->whereYear('fecha', $anioSeleccionado)
                     ->count();
             }
 
@@ -289,7 +288,7 @@ class GrupoTrabajoController extends Controller
         $anioSeleccionado = $request->get('anio', date('Y'));
         $bimestreSeleccionado = $request->get('bimestre', 1);
 
-        // Obtener grupos fijos guardados en la base de datos
+        // Obtener grupos fijos guardados en la base de datos (solo del año seleccionado)
         $gruposFijosDB = GrupoTrabajo::whereIn('nombre', [
             'Anteproyecto Preliminar',
             'Anteproyecto Final', 
@@ -297,7 +296,7 @@ class GrupoTrabajoController extends Controller
             'Publicación de Manuales/Normas',
             'Subcomité No.4',
             'Grupo de Trabajo 1',
-        ])->get();
+        ])->where('anio_meta', $anioSeleccionado)->get();
 
         // Crear array de grupos fijos con valores por defecto o de BD
         $gruposFijos = [];
@@ -352,13 +351,12 @@ class GrupoTrabajoController extends Controller
                 $mesFin = $mesInicio + 1;
 
                 if ($campoFecha) {
-                    // Obtener fechas de productos terminados en este bimestre
-                    $fechasProductos = \DB::table('etapas')
-                        ->select($campoFecha . ' as fecha')
-                        ->whereNotNull($campoFecha)
-                        ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) >= ?", [$mesInicio])
-                        ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) <= ?", [$mesFin])
-                        ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                    // Obtener fechas de productos terminados en este bimestre desde eventos anualizados
+                    $fechasProductos = \DB::table('etapas_eventos')
+                        ->select('fecha')
+                        ->where('etapa', $campoFecha)
+                        ->whereYear('fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
                         ->get();
 
                     $grupo->fechas_productos[$i] = $fechasProductos->pluck('fecha')->toArray();
@@ -372,10 +370,10 @@ class GrupoTrabajoController extends Controller
 
             // Total realizado en el año y todas las fechas
             if ($campoFecha) {
-                $todasFechas = \DB::table('etapas')
-                    ->select($campoFecha . ' as fecha')
-                    ->whereNotNull($campoFecha)
-                    ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                $todasFechas = \DB::table('etapas_eventos')
+                    ->select('fecha')
+                    ->where('etapa', $campoFecha)
+                    ->whereYear('fecha', $anioSeleccionado)
                     ->get();
 
                 $grupo->total_realizado = $todasFechas->count();
@@ -421,8 +419,12 @@ class GrupoTrabajoController extends Controller
             ->orderBy('reuniones.fecha')
             ->get();
 
-        // Obtener grupos de trabajo regulares
-        $grupos = GrupoTrabajo::with('reuniones')->get();
+        // Obtener grupos de trabajo regulares del año seleccionado y sus reuniones del año
+        $grupos = GrupoTrabajo::with(['reuniones' => function($q) use ($anioSeleccionado){
+                $q->whereYear('fecha', $anioSeleccionado);
+            }])
+            ->where('anio_meta', $anioSeleccionado)
+            ->get();
         // Ocultar metas si no corresponde al año seleccionado
         foreach ($grupos as $g) {
             $g->meta_visible = ($g->anio_meta == $anioSeleccionado);
@@ -610,6 +612,132 @@ class GrupoTrabajoController extends Controller
             $ultimoReporte = null;
         }
 
+        // Integrar datos guardados del año/bimestre seleccionado sobre los grupos actuales
+        // y reconstruir completamente cuando no existan datos dinámicos visibles
+        if (Schema::hasTable('grupo_trabajo_reportes')) {
+            try {
+                $guardados = GrupoTrabajoReporte::with('grupoTrabajo')
+                    ->where('anio', (int) $anioSeleccionado)
+                    ->orderBy('grupo_trabajo_id')
+                    ->orderBy('bimestre')
+                    ->get();
+
+                if ($guardados->count() > 0) {
+                    $normalize = function ($s) {
+                        $s = Str::ascii($s);
+                        $s = Str::lower($s);
+                        return preg_replace('/[^a-z0-9]/', '', $s);
+                    };
+                    $fixedMap = [
+                        'apt' => $normalize('Anteproyecto Preliminar'),
+                        'aft' => $normalize('Anteproyecto Final'),
+                        'ppt' => $normalize('Proyecto Preliminar'),
+                        'np'  => $normalize('Publicación de Manuales/Normas'),
+                        'sub4'=> $normalize('Subcomité No.4'),
+                        'gt1' => $normalize('Grupo de Trabajo 1'),
+                    ];
+
+                    $sinDatos = ($todosLosGrupos->count() == 0) || $todosLosGrupos->every(function($g){
+                        $metas = [
+                            (int)($g->meta_bimestre_1 ?? 0),
+                            (int)($g->meta_bimestre_2 ?? 0),
+                            (int)($g->meta_bimestre_3 ?? 0),
+                            (int)($g->meta_bimestre_4 ?? 0),
+                            (int)($g->meta_bimestre_5 ?? 0),
+                            (int)($g->meta_bimestre_6 ?? 0),
+                        ];
+                        $totalMetas = array_sum($metas);
+                        $totalReal = 0;
+                        if (is_array($g->realizados ?? null)) {
+                            $totalReal = array_sum($g->realizados);
+                        } elseif (isset($g->total_realizado)) {
+                            $totalReal = (int)$g->total_realizado;
+                        }
+                        return ($totalMetas <= 0) && ($totalReal <= 0);
+                    });
+
+                    if ($sinDatos) {
+                        // Reconstruir sólo con guardados
+                        $map = [];
+                        foreach ($guardados as $rep) {
+                            $nombre = $rep->grupoTrabajo->nombre ?? '';
+                            $norm = $normalize($nombre);
+                            $idKey = null;
+                            foreach ($fixedMap as $code => $normFixed) {
+                                if ($norm && ($norm === $normFixed)) { $idKey = $code; break; }
+                            }
+                            if (!$idKey) { $idKey = (string)$rep->grupo_trabajo_id; }
+                            if (!isset($map[$idKey])) {
+                                $map[$idKey] = (object)[
+                                    'id' => $idKey,
+                                    'nombre' => $nombre,
+                                    'meta_anual' => 0,
+                                    'meta_bimestre_1' => 0,
+                                    'meta_bimestre_2' => 0,
+                                    'meta_bimestre_3' => 0,
+                                    'meta_bimestre_4' => 0,
+                                    'meta_bimestre_5' => 0,
+                                    'meta_bimestre_6' => 0,
+                                    'observaciones' => null,
+                                    'realizados' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0],
+                                    'total_realizado' => 0,
+                                    'es_fijo' => in_array($idKey, array_keys($fixedMap)),
+                                ];
+                            }
+                            $gobj = $map[$idKey];
+                            $idx = (int)$rep->bimestre;
+                            if ($idx >= 1 && $idx <= 6) {
+                                $gobj->{'meta_bimestre_'.$idx} = (int)$rep->meta_bimestral;
+                                $gobj->realizados[$idx] = (int)$rep->realizado_bimestre;
+                            }
+                            $gobj->total_realizado += (int)$rep->realizado_bimestre;
+                            $gobj->meta_anual += (int)$rep->meta_bimestral;
+                            if (!empty($rep->observaciones)) { $gobj->observaciones = $rep->observaciones; }
+                            $map[$idKey] = $gobj;
+                        }
+                        $todosLosGrupos = collect(array_values($map));
+                    } else {
+                        // Overlay sobre los grupos existentes
+                        $index = collect($todosLosGrupos)->keyBy(function($g) use ($normalize) {
+                            $gid = is_array($g) ? ($g['id'] ?? null) : ($g->id ?? null);
+                            $nombre = is_array($g) ? ($g['nombre'] ?? '') : ($g->nombre ?? '');
+                            $norm = $normalize($nombre);
+                            return $gid ?: $norm;
+                        });
+                        $sumAnual = [];
+                        foreach ($guardados as $rep) {
+                            $nombre = $rep->grupoTrabajo->nombre ?? '';
+                            $norm = $normalize($nombre);
+                            $idKey = null;
+                            foreach ($fixedMap as $code => $normFixed) {
+                                if ($norm && ($norm === $normFixed)) { $idKey = $code; break; }
+                            }
+                            if (!$idKey) { $idKey = (string)$rep->grupo_trabajo_id; }
+
+                            $g = $index->get($idKey) ?? $index->get($norm);
+                            if ($g) {
+                                $b = (int)$rep->bimestre;
+                                if ($b >= 1 && $b <= 6) {
+                                    $g->{'meta_bimestre_'.$b} = (int)$rep->meta_bimestral;
+                                    if (!is_array($g->realizados)) { $g->realizados = [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0]; }
+                                    $g->realizados[$b] = (int)$rep->realizado_bimestre;
+                                }
+                                $sumAnual[$idKey] = ($sumAnual[$idKey] ?? 0) + (int)$rep->meta_bimestral;
+                                if (!empty($rep->observaciones)) { $g->observaciones = $rep->observaciones; }
+                                $index[$idKey] = $g;
+                            }
+                        }
+                        $todosLosGrupos = $index->map(function($g, $key) use ($sumAnual){
+                            if (isset($sumAnual[$key])) { $g->meta_anual = $sumAnual[$key]; }
+                            return $g;
+                        })->values();
+                    }
+                }
+            } catch (\Exception $e) {
+                // continuar sin bloquear la vista ante errores de integración
+            }
+        }
+
         return view('grupotrabajo.reporte', compact(
             'todosLosGrupos',
             'anioSeleccionado',
@@ -698,11 +826,10 @@ class GrupoTrabajoController extends Controller
 
                 if ($campoFecha) {
                     // Contar documentos terminados en este bimestre
-                    $count = \DB::table('etapas')
-                        ->whereNotNull($campoFecha)
-                        ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) >= ?", [$mesInicio])
-                        ->whereRaw("MONTH(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) <= ?", [$mesFin])
-                        ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                    $count = \DB::table('etapas_eventos')
+                        ->where('etapa', $campoFecha)
+                        ->whereYear('fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
                         ->count();
 
                     $grupo->realizados[$i] = $count;
@@ -713,9 +840,9 @@ class GrupoTrabajoController extends Controller
 
             // Total realizado en el año
             if ($campoFecha) {
-                $grupo->total_realizado = \DB::table('etapas')
-                    ->whereNotNull($campoFecha)
-                    ->whereRaw("YEAR(STR_TO_DATE({$campoFecha}, '%Y-%m-%d')) = ?", [$anioSeleccionado])
+                $grupo->total_realizado = \DB::table('etapas_eventos')
+                    ->where('etapa', $campoFecha)
+                    ->whereYear('fecha', $anioSeleccionado)
                     ->count();
             } else {
                 $grupo->total_realizado = 0;
@@ -912,6 +1039,246 @@ class GrupoTrabajoController extends Controller
         // Unir fijos + regulares (sin secciones de coordinación)
         $todosLosGrupos = collect($gruposFijos)->merge($grupos);
 
+        // Fallback: si el año seleccionado no tiene datos dinámicos visibles, cargar datos guardados normalizados
+        if (Schema::hasTable('grupo_trabajo_reportes')) {
+            try {
+                $guardados = GrupoTrabajoReporte::with('grupoTrabajo')
+                    ->where('anio', (int) $anioSeleccionado)
+                    ->orderBy('grupo_trabajo_id')
+                    ->orderBy('bimestre')
+                    ->get();
+
+                $hayGuardados = $guardados->count() > 0;
+                $sinDatos = ($todosLosGrupos->count() == 0) || $todosLosGrupos->every(function($g){
+                    $metas = [
+                        (int)($g->meta_bimestre_1 ?? 0),
+                        (int)($g->meta_bimestre_2 ?? 0),
+                        (int)($g->meta_bimestre_3 ?? 0),
+                        (int)($g->meta_bimestre_4 ?? 0),
+                        (int)($g->meta_bimestre_5 ?? 0),
+                        (int)($g->meta_bimestre_6 ?? 0),
+                    ];
+                    $totalMetas = array_sum($metas);
+                    $totalReal = 0;
+                    if (is_array($g->realizados ?? null)) {
+                        $totalReal = array_sum($g->realizados);
+                    } elseif (isset($g->total_realizado)) {
+                        $totalReal = (int)$g->total_realizado;
+                    }
+                    return ($totalMetas <= 0) && ($totalReal <= 0);
+                });
+
+                if ($hayGuardados && $sinDatos) {
+                    $normalize = function ($s) {
+                        $s = Str::ascii($s);
+                        $s = Str::lower($s);
+                        return preg_replace('/[^a-z0-9]/', '', $s);
+                    };
+                    $fixedMap = [
+                        'apt' => $normalize('Anteproyecto Preliminar'),
+                        'aft' => $normalize('Anteproyecto Final'),
+                        'ppt' => $normalize('Proyecto Preliminar'),
+                        'np'  => $normalize('Publicación de Manuales/Normas'),
+                        'sub4'=> $normalize('Subcomité No.4'),
+                        'gt1' => $normalize('Grupo de Trabajo 1'),
+                    ];
+                    $map = [];
+                    foreach ($guardados as $rep) {
+                        $nombre = $rep->grupoTrabajo->nombre ?? '';
+                        $norm = $normalize($nombre);
+                        $idKey = null;
+                        foreach ($fixedMap as $code => $normFixed) {
+                            if ($norm && ($norm === $normFixed)) { $idKey = $code; break; }
+                        }
+                        if (!$idKey) { $idKey = (string)$rep->grupo_trabajo_id; }
+                        if (!isset($map[$idKey])) {
+                            $map[$idKey] = (object)[
+                                'id' => $idKey,
+                                'nombre' => $nombre,
+                                'meta_anual' => 0,
+                                'meta_bimestre_1' => 0,
+                                'meta_bimestre_2' => 0,
+                                'meta_bimestre_3' => 0,
+                                'meta_bimestre_4' => 0,
+                                'meta_bimestre_5' => 0,
+                                'meta_bimestre_6' => 0,
+                                'observaciones' => null,
+                                'realizados' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0],
+                                'total_realizado' => 0,
+                                'es_fijo' => in_array($idKey, array_keys($fixedMap)),
+                            ];
+                        }
+                        $gobj = $map[$idKey];
+                        $idx = (int)$rep->bimestre;
+                        if ($idx >= 1 && $idx <= 6) {
+                            $gobj->{'meta_bimestre_'.$idx} = (int)$rep->meta_bimestral;
+                            $gobj->realizados[$idx] = (int)$rep->realizado_bimestre;
+                        }
+                        $gobj->total_realizado += (int)$rep->realizado_bimestre;
+                        $gobj->meta_anual += (int)$rep->meta_bimestral;
+                        if (!empty($rep->observaciones)) { $gobj->observaciones = $rep->observaciones; }
+                        $map[$idKey] = $gobj;
+                    }
+                    $todosLosGrupos = collect(array_values($map));
+                }
+            } catch (\Exception $e) {
+                // Continuar sin bloquear la generación del PDF
+            }
+        }
+
+        // Fallback: si el año seleccionado no tiene datos dinámicos visibles, cargar datos guardados normalizados
+        if (Schema::hasTable('grupo_trabajo_reportes')) {
+            try {
+                $guardados = GrupoTrabajoReporte::with('grupoTrabajo')
+                    ->where('anio', (int) $anioSeleccionado)
+                    ->orderBy('grupo_trabajo_id')
+                    ->orderBy('bimestre')
+                    ->get();
+
+                $hayGuardados = $guardados->count() > 0;
+
+                // Detectar si el conjunto actual no tiene datos (sin metas ni realizados)
+                $sinDatos = ($todosLosGrupos->count() == 0) || $todosLosGrupos->every(function($g){
+                    $metas = [
+                        (int)($g->meta_bimestre_1 ?? 0),
+                        (int)($g->meta_bimestre_2 ?? 0),
+                        (int)($g->meta_bimestre_3 ?? 0),
+                        (int)($g->meta_bimestre_4 ?? 0),
+                        (int)($g->meta_bimestre_5 ?? 0),
+                        (int)($g->meta_bimestre_6 ?? 0),
+                    ];
+                    $totalMetas = array_sum($metas);
+                    $totalReal = 0;
+                    if (is_array($g->realizados ?? null)) {
+                        $totalReal = array_sum($g->realizados);
+                    } elseif (isset($g->total_realizado)) {
+                        $totalReal = (int)$g->total_realizado;
+                    }
+                    return ($totalMetas <= 0) && ($totalReal <= 0);
+                });
+
+                if ($hayGuardados && $sinDatos) {
+                    $normalize = function ($s) {
+                        $s = Str::ascii($s);
+                        $s = Str::lower($s);
+                        return preg_replace('/[^a-z0-9]/', '', $s);
+                    };
+
+                    $fixedMap = [
+                        'apt' => $normalize('Anteproyecto Preliminar'),
+                        'aft' => $normalize('Anteproyecto Final'),
+                        'ppt' => $normalize('Proyecto Preliminar'),
+                        'np'  => $normalize('Publicación de Manuales/Normas'),
+                        'sub4'=> $normalize('Subcomité No.4'),
+                        'gt1' => $normalize('Grupo de Trabajo 1'),
+                    ];
+
+                    $map = [];
+                    foreach ($guardados as $rep) {
+                        $nombre = $rep->grupoTrabajo->nombre ?? '';
+                        $norm = $normalize($nombre);
+                        $idKey = null;
+                        foreach ($fixedMap as $code => $normFixed) {
+                            if ($norm && ($norm === $normFixed)) { $idKey = $code; break; }
+                        }
+                        if (!$idKey) { $idKey = (string)$rep->grupo_trabajo_id; }
+
+                        if (!isset($map[$idKey])) {
+                            $map[$idKey] = (object)[
+                                'id' => $idKey,
+                                'nombre' => $nombre,
+                                'meta_anual' => 0,
+                                'meta_bimestre_1' => 0,
+                                'meta_bimestre_2' => 0,
+                                'meta_bimestre_3' => 0,
+                                'meta_bimestre_4' => 0,
+                                'meta_bimestre_5' => 0,
+                                'meta_bimestre_6' => 0,
+                                'observaciones' => null,
+                                'realizados' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0],
+                                'total_realizado' => 0,
+                                'es_fijo' => in_array($idKey, array_keys($fixedMap)),
+                            ];
+                        }
+                        $gobj = $map[$idKey];
+                        $idx = (int)$rep->bimestre;
+                        if ($idx >= 1 && $idx <= 6) {
+                            $gobj->{'meta_bimestre_'.$idx} = (int)$rep->meta_bimestral;
+                            $gobj->realizados[$idx] = (int)$rep->realizado_bimestre;
+                        }
+                        $gobj->total_realizado += (int)$rep->realizado_bimestre;
+                        $gobj->meta_anual += (int)$rep->meta_bimestral;
+                        if (!empty($rep->observaciones)) { $gobj->observaciones = $rep->observaciones; }
+                        $map[$idKey] = $gobj;
+                    }
+
+                    $todosLosGrupos = collect(array_values($map));
+                }
+            } catch (\Exception $e) {
+                // En caso de error en el fallback, continuar sin bloquear la vista
+            }
+        }
+
+        // Overlay de los datos guardados sobre los grupos actuales (cuando sí hay datos dinámicos)
+        if (Schema::hasTable('grupo_trabajo_reportes')) {
+            try {
+                $guardadosAnio = GrupoTrabajoReporte::with('grupoTrabajo')
+                    ->where('anio', (int)$anioSeleccionado)
+                    ->get();
+                if ($guardadosAnio->count() > 0) {
+                    $normalize = function ($s) {
+                        $s = Str::ascii($s);
+                        $s = Str::lower($s);
+                        return preg_replace('/[^a-z0-9]/', '', $s);
+                    };
+                    $fixedMap = [
+                        'apt' => $normalize('Anteproyecto Preliminar'),
+                        'aft' => $normalize('Anteproyecto Final'),
+                        'ppt' => $normalize('Proyecto Preliminar'),
+                        'np'  => $normalize('Publicación de Manuales/Normas'),
+                        'sub4'=> $normalize('Subcomité No.4'),
+                        'gt1' => $normalize('Grupo de Trabajo 1'),
+                    ];
+
+                    $index = collect($todosLosGrupos)->keyBy(function($g) use ($normalize) {
+                        $gid = is_array($g) ? ($g['id'] ?? null) : ($g->id ?? null);
+                        $nombre = is_array($g) ? ($g['nombre'] ?? '') : ($g->nombre ?? '');
+                        $norm = $normalize($nombre);
+                        return $gid ?: $norm;
+                    });
+                    $sumAnual = [];
+                    foreach ($guardadosAnio as $rep) {
+                        $nombre = $rep->grupoTrabajo->nombre ?? '';
+                        $norm = $normalize($nombre);
+                        $idKey = null;
+                        foreach ($fixedMap as $code => $normFixed) {
+                            if ($norm && ($norm === $normFixed)) { $idKey = $code; break; }
+                        }
+                        if (!$idKey) { $idKey = (string)$rep->grupo_trabajo_id; }
+
+                        $g = $index->get($idKey) ?? $index->get($norm);
+                        if ($g) {
+                            $b = (int)$rep->bimestre;
+                            if ($b >= 1 && $b <= 6) {
+                                $g->{'meta_bimestre_'.$b} = (int)$rep->meta_bimestral;
+                                if (!is_array($g->realizados)) { $g->realizados = [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0]; }
+                                $g->realizados[$b] = (int)$rep->realizado_bimestre;
+                            }
+                            $sumAnual[$idKey] = ($sumAnual[$idKey] ?? 0) + (int)$rep->meta_bimestral;
+                            if (!empty($rep->observaciones)) { $g->observaciones = $rep->observaciones; }
+                            $index[$idKey] = $g;
+                        }
+                    }
+                    $todosLosGrupos = $index->map(function($g, $key) use ($sumAnual){
+                        if (isset($sumAnual[$key])) { $g->meta_anual = $sumAnual[$key]; }
+                        return $g;
+                    })->values();
+                }
+            } catch (\Exception $e) {
+                // continuar sin bloquear
+            }
+        }
+
         // Recuperar las notas del reporte guardado para el período actual (g.3) si la tabla existe
         $notasReporte = null;
         if (Schema::hasTable('grupo_trabajo_reportes')) {
@@ -1044,7 +1411,7 @@ class GrupoTrabajoController extends Controller
         $anioSeleccionado = $request->get('anio', date('Y'));
         $bimestreSeleccionado = $request->get('bimestre', 1);
     
-    // Obtener grupos fijos guardados en la base de datos
+    // Obtener grupos fijos guardados en la base de datos (solo del año seleccionado)
     $gruposFijosDB = GrupoTrabajo::whereIn('nombre', [
         'Anteproyecto Preliminar',
         'Anteproyecto Final', 
@@ -1052,7 +1419,7 @@ class GrupoTrabajoController extends Controller
         'Publicación de Manuales/Normas',
         'Subcomité No.4',
         'Grupo de Trabajo 1',
-    ])->get();
+    ])->where('anio_meta', $anioSeleccionado)->get();
 
     // Crear array de grupos fijos con valores por defecto o de BD
     $gruposFijos = [];
@@ -1129,9 +1496,12 @@ class GrupoTrabajoController extends Controller
         }
     }
     
-        // Obtener todos los grupos de trabajo regulares (sin excluir por nombre);
-        // deduplicaremos contra fijos y especiales más adelante.
-        $grupos = GrupoTrabajo::with('reuniones')->get();
+        // Obtener grupos de trabajo regulares del año seleccionado y sus reuniones del año
+        $grupos = GrupoTrabajo::with(['reuniones' => function($q) use ($anioSeleccionado){
+                $q->whereYear('fecha', $anioSeleccionado);
+            }])
+            ->where('anio_meta', $anioSeleccionado)
+            ->get();
 
         // Normalizador de nombres
         $normalize = function ($s) {
@@ -1385,8 +1755,12 @@ public function guardarReporte(Request $request)
                 ->update(['observaciones' => $dato['observaciones']]);
         }
         
-        // Obtener datos completos para el reporte
-        $grupos = GrupoTrabajo::with('reuniones')->get();
+        // Obtener datos completos para el reporte, limitados al año seleccionado
+        $grupos = GrupoTrabajo::with(['reuniones' => function($q) use ($request) {
+                $q->whereYear('fecha', (int)$request->anio);
+            }])
+            ->where('anio_meta', (int)$request->anio)
+            ->get();
         $datosReporte = [];
         
         foreach ($grupos as $grupo) {

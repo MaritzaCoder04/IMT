@@ -58,7 +58,7 @@
                 @forelse($tipos as $t)
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem 1.5rem;">
-                            <form method="POST" action="{{ route('tipos.update', $t->ID_tipo) }}" style="display: contents;">
+                            <form method="POST" action="{{ route('tipos.update', ['tipo' => $t->ID_tipo]) }}" style="display: contents;">
                                 @csrf
                                 @method('PUT')
                                 <input type="text" 

@@ -11,6 +11,7 @@
         </h4>
         <form method="POST" action="{{ route('temas.store') }}" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
             @csrf
+            <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             <input type="text" 
                    name="desc" 
                    placeholder="Descripción" 
@@ -56,7 +57,7 @@
                 @forelse($temas as $t)
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem 1.5rem;">
-                            <form method="POST" action="{{ route('temas.update', $t->ID_tema) }}">
+                            <form method="POST" action="{{ route('temas.update', ['tema' => $t->ID_tema]) }}">
                                 @csrf
                                 @method('PUT')
                                 <input type="text" 

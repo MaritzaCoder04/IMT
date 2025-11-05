@@ -11,6 +11,7 @@
         </h4>
         <form method="POST" action="{{ route('libros.store') }}" style="display: flex; gap: 0.75rem; flex-wrap: wrap; align-items: center;">
             @csrf
+            <input type="hidden" name="modal" value="{{ request('modal') ? 1 : '' }}">
             <input type="text" 
                    name="desc" 
                    placeholder="Descripción" 
@@ -56,7 +57,7 @@
                 @forelse($libros as $l)
                     <tr style="border-bottom: 1px solid #f1f5f9;">
                         <td style="padding: 1rem 1.5rem;">
-                            <form method="POST" action="{{ route('libros.update', $l->ID_libro) }}">
+                            <form method="POST" action="{{ route('libros.update', ['libro' => $l->ID_libro]) }}">
                                 @csrf
                                 @method('PUT')
                                 <input type="text" 

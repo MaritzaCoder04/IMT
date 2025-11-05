@@ -20,8 +20,19 @@ class TemaController extends Controller
             'clave' => 'nullable|string|max:50',
         ]);
 
-        Tema::create($validated);
-        return redirect()->route('temas.index');
+        // Ensure primary key exists to avoid UrlGenerationException when rendering update URLs
+        $nextId = (Tema::max('ID_tema') ?? 0) + 1;
+        $tema = new Tema();
+        $tema->ID_tema = $nextId;
+        $tema->desc = $validated['desc'];
+        $tema->clave = $validated['clave'] ?? null;
+        $tema->save();
+
+        $target = route('temas.index');
+        if ($request->boolean('modal')) {
+            return redirect()->to($target.'?modal=1&saved=1');
+        }
+        return redirect()->to($target);
     }
 
     public function update(Request $request, $id)
