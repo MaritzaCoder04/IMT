@@ -214,6 +214,10 @@ class DocumentoController extends Controller
             });
             $designacionGenerada = implode('-', $componentesFiltrados);
 
+            // Obtener descripción de origen y asegurar años
+            $origenDesc = \App\Models\Origen::where('ID_origen', $documento->origen)->value('desc');
+            $anioSimple = $documento->anio_simple ?: substr((string)($documento->anio ?? ''), -2);
+
             DocumentoInfo::updateOrCreate(
                 ['ID_doc' => $documento->ID_doc],
                 [
@@ -229,6 +233,10 @@ class DocumentoController extends Controller
                     'desc_titulo' => $descTitulo ?? '',
                     'capitulo' => (string)$documento->capitulo,
                     'designacion' => $designacionGenerada ?: null,
+                    // Campos adicionales para exportación y vistas
+                    'origen' => $origenDesc ?? '',
+                    'anio_simple' => (string)$anioSimple,
+                    'anio' => (string)($documento->anio ?? ''),
                 ]
             );
         } catch (\Exception $e) {

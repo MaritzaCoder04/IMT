@@ -97,6 +97,10 @@ class FormularioController extends Controller
         });
         $designacionGenerada = implode('-', $componentesFiltrados);
 
+        // Obtener descripción de origen y asegurar años
+        $origenDesc = Origen::where('ID_origen', $documento->origen)->value('desc');
+        $anioSimple = $documento->anio_simple ?: substr((string)($documento->anio ?? ''), -2);
+
         DocumentoInfo::updateOrCreate(
             ['ID_doc' => $documento->ID_doc],
             [
@@ -106,11 +110,16 @@ class FormularioController extends Controller
                 'libro' => (string)$documento->libro,
                 'tema' => (string)$documento->tema,
                 'parte' => (string)$documento->parte,
-                'desc_parte' => $parteDesc,
+                // Evitar NULL en descripciones
+                'desc_parte' => $parteDesc ?? '',
                 'titulo' => (string)$documento->titulo,
-                'desc_titulo' => $tituloDesc,
+                'desc_titulo' => $tituloDesc ?? '',
                 'capitulo' => (string)$documento->capitulo,
                 'designacion' => $designacionGenerada ?: null,
+                // Campos adicionales para exportación y vistas
+                'origen' => $origenDesc ?? '',
+                'anio_simple' => (string)$anioSimple,
+                'anio' => (string)($documento->anio ?? ''),
             ]
         );
     } catch (\Exception $e) {
