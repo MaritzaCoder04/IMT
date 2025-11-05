@@ -35,7 +35,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="palabraExacta">Palabra exacta</label>
+                        <label for="palabraExacta">Palabra Exacta</label>
                         <div class="input-clearable">
                             <input type="text" id="palabraExacta" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
                             <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>

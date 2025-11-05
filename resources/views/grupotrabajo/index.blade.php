@@ -213,6 +213,8 @@
         flex-direction: column;
     }
 }
+
+
 </style>
 
 <div class="all-form">
@@ -367,12 +369,6 @@
                                         title="Editar grupo">
                                     <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo">
                                 </button>
-                                <button type="button" class="btn-icon" 
-                                        data-nombre="{{ $grupo->nombre }}"
-                                        onclick="abrirAgendaDeGrupo(this)"
-                                        title="Ver agenda del grupo">
-                                    <img src="{{ asset('img/calendar.png') }}" alt="Agenda del grupo">
-                                </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
                                       style="display: inline;"
@@ -450,7 +446,7 @@
         <div id="modal-overlay-gt" class="modal-overlay" onclick="cerrarModalGTOverlayClick(event)">
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
-                    <h3>Nuevo Grupo de Trabajo</h3>
+                    <h3>Grupo de Trabajo</h3>
                     <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">×</button>
                 </div>
                 <div class="modal-body">
