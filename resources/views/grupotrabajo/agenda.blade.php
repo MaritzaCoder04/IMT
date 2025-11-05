@@ -647,16 +647,27 @@ function cerrarModalBtn(grupoId) {
 function toggleMotivo(radio, grupoId) {
     const motivoProgramada = document.getElementById('motivo-programada-' + grupoId);
     const motivoNoProgramada = document.getElementById('motivo-noprogramada-' + grupoId);
+    const textareaProgramada = motivoProgramada.querySelector('textarea');
     const textareaNoProgramada = motivoNoProgramada.querySelector('textarea');
     
     if (radio.value === '1') {
         motivoProgramada.style.display = 'block';
         motivoNoProgramada.style.display = 'none';
-        textareaNoProgramada.removeAttribute('required');
+        // El motivo a guardar debe llamarse "motivo" cuando es programada
+        if (textareaProgramada) textareaProgramada.name = 'motivo';
+        if (textareaNoProgramada) {
+            textareaNoProgramada.name = '';
+            textareaNoProgramada.removeAttribute('required');
+        }
     } else {
         motivoProgramada.style.display = 'none';
         motivoNoProgramada.style.display = 'block';
-        textareaNoProgramada.setAttribute('required', 'required');
+        // El motivo a guardar debe llamarse "motivo" cuando es fuera de programación
+        if (textareaNoProgramada) {
+            textareaNoProgramada.name = 'motivo';
+            textareaNoProgramada.setAttribute('required', 'required');
+        }
+        if (textareaProgramada) textareaProgramada.name = '';
     }
 }
 
