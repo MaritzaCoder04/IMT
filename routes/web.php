@@ -155,7 +155,7 @@ Route::get('/', function () {
 
 Route::get('/dashboard', function () {
     return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
 Route::get('/mi-vista', function () {
     return view('home');
@@ -163,13 +163,13 @@ Route::get('/mi-vista', function () {
 
 
 
-Route::middleware('auth')->group(function () {
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
+// Rutas de perfil deshabilitadas al quitar autenticación
+// Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+// Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+// Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-require __DIR__.'/auth.php';
+// Autenticación deshabilitada
+// require __DIR__.'/auth.php';
  
 // Gestión de tipos para creación de grupos de trabajo
 Route::resource('grupos', App\Http\Controllers\GrupoController::class)->only(['index','store','update','destroy']);

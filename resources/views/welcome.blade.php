@@ -45,8 +45,8 @@
 <body>
     <div class="container">
         <h1>¡Bienvenid@!</h1>
-        <p>Estoy feliz de que estés aquí. Haz clic en el botón de abajo.</p>
-        <a href="{{ route('login') }}" class="btn-login">Iniciar sesión</a>
+        <p>Bienvenido. Entra a la aplicación sin necesidad de iniciar sesión.</p>
+        <a href="{{ route('todoslosdocumentos') }}" class="btn-login">Entrar</a>
     </div>
 </body>
 </html>
