@@ -635,6 +635,38 @@
 let anioActual = {{ $anioSeleccionado ?? date('Y') }};
 let bimestreActual = {{ $bimestreSeleccionado ?? 1 }};
 
+// Claves de localStorage para persistir selección
+const LS_KEY_BIMESTRE = 'reporte:last_bimestre';
+const LS_KEY_ANIO = 'reporte:last_anio';
+
+// Al cargar, si faltan parámetros en la URL, usar la última selección guardada
+document.addEventListener('DOMContentLoaded', function() {
+    try {
+        const url = new URL(window.location.href);
+        const hasB = url.searchParams.has('bimestre');
+        const hasY = url.searchParams.has('anio');
+        const storedB = localStorage.getItem(LS_KEY_BIMESTRE);
+        const storedY = localStorage.getItem(LS_KEY_ANIO);
+
+        // Si la URL ya trae selección, guardarla para persistir al volver sin parámetros
+        if (hasB && hasY) {
+            try {
+                localStorage.setItem(LS_KEY_BIMESTRE, String(url.searchParams.get('bimestre')));
+                localStorage.setItem(LS_KEY_ANIO, String(url.searchParams.get('anio')));
+            } catch (e) { /* ignorar */ }
+            return; // no redirigir, respetar la selección explícita
+        }
+
+        if ((!hasB || !hasY) && storedB) {
+            const anioToUse = storedY || String(new Date().getFullYear());
+            url.searchParams.set('bimestre', storedB);
+            url.searchParams.set('anio', anioToUse);
+            window.location.replace(url.toString());
+            return;
+        }
+    } catch (e) { /* ignorar */ }
+});
+
 function cambiarTab(tab) {
     document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -645,11 +677,21 @@ function cambiarTab(tab) {
 
 function cambiarAnio(direccion) {
     anioActual += direccion;
+    // Guardar selección en localStorage
+    try {
+        localStorage.setItem(LS_KEY_ANIO, String(anioActual));
+        localStorage.setItem(LS_KEY_BIMESTRE, String(bimestreActual));
+    } catch (e) { /* ignorar */ }
     window.location = '{{ route("grupotrabajo.reporte") }}?anio=' + anioActual + '&bimestre=' + bimestreActual;
 }
 
 function cambiarBimestre(bimestre) {
     bimestreActual = bimestre;
+    // Guardar selección en localStorage
+    try {
+        localStorage.setItem(LS_KEY_BIMESTRE, String(bimestre));
+        localStorage.setItem(LS_KEY_ANIO, String(anioActual));
+    } catch (e) { /* ignorar */ }
     window.location = '{{ route("grupotrabajo.reporte") }}?anio=' + anioActual + '&bimestre=' + bimestre;
 }
 
