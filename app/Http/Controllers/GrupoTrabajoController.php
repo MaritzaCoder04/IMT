@@ -351,16 +351,18 @@ class GrupoTrabajoController extends Controller
                 $mesFin = $mesInicio + 1;
 
                 if ($campoFecha) {
-                    // Obtener fechas de productos terminados en este bimestre desde eventos anualizados
-                    $fechasProductos = \DB::table('etapas_eventos')
-                        ->select('fecha')
-                        ->where('etapa', $campoFecha)
-                        ->whereYear('fecha', $anioSeleccionado)
-                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
-                        ->get();
+                    // Contar documentos distintos vigentes con fecha de terminación en el bimestre
+                    $countDistinctDocs = \DB::table('etapas_eventos')
+                        ->join('documento', 'etapas_eventos.ID_doc', '=', 'documento.ID_doc')
+                        ->where('documento.vigente', 1)
+                        ->where('etapas_eventos.etapa', $campoFecha)
+                        ->whereYear('etapas_eventos.fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(etapas_eventos.fecha) >= ? AND MONTH(etapas_eventos.fecha) <= ?', [$mesInicio, $mesFin])
+                        ->distinct()
+                        ->count('etapas_eventos.ID_doc');
 
-                    $grupo->fechas_productos[$i] = $fechasProductos->pluck('fecha')->toArray();
-                    $grupo->realizados[$i] = $fechasProductos->count();
+                    $grupo->fechas_productos[$i] = [];
+                    $grupo->realizados[$i] = $countDistinctDocs;
                 } else {
                     // Grupos fijos sin mapeo a `etapas` (p.ej. Subcomité/Grupo de Trabajo)
                     $grupo->fechas_productos[$i] = [];
@@ -368,16 +370,17 @@ class GrupoTrabajoController extends Controller
                 }
             }
 
-            // Total realizado en el año y todas las fechas
+            // Total realizado en el año (documentos distintos vigentes) y todas las fechas
             if ($campoFecha) {
-                $todasFechas = \DB::table('etapas_eventos')
-                    ->select('fecha')
-                    ->where('etapa', $campoFecha)
-                    ->whereYear('fecha', $anioSeleccionado)
-                    ->get();
+                $grupo->total_realizado = \DB::table('etapas_eventos')
+                    ->join('documento', 'etapas_eventos.ID_doc', '=', 'documento.ID_doc')
+                    ->where('documento.vigente', 1)
+                    ->where('etapas_eventos.etapa', $campoFecha)
+                    ->whereYear('etapas_eventos.fecha', $anioSeleccionado)
+                    ->distinct()
+                    ->count('etapas_eventos.ID_doc');
 
-                $grupo->total_realizado = $todasFechas->count();
-                $grupo->todas_fechas_productos = $todasFechas->pluck('fecha')->toArray();
+                $grupo->todas_fechas_productos = [];
             } else {
                 $grupo->total_realizado = 0;
                 $grupo->todas_fechas_productos = [];
@@ -720,7 +723,12 @@ class GrupoTrabajoController extends Controller
                                 if ($b >= 1 && $b <= 6) {
                                     $g->{'meta_bimestre_'.$b} = (int)$rep->meta_bimestral;
                                     if (!is_array($g->realizados)) { $g->realizados = [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0]; }
-                                    $g->realizados[$b] = (int)$rep->realizado_bimestre;
+                                    // Mantener los conteos dinámicos por etapa para APT/AFT/PPT/NP;
+                                    // sólo sobrescribir "realizados" desde guardados para otros grupos.
+                                    $idsEtapas = ['apt','aft','ppt','np'];
+                                    if (!in_array($idKey, $idsEtapas, true)) {
+                                        $g->realizados[$b] = (int)$rep->realizado_bimestre;
+                                    }
                                 }
                                 $sumAnual[$idKey] = ($sumAnual[$idKey] ?? 0) + (int)$rep->meta_bimestral;
                                 if (!empty($rep->observaciones)) { $g->observaciones = $rep->observaciones; }
@@ -825,14 +833,17 @@ class GrupoTrabajoController extends Controller
                 $mesFin = $mesInicio + 1;
 
                 if ($campoFecha) {
-                    // Contar documentos terminados en este bimestre
-                    $count = \DB::table('etapas_eventos')
-                        ->where('etapa', $campoFecha)
-                        ->whereYear('fecha', $anioSeleccionado)
-                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
-                        ->count();
+                    // Contar documentos distintos vigentes terminados en este bimestre
+                    $countDistinctDocs = \DB::table('etapas_eventos')
+                        ->join('documento', 'etapas_eventos.ID_doc', '=', 'documento.ID_doc')
+                        ->where('documento.vigente', 1)
+                        ->where('etapas_eventos.etapa', $campoFecha)
+                        ->whereYear('etapas_eventos.fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(etapas_eventos.fecha) >= ? AND MONTH(etapas_eventos.fecha) <= ?', [$mesInicio, $mesFin])
+                        ->distinct()
+                        ->count('etapas_eventos.ID_doc');
 
-                    $grupo->realizados[$i] = $count;
+                    $grupo->realizados[$i] = $countDistinctDocs;
                 } else {
                     $grupo->realizados[$i] = 0;
                 }
@@ -841,9 +852,12 @@ class GrupoTrabajoController extends Controller
             // Total realizado en el año
             if ($campoFecha) {
                 $grupo->total_realizado = \DB::table('etapas_eventos')
-                    ->where('etapa', $campoFecha)
-                    ->whereYear('fecha', $anioSeleccionado)
-                    ->count();
+                    ->join('documento', 'etapas_eventos.ID_doc', '=', 'documento.ID_doc')
+                    ->where('documento.vigente', 1)
+                    ->where('etapas_eventos.etapa', $campoFecha)
+                    ->whereYear('etapas_eventos.fecha', $anioSeleccionado)
+                    ->distinct()
+                    ->count('etapas_eventos.ID_doc');
             } else {
                 $grupo->total_realizado = 0;
             }

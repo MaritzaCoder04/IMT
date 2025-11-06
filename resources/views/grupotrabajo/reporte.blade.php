@@ -295,7 +295,6 @@
                         <tr>
                             <th rowspan="2">No.</th>
                             <th rowspan="2">Grupo de Trabajo</th>
-                            <th rowspan="2">Unidad de medida</th>
                             <th rowspan="2">Meta Anual</th>
                             <th rowspan="2">Meta Bimestral</th>
                             <th rowspan="2">Realizado en Bimestre</th>
@@ -327,7 +326,6 @@
                             <td>
                                 {{ $grupo->nombre }}
                             </td>
-                            <td>{{ $unidadMedida }}</td>
                             <td>{{ $grupo->meta_anual }}</td>
                             <td>{{ $metaBimestral }}</td>
                             <td>{{ $realizadoBimestre }}</td>
