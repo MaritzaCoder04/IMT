@@ -1,7 +1,5 @@
 @extends('home')
-
 @section('contenido')
-
 <link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 @if(session('success'))
     <div class="alert alert-success">
@@ -358,70 +356,14 @@
 }
 </style>
 
-        <div class="form-container">
+<div class="all-form">
 
-<div class="calendario-container">
-        <div class="section-header">
-            <h2 class="section-title">Agenda De Reuniones</h2>
-        </div>
-        <div class="search-container">
-            <form method="GET" action="{{ route('grupotrabajo.agenda') }}" class="form-busqueda">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="cp">Buscar Grupo</label>
-                        <div class="input-clearable">
-                            <input type="text" id="cp" name="busqueda" placeholder="Buscar Grupo" value="{{ request('busqueda') }}">
-                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="anio">Buscar Por Año</label>
-                        <input type="number" id="anio" name="anio" placeholder="Año" value="{{ $anio }}" min="2000" max="2100">
-                    </div>
-                    <div class="form-group" style="align-self:flex-end;">
-                        <button type="submit" class="btn btn-ejemplo">Buscar</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-        
-        
-    </div>
+      
 
-    @if($grupos->isEmpty())
-    <div style="text-align: center; padding: 60px 20px; background: white; border-radius: 8px; border: 1px solid #e0e0e0;">
-        <div style="font-size: 4em; margin-bottom: 15px; opacity: 0.3;">📭</div>
-        <h3 style="margin: 0 0 10px 0; color: #333;">No se encontraron grupos</h3>
-        <p style="color: #666; margin-bottom: 20px;">
-            @if($busqueda)
-                No hay grupos que coincidan con "{{ $busqueda }}"
-            @else
-                No hay grupos de trabajo registrados para el año {{ $anio }}
-            @endif
-        </p>
-        <div style="display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;">
-            @if($busqueda)
-                <button type="button" class="btn btn-secondary" onclick="window.location='{{ route('grupotrabajo.agenda', ['anio' => $anio]) }}'">
-                    Ver Todos los Grupos
-                </button>
-            @endif
-        </div>
-    </div>
-    @endif
 
-    <div class="docs-table-wrapper2"> 
         @foreach($grupos as $grupo)
         <div class="grupo-card">
-            <div class="grupo-header">
-                <div class="grupo-info">
-                    <h3>{{ $grupo->nombre }}</h3>
-                </div>
-                <div style="display: flex; gap: 8px; align-items: center;">
-                    <button type="button" class="btn btn-ejemplo" onclick="abrirModal({{ $grupo->id }})">
-                        Nueva Reunión
-                    </button>
-                </div>
-            </div>
+            
 
             <div class="meses-grid">
                 @php
@@ -490,7 +432,13 @@
                 @endforeach
             </div>
         </div>
-    
+            <div class="grupo-header">
+                <div style="display: flex; gap: 8px; align-items: center;">
+                    <button type="button" class="btn btn-ejemplo" onclick="abrirModal({{ $grupo->id }})">
+                        Nueva Reunión
+                    </button>
+                </div>
+            </div>
 
     <!-- Modal para agregar reunión -->
     <div id="modal-{{ $grupo->id }}" class="modal-overlay" onclick="cerrarModal(event, {{ $grupo->id }})">

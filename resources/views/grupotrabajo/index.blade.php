@@ -351,8 +351,8 @@
                         
                         <td class="bimestre-cell">
                             @php
-                                // Mostrar "Atendidas / Programadas": Atendidas = realizadas, Programadas = meta anual
-                                $totalProgramadas = (int)($grupo->meta_anual ?? 0);
+                                // Mostrar "Atendidas / Programadas": Programadas = meta anual (fallback a stats o conteo)
+                                $totalProgramadas = (int) ($grupo->meta_anual ?? ($stats['total_programadas'] ?? ($grupo->reuniones->where('programada', true)->count())));
                             @endphp
                             <strong>{{ $totalRealizadas }} / {{ $totalProgramadas }}</strong>
                         </td>
@@ -368,7 +368,7 @@
                                         data-nombre="{{ $grupo->nombre }}"
                                         onclick="abrirAgendaDeGrupo(this)"
                                         title="Agenda del grupo">
-                                    <img src="{{ asset('img/calendar.png') }}" alt="Agenda del grupo">
+                                    <img src="{{ asset('img/agenda.png') }}" alt="Agenda del grupo">
                                 </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
@@ -403,7 +403,7 @@
                         foreach ($grupos as $g) {
                             $statsG = $statsByGroup[$g->id] ?? [];
                             $sumAtendidas += (int)($statsG['total_realizadas'] ?? 0);
-                            $sumProgramadas += (int)($g->meta_anual ?? 0);
+                            $sumProgramadas += (int)($g->meta_anual ?? ($statsG['total_programadas'] ?? ($g->reuniones->where('programada', true)->count())));
                         }
                     @endphp
                     <tr>

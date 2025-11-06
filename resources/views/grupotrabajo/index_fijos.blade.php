@@ -43,7 +43,6 @@
                             'reuniones_por_bimestre' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0],
                             'terminados_por_bimestre' => null,
                             'terminados_total' => null,
-                            'total_programadas' => 0,
                         ];
                         $totalRealizadas = $stats['total_realizadas'];
                         $reunionesPorBimestre = $stats['reuniones_por_bimestre'];
@@ -70,11 +69,9 @@
 
                         <td class="bimestre-cell">
                             @php
-                                // Para grupos fijos de productos: Atendidas = terminados_total (si disponible), Programadas = meta anual
-                                $totalAtendidas = !is_null($stats['terminados_total'] ?? null) ? (int)$stats['terminados_total'] : (int)$totalRealizadas;
-                                $totalProgramadas = (int)($grupo->meta_anual ?? 0);
+                                $totalProgramadas = $stats['total_programadas'] ?? ($grupo->reuniones->where('programada', true)->count());
                             @endphp
-                            <strong>{{ $totalAtendidas }} / {{ $totalProgramadas }}</strong>
+                            <strong>{{ $totalRealizadas }} / {{ $totalProgramadas }}</strong>
                         </td>
 
                         <td>
@@ -112,8 +109,8 @@
                         $sumProgramadas = 0;
                         foreach ($grupos as $g) {
                             $statsG = $statsByGroup[$g->id] ?? [];
-                            $sumAtendidas += (int)($statsG['terminados_total'] ?? ($statsG['total_realizadas'] ?? 0));
-                            $sumProgramadas += (int)($g->meta_anual ?? 0);
+                            $sumAtendidas += (int)($statsG['total_realizadas'] ?? 0);
+                            $sumProgramadas += (int)($statsG['total_programadas'] ?? ($g->reuniones->where('programada', true)->count()));
                         }
                     @endphp
                     <tr>
