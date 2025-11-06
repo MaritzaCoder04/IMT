@@ -2,9 +2,9 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Reporte Grupos de Trabajo</title>
+    <title>Reporte de Avance del Programa de la Elaboración de Normas</title>
     <style>
-        body { font-family: Arial, sans-serif; font-size: 12px; color: #000; }
+        body { font-family: Arial, sans-serif; font-size: 12px; color: #000; margin: 0; }
         h1 { text-align: center; font-size: 18px; margin: 0; }
         p { text-align: center; margin: 4px 0 12px; }
         table { width: 100%; border-collapse: collapse; }
@@ -13,13 +13,34 @@
     </style>
 </head>
 <body>
-    <h1>Reporte de Grupos de Trabajo - Año {{ $anioSeleccionado ?? date('Y') }}</h1>
     @php
         $labels = [1=>'PRIMER BIMESTRE',2=>'SEGUNDO BIMESTRE',3=>'TERCER BIMESTRE',4=>'CUARTO BIMESTRE',5=>'QUINTO BIMESTRE',6=>'SEXTO BIMESTRE'];
         $bimestreActual = $bimestreActual ?? 1;
         $bLabel = $labels[$bimestreActual] ?? 'BIMESTRE';
+
+        $logoCandidates = [
+            public_path('img/Logo_IMT.png'),
+            public_path('Logos IMT/Logo_IMT.png'),
+        ];
+        $logoPath = '';
+        foreach ($logoCandidates as $candidate) {
+            if (@file_exists($candidate)) { $logoPath = $candidate; break; }
+        }
+        $logoData = (extension_loaded('gd') && $logoPath)
+            ? ('data:image/png;base64,'.base64_encode(file_get_contents($logoPath)))
+            : '';
     @endphp
-    <p>{{ $bLabel }} • Generado: {{ date('d/m/Y H:i') }}</p>
+
+    <div style="display: flex; align-items: center; margin: 0 0 12px 0;">
+        @if($logoData)
+            <img src="{{ $logoData }}" alt="Logo IMT" style="width: 60px; height: auto; margin: 0 10px 0 0;" />
+        @endif
+        <div style="flex: 1; text-align: center;">
+            <div style="font-weight: bold; font-size: 14px;">DIRECCIÓN GENERAL</div>
+            <div style="font-size: 12px;">Sistema de Gestión de la Calidad</div>
+            <div style="font-weight: bold; font-size: 12px;">REPORTE DE AVANCE DEL PROGRAMA DE LA ELABORACIÓN DE NORMAS</div>
+        </div>
+    </div>
 
     <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
         <thead>
