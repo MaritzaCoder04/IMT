@@ -70,9 +70,11 @@
 
                         <td class="bimestre-cell">
                             @php
-                                $totalProgramadas = $stats['total_programadas'] ?? ($grupo->reuniones->where('programada', true)->count());
+                                // Para grupos fijos de productos: Atendidas = terminados_total (si disponible), Programadas = meta anual
+                                $totalAtendidas = !is_null($stats['terminados_total'] ?? null) ? (int)$stats['terminados_total'] : (int)$totalRealizadas;
+                                $totalProgramadas = (int)($grupo->meta_anual ?? 0);
                             @endphp
-                            <strong>{{ $totalRealizadas }} / {{ $totalProgramadas }}</strong>
+                            <strong>{{ $totalAtendidas }} / {{ $totalProgramadas }}</strong>
                         </td>
 
                         <td>
@@ -110,8 +112,8 @@
                         $sumProgramadas = 0;
                         foreach ($grupos as $g) {
                             $statsG = $statsByGroup[$g->id] ?? [];
-                            $sumAtendidas += (int)($statsG['total_realizadas'] ?? 0);
-                            $sumProgramadas += (int)($statsG['total_programadas'] ?? ($g->reuniones->where('programada', true)->count()));
+                            $sumAtendidas += (int)($statsG['terminados_total'] ?? ($statsG['total_realizadas'] ?? 0));
+                            $sumProgramadas += (int)($g->meta_anual ?? 0);
                         }
                     @endphp
                     <tr>

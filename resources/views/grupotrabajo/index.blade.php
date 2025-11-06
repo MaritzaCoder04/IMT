@@ -351,8 +351,8 @@
                         
                         <td class="bimestre-cell">
                             @php
-                                // Mostrar "Atendidas / Programadas" en lugar de Total/Progreso
-                                $totalProgramadas = $stats['total_programadas'] ?? ($grupo->reuniones->where('programada', true)->count());
+                                // Mostrar "Atendidas / Programadas": Atendidas = realizadas, Programadas = meta anual
+                                $totalProgramadas = (int)($grupo->meta_anual ?? 0);
                             @endphp
                             <strong>{{ $totalRealizadas }} / {{ $totalProgramadas }}</strong>
                         </td>
@@ -403,7 +403,7 @@
                         foreach ($grupos as $g) {
                             $statsG = $statsByGroup[$g->id] ?? [];
                             $sumAtendidas += (int)($statsG['total_realizadas'] ?? 0);
-                            $sumProgramadas += (int)($statsG['total_programadas'] ?? ($g->reuniones->where('programada', true)->count()));
+                            $sumProgramadas += (int)($g->meta_anual ?? 0);
                         }
                     @endphp
                     <tr>
