@@ -86,13 +86,13 @@
           </li>
           <li>
             <a href="{{ route('grupotrabajo.index') }}" data-tooltip="Programaciones">
-              <img src="{{asset('/img/blueprint.png')}}" alt="">
+              <img src="{{asset('/img/calendarr.png')}}" alt="">
               <span class="link-text">&nbsp;Agenda Representaciones</span>
             </a>
           </li>
           <li>
             <a href="{{ route('grupotrabajo.agenda_productos') }}" data-tooltip="Agenda de Productos">
-              <img src="{{asset('/img/blueprint.png')}}" alt="">
+              <img src="{{asset('/img/calenda.png')}}" alt="">
               <span class="link-text">&nbsp;Agenda Productos</span>
             </a>
           </li>

@@ -368,7 +368,7 @@
                                         data-nombre="{{ $grupo->nombre }}"
                                         onclick="abrirAgendaDeGrupo(this)"
                                         title="Agenda del grupo">
-                                    <img src="{{ asset('img/agenda.png') }}" alt="Agenda del grupo">
+                                    <img src="{{ asset('img/agend.png') }}" alt="Agenda del grupo">
                                 </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
