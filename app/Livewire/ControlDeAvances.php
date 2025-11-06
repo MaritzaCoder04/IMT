@@ -53,6 +53,22 @@ class ControlDeAvances extends Component
         }
         
         $documentos = $query->get();
+
+        // Calcular "Última Fecha" por documento: último año registrado en fechas de Entrega (2a–2e) y Terminación (3a–3e)
+        foreach ($documentos as $doc) {
+            $e = $doc->etapas ?? null;
+            $campos = ['2a','2b','2c','2d','2e','3a','3b','3c','3d','3e'];
+            $years = [];
+            if ($e) {
+                foreach ($campos as $c) {
+                    $v = $e->{$c} ?? null;
+                    if (!empty($v)) {
+                        $years[] = (int) date('Y', strtotime($v));
+                    }
+                }
+            }
+            $doc->ultima_fecha = !empty($years) ? max($years) : null;
+        }
         
         return view('livewire.control-de-avances', compact('documentos'));
     }

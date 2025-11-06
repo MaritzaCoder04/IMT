@@ -139,6 +139,7 @@
                         <th rowspan="2">Designación</th>
                         <th rowspan="2">Nombre</th>
                         <th rowspan="2">Nueva/Actualización</th>
+                        <th rowspan="2">Última Fecha</th>
                         <!--<th rowspan="2">Año</th>-->
                         <th colspan="5">Fecha Inicio</th>
                         <th colspan="5">Fecha Entrega</th>
@@ -170,6 +171,7 @@
                         <td>{{ $documento->info->designacion ?? '--' }}</td>
                         <td class="up">{{ $documento->nombre ?? '--' }}</td>
                         <td>{{ $documento->nueva ? 'Nueva' : 'Actualización' }}</td>
+                        <td>{{ $documento->ultima_fecha ?? '--' }}</td>
                         @php
                             $etapas = $documento->etapas ?? null;
                             $ano = '-';
