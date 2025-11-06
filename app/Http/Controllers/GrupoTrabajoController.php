@@ -27,6 +27,17 @@ class GrupoTrabajoController extends Controller
             ->where('anio_meta', $anioSeleccionado)
             ->get();
 
+        // Excluir grupos fijos solicitados de la tabla principal
+        $excluirNombres = [
+            'Anteproyecto Preliminar',
+            'Anteproyecto Final',
+            'Proyecto Preliminar',
+            'Publicación de Manuales/Normas',
+        ];
+        $grupos = $grupos->reject(function($g) use ($excluirNombres){
+            return in_array($g->nombre, $excluirNombres);
+        })->values();
+
         // Precalcular estadísticas por grupo para evitar lógica en la vista
         $statsByGroup = [];
         foreach ($grupos as $grupo) {
@@ -70,12 +81,16 @@ class GrupoTrabajoController extends Controller
                     ->count();
             }
 
+            // Reuniones programadas del año (para columna "Atendidas / Programadas")
+            $totalProgramadas = $grupo->reuniones->where('programada', true)->count();
+
             $statsByGroup[$grupo->id] = [
                 'total_realizadas' => $totalRealizadas,
                 'progreso' => $progreso,
                 'reuniones_por_bimestre' => $reunionesPorBimestre,
                 'terminados_por_bimestre' => $terminadosPorBimestre,
                 'terminados_total' => $terminadosTotal,
+                'total_programadas' => $totalProgramadas,
             ];
         }
 
@@ -142,11 +157,153 @@ class GrupoTrabajoController extends Controller
             ]);
         }
 
-        $nombresGrupos = $nombresGrupos->filter()->unique()->sort()->values();
+        // Excluir de las opciones del select los grupos fijos solicitados
+        $excluirNombres = [
+            'Anteproyecto Preliminar',
+            'Anteproyecto Final',
+            'Proyecto Preliminar',
+            'Publicación de Manuales/Normas',
+        ];
+        $nombresGrupos = $nombresGrupos
+            ->reject(function($n) use ($excluirNombres){ return in_array($n, $excluirNombres); })
+            ->filter()->unique()->sort()->values();
 
         return view('grupotrabajo.create', [
             'nombresGrupos' => $nombresGrupos,
         ]);
+    }
+
+    // Nueva vista: solo mostrar grupos fijos (APT/AFT/PPT/NP) con mismo diseño
+    public function indexFijos()
+    {
+        $anioSeleccionado = (int) request()->get('anio', (int)date('Y'));
+        $soloNombres = [
+            'Anteproyecto Preliminar',
+            'Anteproyecto Final',
+            'Proyecto Preliminar',
+            'Publicación de Manuales/Normas',
+        ];
+
+        $grupos = GrupoTrabajo::with(['reuniones' => function($q) use ($anioSeleccionado) {
+                $q->whereYear('fecha', $anioSeleccionado);
+            }])
+            ->where('anio_meta', $anioSeleccionado)
+            ->whereIn('nombre', $soloNombres)
+            ->get();
+
+        // Precalcular estadísticas por grupo
+        $statsByGroup = [];
+        foreach ($grupos as $grupo) {
+            $totalRealizadas = $grupo->reuniones->count();
+            $progreso = $grupo->meta_anual > 0 ? round(($totalRealizadas / $grupo->meta_anual) * 100) : 0;
+            $reunionesPorBimestre = [
+                1 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [1,2]))->count(),
+                2 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [3,4]))->count(),
+                3 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [5,6]))->count(),
+                4 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [7,8]))->count(),
+                5 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [9,10]))->count(),
+                6 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [11,12]))->count(),
+            ];
+            $campoEtapa = $this->campoEtapaPorNombre($grupo->nombre);
+            $terminadosPorBimestre = null;
+            $terminadosTotal = null;
+            if ($campoEtapa) {
+                $terminadosPorBimestre = [];
+                for ($i = 1; $i <= 6; $i++) {
+                    $mesInicio = ($i - 1) * 2 + 1;
+                    $mesFin = $mesInicio + 1;
+                    $count = DB::table('etapas_eventos')
+                        ->where('etapa', $campoEtapa)
+                        ->whereYear('fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
+                        ->count();
+                    $terminadosPorBimestre[$i] = $count;
+                }
+                $terminadosTotal = DB::table('etapas_eventos')
+                    ->where('etapa', $campoEtapa)
+                    ->whereYear('fecha', $anioSeleccionado)
+                    ->count();
+            }
+            $totalProgramadas = $grupo->reuniones->where('programada', true)->count();
+
+            $statsByGroup[$grupo->id] = [
+                'total_realizadas' => $totalRealizadas,
+                'progreso' => $progreso,
+                'reuniones_por_bimestre' => $reunionesPorBimestre,
+                'terminados_por_bimestre' => $terminadosPorBimestre,
+                'terminados_total' => $terminadosTotal,
+                'total_programadas' => $totalProgramadas,
+            ];
+        }
+
+        return view('grupotrabajo.index_fijos', compact('grupos', 'statsByGroup'));
+    }
+
+    // Nueva vista: Agenda de Productos (solo APT/AFT/PPT/NP), mismo diseño y modales
+    public function agendaProductos()
+    {
+        $anioSeleccionado = (int) request()->get('anio', (int)date('Y'));
+        $soloNombres = [
+            'Anteproyecto Preliminar',
+            'Anteproyecto Final',
+            'Proyecto Preliminar',
+            'Publicación de Manuales/Normas',
+        ];
+
+        $grupos = GrupoTrabajo::with(['reuniones' => function($q) use ($anioSeleccionado) {
+                $q->whereYear('fecha', $anioSeleccionado);
+            }])
+            ->where('anio_meta', $anioSeleccionado)
+            ->whereIn('nombre', $soloNombres)
+            ->get();
+
+        $statsByGroup = [];
+        foreach ($grupos as $grupo) {
+            $totalRealizadas = $grupo->reuniones->count();
+            $progreso = $grupo->meta_anual > 0 ? round(($totalRealizadas / $grupo->meta_anual) * 100) : 0;
+            $reunionesPorBimestre = [
+                1 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [1,2]))->count(),
+                2 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [3,4]))->count(),
+                3 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [5,6]))->count(),
+                4 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [7,8]))->count(),
+                5 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [9,10]))->count(),
+                6 => $grupo->reuniones->filter(fn($r) => $r->fecha->year == $anioSeleccionado && in_array($r->fecha->month, [11,12]))->count(),
+            ];
+
+            $campoEtapa = $this->campoEtapaPorNombre($grupo->nombre);
+            $terminadosPorBimestre = null;
+            $terminadosTotal = null;
+            if ($campoEtapa) {
+                $terminadosPorBimestre = [];
+                for ($i = 1; $i <= 6; $i++) {
+                    $mesInicio = ($i - 1) * 2 + 1;
+                    $mesFin = $mesInicio + 1;
+                    $count = DB::table('etapas_eventos')
+                        ->where('etapa', $campoEtapa)
+                        ->whereYear('fecha', $anioSeleccionado)
+                        ->whereRaw('MONTH(fecha) >= ? AND MONTH(fecha) <= ?', [$mesInicio, $mesFin])
+                        ->count();
+                    $terminadosPorBimestre[$i] = $count;
+                }
+                $terminadosTotal = DB::table('etapas_eventos')
+                    ->where('etapa', $campoEtapa)
+                    ->whereYear('fecha', $anioSeleccionado)
+                    ->count();
+            }
+
+            $totalProgramadas = $grupo->reuniones->where('programada', true)->count();
+
+            $statsByGroup[$grupo->id] = [
+                'total_realizadas' => $totalRealizadas,
+                'progreso' => $progreso,
+                'reuniones_por_bimestre' => $reunionesPorBimestre,
+                'terminados_por_bimestre' => $terminadosPorBimestre,
+                'terminados_total' => $terminadosTotal,
+                'total_programadas' => $totalProgramadas,
+            ];
+        }
+
+        return view('grupotrabajo.agenda_productos', compact('grupos', 'statsByGroup'));
     }
 
     // Guardar grupo de trabajo
@@ -265,6 +422,7 @@ class GrupoTrabajoController extends Controller
 
         return view('grupotrabajo.agenda', compact('grupos', 'anio', 'busqueda', 'grupoViewModels'));
     }
+
 
     // Guardar reunión
     public function guardarReunion(Request $request)

@@ -41,6 +41,10 @@ Route::resource('grupotrabajo', App\Http\Controllers\GrupoTrabajoController::cla
 
 // Vista 1: Lista de grupos
 Route::get('/grupos-trabajo', [GrupoTrabajoController::class, 'index'])->name('grupotrabajo.index');
+// Vista adicional: solo grupos fijos (APT/AFT/PPT/NP)
+Route::get('/grupos-trabajo/fijos', [GrupoTrabajoController::class, 'indexFijos'])->name('grupotrabajo.fijos');
+// Vista adicional: Agenda de Productos (solo APT/AFT/PPT/NP)
+Route::get('/grupos-trabajo/agenda-productos', [GrupoTrabajoController::class, 'agendaProductos'])->name('grupotrabajo.agenda_productos');
 
 // Vista 2: Formulario
 Route::get('/grupos-trabajo/crear', [GrupoTrabajoController::class, 'create'])->name('grupotrabajo.create');

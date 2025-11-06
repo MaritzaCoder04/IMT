@@ -1,19 +1,5 @@
 @extends('home')
-
 @section('contenido')
-
-<link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
-@if(session('success'))
-    <div class="alert alert-success">
-        {{ session('success') }}
-    </div>
-@endif
-
-@if(session('error'))
-    <div class="alert alert-danger">
-        {{ session('error') }}
-    </div>
-@endif
 
 <style>
 
@@ -217,71 +203,12 @@
 
 </style>
 
-<div class="all-form">
-    <div class="form-container">
-        <div class="header-section">
-            <div class="section-header">
-                <h2 class="section-title"> Programación</h2>
-            </div>
-        </div>
-
-        @php
-            $totalGrupos = $grupos->count();
-            $totalMetaAnual = $grupos->sum('meta_anual');
-            $totalReuniones = $grupos->sum(function($g) { return $g->reuniones->count(); });
-            $progresoGeneral = $totalMetaAnual > 0 ? round(($totalReuniones / $totalMetaAnual) * 100) : 0;
-        @endphp
-
-        <!-- Tarjetas de estadísticas -->
-         <!--
-        <div class="stats-cards">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #e3f2fd;">
-                    👥
-                </div>
-                <div class="stat-info">
-                    <h4>Total Grupos</h4>
-                    <p>{{ $totalGrupos }}</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #f3e5f5;">
-                    🎯
-                </div>
-                <div class="stat-info">
-                    <h4>Meta Anual Total</h4>
-                    <p>{{ $totalMetaAnual }}</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #e8f5e9;">
-                    ✅
-                </div>
-                <div class="stat-info">
-                    <h4>Reuniones Realizadas</h4>
-                    <p>{{ $totalReuniones }}</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon" style="background: #fff3e0;">
-                    📊
-                </div>
-                <div class="stat-info">
-                    <h4>Progreso General</h4>
-                    <p>{{ $progresoGeneral }}%</p>
-                    <div class="progress-bar">
-                        <div class="progress-fill" style="width: {{ $progresoGeneral }}%; background: {{ $progresoGeneral >= 75 ? '#4caf50' : ($progresoGeneral >= 50 ? '#ff9800' : '#f44336') }};"></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        -->
+<div class="main-container">
+    <div class="section-content">
+        <h2 class="section-title">Agenda de Productos</h2>
 
         <!-- Buscador -->
-        <form method="GET" action="{{ route('grupotrabajo.index') }}" class="search-box">
+        <form method="GET" action="{{ route('grupotrabajo.agenda_productos') }}" class="search-box">
             <div class="input-clearable">
                 <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
                 <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
@@ -318,45 +245,38 @@
                             'reuniones_por_bimestre' => [1=>0,2=>0,3=>0,4=>0,5=>0,6=>0],
                             'terminados_por_bimestre' => null,
                             'terminados_total' => null,
+                            'total_programadas' => 0,
                         ];
                         $totalRealizadas = $stats['total_realizadas'];
-                        $progreso = $stats['progreso'];
                         $reunionesPorBimestre = $stats['reuniones_por_bimestre'];
                         $terminadosPorBimestre = $stats['terminados_por_bimestre'] ?? null;
                     @endphp
                     <tr>
                         <td><strong>{{ $grupo->nombre }}</strong></td>
-                        
                         @for($i = 1; $i <= 6; $i++)
                             @php
                                 $meta = $grupo->{'meta_bimestre_' . $i};
                                 $realizadas = $reunionesPorBimestre[$i] ?? 0;
-                                $statusClass = $realizadas >= $meta ? 'status-ok' : ($realizadas > 0 ? 'status-warning' : 'status-danger');
+                                $terminadosCount = is_array($terminadosPorBimestre ?? null) ? ($terminadosPorBimestre[$i] ?? null) : null;
+                                $usarTerminados = !is_null($terminadosCount);
+                                $valorMostrar = $usarTerminados ? $terminadosCount : ($realizadas ?? 0);
+                                $statusClassDisplay = $valorMostrar >= $meta ? 'status-ok' : ($valorMostrar > 0 ? 'status-warning' : 'status-danger');
+                                $tituloMetric = $usarTerminados ? 'Terminados' : 'Realizadas';
                             @endphp
                             <td class="bimestre-cell">
-                                @php
-                                    // Si hay datos de terminados para este grupo, mostrar terminados/meta;
-                                    // de lo contrario, mostrar realizadas/meta.
-                                    $terminadosCount = is_array($terminadosPorBimestre ?? null) ? ($terminadosPorBimestre[$i] ?? null) : null;
-                                    $usarTerminados = !is_null($terminadosCount);
-                                    $valorMostrar = $usarTerminados ? $terminadosCount : ($realizadas ?? 0);
-                                    $statusClassDisplay = $valorMostrar >= $meta ? 'status-ok' : ($valorMostrar > 0 ? 'status-warning' : 'status-danger');
-                                    $tituloMetric = $usarTerminados ? 'Terminados' : 'Realizadas';
-                                @endphp
                                 <span class="reunion-count {{ $statusClassDisplay }}" title="{{ $tituloMetric }}: {{ $valorMostrar }} | Meta: {{ $meta }}">
                                     {{ $valorMostrar }}/{{ $meta }}
                                 </span>
                             </td>
                         @endfor
-                        
+
                         <td class="bimestre-cell">
                             @php
-                                // Mostrar "Atendidas / Programadas" en lugar de Total/Progreso
                                 $totalProgramadas = $stats['total_programadas'] ?? ($grupo->reuniones->where('programada', true)->count());
                             @endphp
                             <strong>{{ $totalRealizadas }} / {{ $totalProgramadas }}</strong>
                         </td>
-                        
+
                         <td>
                             <div class="table-actions">
                                 <button type="button" class="btn-icon" 
@@ -383,10 +303,6 @@
                             </div>
                         </td>
                     </tr>
-                    @php
-                        // Acumular totales globales de la tabla
-                        // Nota: se suman dentro del bucle con variables persistentes
-                    @endphp
                     @empty
                     <tr>
                         <td colspan="10" class="empty-state">
@@ -397,7 +313,6 @@
                     </tr>
                     @endforelse
                     @php
-                        // Fila de totales: suma de Atendidas y Programadas
                         $sumAtendidas = 0;
                         $sumProgramadas = 0;
                         foreach ($grupos as $g) {
@@ -415,54 +330,7 @@
                 </tbody>
             </table>
         </div>
-        <script>
-        document.addEventListener('DOMContentLoaded', function() {
-          const input = document.querySelector('.search-box input[name="busqueda"]');
-          const tbody = document.querySelector('.docs-table tbody');
-          if (!input || !tbody) return;
 
-          const rows = Array.from(tbody.querySelectorAll('tr'));
-          let noRow = document.getElementById('no-results-row');
-          if (!noRow) {
-            noRow = document.createElement('tr');
-            noRow.id = 'no-results-row';
-            const td = document.createElement('td');
-            td.colSpan = 10;
-            td.className = 'empty-state';
-            td.textContent = 'No se encontraron grupos';
-            noRow.appendChild(td);
-            noRow.style.display = 'none';
-            tbody.appendChild(noRow);
-          }
-
-          const filter = () => {
-            const q = input.value.trim().toLowerCase();
-            let anyVisible = false;
-            rows.forEach(row => {
-              if (row.id === 'no-results-row') return;
-              const nameCell = row.querySelector('td:first-child');
-              const text = nameCell ? nameCell.textContent.toLowerCase() : '';
-              const show = !q || text.includes(q);
-              row.style.display = show ? '' : 'none';
-              if (show) anyVisible = true;
-            });
-            noRow.style.display = (!anyVisible && q) ? '' : 'none';
-          };
-
-          input.addEventListener('input', filter);
-          filter();
-
-          const clearBtn = document.querySelector('.search-box .clear-input');
-          if (clearBtn) {
-            clearBtn.addEventListener('click', function() {
-              input.value = '';
-              input.dispatchEvent(new Event('input', { bubbles: true }));
-              input.focus();
-            });
-          }
-        });
-        </script>
-        
         <!-- Modal Overlay para Crear Grupo -->
         <div id="modal-overlay-gt" class="modal-overlay" onclick="cerrarModalGTOverlayClick(event)">
             <div class="modal-content" onclick="event.stopPropagation()">
@@ -501,7 +369,7 @@
                 </div>
             </div>
         </div>
-        
+
         <script>
         function abrirModalUrl(url){
           try{
@@ -580,7 +448,6 @@
             if (d.reload || d.saved) { window.location.reload(); }
           }
         });
-        // Autocierre cuando index se carga dentro de iframe con saved=1
         (function(){
           try {
             const params = new URLSearchParams(window.location.search);

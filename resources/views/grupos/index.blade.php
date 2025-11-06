@@ -45,7 +45,7 @@
                     <tr style="background: #f8fafc; border-top: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;">
                         <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff;">Nombre</th>
                         <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff;">Activo</th>
-                        <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff; width: 180px;">Acciones</th>
+                        <th style="padding: 0.75rem 1.5rem; text-align: left; font-size: 0.875rem; font-weight: 500; color: #bfc6d1ff;">Editar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -79,16 +79,6 @@
                                     @endif
                                     <button type="submit" class="btn-icon" title="Actualizar">
                                         <img src="{{ asset('img/pencil.png') }}" alt="Actualizar">
-                                    </button>
-                                </form>
-                                <form method="POST" action="{{ route('grupos.destroy', $g->id) }}" style="display:inline;">
-                                    @csrf
-                                    @method('DELETE')
-                                    @if(request('modal'))
-                                    <input type="hidden" name="modal" value="1">
-                                    @endif
-                                    <button type="submit" class="btn-icon" title="Eliminar" onclick="return confirm('¿Eliminar este tipo?')">
-                                        <img src="{{ asset('img/delete.png') }}" alt="Eliminar">
                                     </button>
                                 </form>
                             </div>
