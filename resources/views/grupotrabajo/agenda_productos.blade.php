@@ -223,10 +223,10 @@
       <input type="number" id="page-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:90px;" />
     </div>
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
-                Agregar Grupo
+                NUEVO GRUPO DE TRABAJO
             </button>
-            <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px; margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">
-              <img src="{{ asset('img/pencil.png') }}" alt="Tipos de Grupo" style="width:16px;height:16px;" />
+            <button type="button" class="btn btn-icon" style="padding: 7px 12px; margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">
+              <img src="{{ asset('img/pluss.png') }}" alt="Tipos de Grupo" style="width:30px;height:30px;" />
             </button>
         </form>
 

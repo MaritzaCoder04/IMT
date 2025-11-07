@@ -333,8 +333,8 @@ document.addEventListener('DOMContentLoaded', function(){
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
                 Agregar Grupo
             </button>
-            <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px; margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">
-              <img src="{{ asset('img/pencil.png') }}" alt="Tipos de Grupo" style="width:16px;height:16px;" />
+            <button type="button" class="btn btn-icon" style="padding: 7px 12px; margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">
+              <img src="{{ asset('img/pluss.png') }}" alt="Tipos de Grupo" style="width:30px;height:30px;" />
             </button>
         </form>
 

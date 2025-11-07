@@ -12,7 +12,7 @@
                 <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">x</button>
             </div>
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
-                Agregar Grupo
+                NUEVO PRODUCTO
             </button>
             <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px; margin-left:8px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">
               <img src="{{ asset('img/pencil.png') }}" alt="Tipos de Grupo" style="width:16px;height:16px;" />
