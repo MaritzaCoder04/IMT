@@ -17,6 +17,19 @@
         }
         .clear-input:hover { color: #000; }
         .input-clearable input:placeholder-shown + .clear-input { display: none; }
+
+        /* Badges de estado de entrega */
+        .badge { display: inline-block; padding: 0.2rem 0.5rem; border-radius: 0.25rem; font-size: 0.85rem; border: 1px solid transparent; }
+        .badge-success { background: #e6f4ea; color: #207844; border-color: #bfe3c8; }
+        .badge-danger { background: #fdecea; color: #b6231b; border-color: #f5c2c0; }
+        /* Modal básico */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.35); display: none; align-items: center; justify-content: center; z-index: 9999; }
+        .modal-overlay.show { display: flex; }
+        .modal-box { background: #fff; padding: 1rem 1.25rem; border-radius: 6px; max-width: 640px; width: 92%; box-shadow: 0 10px 30px rgba(0,0,0,.2); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: .5rem; }
+        .modal-title { font-size: 1.1rem; font-weight: 600; }
+        .modal-close { background: transparent; border: none; font-size: 1.4rem; cursor: pointer; line-height: 1; }
+        .modal-body { font-size: .95rem; line-height: 1.4; white-space: pre-wrap; }
     </style>
     <div class="all-form"> 
         <div class="form-container">
@@ -65,6 +78,7 @@
                         <th rowspan="2">Nombre</th>
                         <th rowspan="2">Nueva/Actualización</th>
                         <th rowspan="2">Última Fecha</th>
+                        <th rowspan="2">Entrega</th>
                         <th colspan="6">Fecha Terminación</th>
                     </tr>
                     <tr>
@@ -109,6 +123,19 @@
                         @endphp
                         
                         <td>{{ $documento->ultima_fecha ?? '--' }}</td>
+                        @php
+                            $entregaStatus = $documento->entrega_programacion ?? null;
+                            $entregaDetalle = $documento->entrega_detalle ?? null;
+                        @endphp
+                        <td>
+                            @if($entregaStatus === 'dentro')
+                                <button type="button" class="badge badge-success" title="Ver detalle" wire:click="abrirModalEntrega({{ $documento->ID_doc }})">Dentro de programación</button>
+                            @elseif($entregaStatus === 'fuera')
+                                <button type="button" class="badge badge-danger" title="Ver detalle" wire:click="abrirModalEntrega({{ $documento->ID_doc }})">Fuera de programación</button>
+                            @else
+                                <span class="badge" title="Estado no disponible">--</span>
+                            @endif
+                        </td>
                         <td>{{ $anoTerm }}</td>
 
                         {{-- Fechas de Terminación --}}
@@ -128,6 +155,18 @@
                 </tbody>
             </table>
         </div>
+
+        {{-- Modal de detalle de entrega --}}
+        <div class="modal-overlay {{ $modalEntregaOpen ? 'show' : '' }}" wire:click.self="cerrarModalEntrega">
+            <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalEntregaTitulo">
+                <div class="modal-header">
+                    <div id="modalEntregaTitulo" class="modal-title">{{ $modalEntregaTitulo }}</div>
+                    <button class="modal-close" aria-label="Cerrar" wire:click="cerrarModalEntrega">×</button>
+                </div>
+                <div class="modal-body">{{ $modalEntregaContenido }}</div>
+            </div>
+        </div>
+
             </div>
         </div>
     </div>
