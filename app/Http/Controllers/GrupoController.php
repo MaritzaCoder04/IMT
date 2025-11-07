@@ -22,20 +22,9 @@ class GrupoController extends Controller
             }
         }
 
-        // Combinar nombres de tipos y de grupos de trabajo existentes, con fallbacks seguros
-        $nombresTipos = $grupos->pluck('nombre');
-
-        $nombresTrabajo = collect();
-        if (Schema::hasTable('grupos_trabajo')) {
-            try {
-                $nombresTrabajo = GrupoTrabajo::orderBy('nombre')->pluck('nombre');
-            } catch (\Throwable $e) {
-                $nombresTrabajo = collect();
-            }
-        }
-
-        $nombresGrupos = $nombresTipos
-            ->merge($nombresTrabajo)
+        // Sugerencias SOLO desde la BD de 'grupos' (catálogo de tipos)
+        $nombresGrupos = $grupos
+            ->pluck('nombre')
             ->filter()
             ->unique()
             ->sort()

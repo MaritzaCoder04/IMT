@@ -16,12 +16,18 @@
                         <option value="{{ $nombre }}"></option>
                     @endforeach
                 </datalist>
+                @error('nombre')
+                    <small style="color:#dc2626;">{{ $message }}</small>
+                @enderror
             </div>
 
             <div style="margin-bottom: 1.5rem;">
                 <label for="anio_meta" style="display: block; color: #475569; font-size: 0.875rem; font-weight: 500; margin-bottom: 0.5rem;">Año</label>
                 <input type="number" id="anio_meta" name="anio_meta" required placeholder="Ej: {{ date('Y') }}" value="{{ request('anio') }}" style="width: 100%; padding: 0.625rem 0.75rem; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 0.875rem; outline: none; transition: border-color 0.2s; background: white;" onfocus="this.style.borderColor='#3b82f6'" onblur="this.style.borderColor='#cbd5e1'">
                 <small style="color:#64748b;">El grupo se guardará asociado a este año.</small>
+                @error('anio_meta')
+                    <small style="color:#dc2626;">{{ $message }}</small>
+                @enderror
             </div>
             <div style="border-top: 1px solid #e2e8f0; margin: 2rem 0;"></div>
 

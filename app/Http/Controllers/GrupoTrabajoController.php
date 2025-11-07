@@ -332,6 +332,56 @@ class GrupoTrabajoController extends Controller
         // Asignar año de la meta (por defecto, año actual si no viene explícito)
         $validated['anio_meta'] = $request->get('anio_meta', (int)date('Y'));
 
+        // Validación: impedir duplicados por (nombre, año) para productos y representaciones
+        $nombreLc = mb_strtolower(trim($validated['nombre']));
+        $productos = [
+            'anteproyecto preliminar',
+            'anteproyecto final',
+            'proyecto preliminar',
+            'publicación de manuales/normas',
+            'publicacion de manuales/normas',
+        ];
+        $representaciones = [
+            'subcomité no.4',
+            'grupo de trabajo 1',
+        ];
+        $esCategoriaRestringida = in_array($nombreLc, $productos) || in_array($nombreLc, $representaciones);
+        if ($esCategoriaRestringida) {
+            $existe = \App\Models\GrupoTrabajo::where('anio_meta', (int)$validated['anio_meta'])
+                ->whereRaw('LOWER(nombre) = ?', [$nombreLc])
+                ->exists();
+            if ($existe) {
+                return back()
+                    ->withErrors(['nombre' => 'Ya existe un grupo "'.$validated['nombre'].'" para el año '.$validated['anio_meta']])
+                    ->withInput();
+            }
+        }
+
+        // Validación: impedir duplicados por (nombre, año) para productos y representaciones
+        $nombreLc = mb_strtolower(trim($validated['nombre']));
+        $productos = [
+            'anteproyecto preliminar',
+            'anteproyecto final',
+            'proyecto preliminar',
+            'publicación de manuales/normas',
+            'publicacion de manuales/normas',
+        ];
+        $representaciones = [
+            'subcomité no.4',
+            'grupo de trabajo 1',
+        ];
+        $esCategoriaRestringida = in_array($nombreLc, $productos) || in_array($nombreLc, $representaciones);
+        if ($esCategoriaRestringida) {
+            $existe = \App\Models\GrupoTrabajo::where('anio_meta', (int)$validated['anio_meta'])
+                ->whereRaw('LOWER(nombre) = ?', [$nombreLc])
+                ->exists();
+            if ($existe) {
+                return back()
+                    ->withErrors(['nombre' => 'Ya existe un grupo "'.$validated['nombre'].'" para el año '.$validated['anio_meta']])
+                    ->withInput();
+            }
+        }
+
         // Calcular meta anual como suma de metas bimestrales
         $validated['meta_anual'] = (
             ($validated['meta_bimestre_1'] ?? 0) +
