@@ -33,19 +33,19 @@
                         <td class="check-inline {{ in_array('1a', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa1_periodo1" value="{{ $etapas->{"1a"} ?? '' }}">
                             <label class="check-label" title="Marcar inicio completado">
-                                <input type="checkbox" name="complete_1a" {{ in_array('1a', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_1a" {{ in_array('1a', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('2a', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa1_periodo2" value="{{ $etapas->{"2a"} ?? '' }}">
                             <label class="check-label" title="Marcar entrega completada">
-                                <input type="checkbox" name="complete_2a" {{ in_array('2a', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_2a" {{ in_array('2a', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('3a', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa1_periodo3" value="{{ $etapas->{"3a"} ?? '' }}">
                             <label class="check-label" title="Marcar terminación completada">
-                                <input type="checkbox" name="complete_3a" {{ in_array('3a', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_3a" {{ in_array('3a', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                     </tr>
@@ -57,19 +57,19 @@
                         <td class="check-inline {{ in_array('1b', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa2_periodo1" value="{{ $etapas->{"1b"} ?? '' }}">
                             <label class="check-label" title="Marcar inicio completado">
-                                <input type="checkbox" name="complete_1b" {{ in_array('1b', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_1b" {{ in_array('1b', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('2b', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa2_periodo2" value="{{ $etapas->{"2b"} ?? '' }}">
                             <label class="check-label" title="Marcar entrega completada">
-                                <input type="checkbox" name="complete_2b" {{ in_array('2b', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_2b" {{ in_array('2b', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('3b', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa2_periodo3" value="{{ $etapas->{"3b"} ?? '' }}">
                             <label class="check-label" title="Marcar terminación completada">
-                                <input type="checkbox" name="complete_3b" {{ in_array('3b', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_3b" {{ in_array('3b', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                     </tr>
@@ -81,19 +81,19 @@
                         <td class="check-inline {{ in_array('1c', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa3_periodo1" value="{{ $etapas->{"1c"} ?? '' }}">
                             <label class="check-label" title="Marcar inicio completado">
-                                <input type="checkbox" name="complete_1c" {{ in_array('1c', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_1c" {{ in_array('1c', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('2c', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa3_periodo2" value="{{ $etapas->{"2c"} ?? '' }}">
                             <label class="check-label" title="Marcar entrega completada">
-                                <input type="checkbox" name="complete_2c" {{ in_array('2c', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_2c" {{ in_array('2c', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('3c', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa3_periodo3" value="{{ $etapas->{"3c"} ?? '' }}">
                             <label class="check-label" title="Marcar terminación completada">
-                                <input type="checkbox" name="complete_3c" {{ in_array('3c', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_3c" {{ in_array('3c', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                     </tr>
@@ -105,19 +105,19 @@
                         <td class="check-inline {{ in_array('1d', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa4_periodo1" value="{{ $etapas->{"1d"} ?? '' }}">
                             <label class="check-label" title="Marcar inicio completado">
-                                <input type="checkbox" name="complete_1d" {{ in_array('1d', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_1d" {{ in_array('1d', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('2d', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa4_periodo2" value="{{ $etapas->{"2d"} ?? '' }}">
                             <label class="check-label" title="Marcar entrega completada">
-                                <input type="checkbox" name="complete_2d" {{ in_array('2d', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_2d" {{ in_array('2d', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('3d', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa4_periodo3" value="{{ $etapas->{"3d"} ?? '' }}">
                             <label class="check-label" title="Marcar terminación completada">
-                                <input type="checkbox" name="complete_3d" {{ in_array('3d', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_3d" {{ in_array('3d', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                     </tr>
@@ -129,19 +129,19 @@
                         <td class="check-inline {{ in_array('1e', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa5_periodo1" value="{{ $etapas->{"1e"} ?? '' }}">
                             <label class="check-label" title="Marcar inicio completado">
-                                <input type="checkbox" name="complete_1e" {{ in_array('1e', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_1e" {{ in_array('1e', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('2e', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa5_periodo2" value="{{ $etapas->{"2e"} ?? '' }}">
                             <label class="check-label" title="Marcar entrega completada">
-                                <input type="checkbox" name="complete_2e" {{ in_array('2e', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_2e" {{ in_array('2e', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                         <td class="check-inline {{ in_array('3e', $completadas) ? 'completed-cell' : '' }}">
                             <input type="date" class="date-input" name="etapa5_periodo3" value="{{ $etapas->{"3e"} ?? '' }}">
                             <label class="check-label" title="Marcar terminación completada">
-                                <input type="checkbox" name="complete_3e" {{ in_array('3e', $completadas) ? 'checked' : '' }}> âœ”ï¸
+                                <input type="checkbox" name="complete_3e" {{ in_array('3e', $completadas) ? 'checked' : '' }}> &#x2714;
                             </label>
                         </td>
                     </tr>

@@ -5,6 +5,8 @@ namespace App\Livewire;
 use Livewire\Component;
 use App\Models\Documento;
 use App\Models\Parte;
+use App\Models\Etapa;
+use App\Models\EtapaEvento;
 
 class ProductosTerminados extends Component
 {
@@ -30,22 +32,24 @@ class ProductosTerminados extends Component
             ->orderBy('anio')
             ->get();
 
-        // Luego filtrar solo los que tienen etapas completas
+        // Luego filtrar solo los que tienen checklist de terminación completo (3a, 3b, 3c, 3d, 3e)
         $documentosConEtapasCompletas = [];
+        $etapasRequeridas = ['3a', '3b', '3c', '3d', '3e'];
         
         foreach ($documentos as $documento) {
-            $etapas = \App\Models\Etapa::where('ID_doc', $documento->ID_doc)->first();
-            
-            if ($etapas && 
-                !empty($etapas->{'3a'}) && 
-                !empty($etapas->{'3b'}) && 
-                !empty($etapas->{'3c'}) && 
-                !empty($etapas->{'3d'}) && 
-                !empty($etapas->{'3e'})) {
-                
-                // Cargar las relaciones necesarias
+            // Verificar existencia de eventos para todas las etapas requeridas (checklist marcado)
+            $etapasEvento = EtapaEvento::where('ID_doc', $documento->ID_doc)
+                ->whereIn('etapa', $etapasRequeridas)
+                ->distinct()
+                ->pluck('etapa')
+                ->toArray();
+
+            $tieneChecklistCompleto = count(array_intersect($etapasRequeridas, $etapasEvento)) === count($etapasRequeridas);
+
+            if ($tieneChecklistCompleto) {
+                // Cargar relaciones y las fechas de etapas para desplegar en la tabla
                 $documento->load(['libroRelacion', 'parteRelacion', 'info', 'origenRelacion']);
-                $documento->etapas = $etapas;
+                $documento->etapas = Etapa::where('ID_doc', $documento->ID_doc)->first();
                 $documentosConEtapasCompletas[] = $documento;
             }
         }
