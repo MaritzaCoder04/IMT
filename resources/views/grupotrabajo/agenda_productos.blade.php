@@ -282,8 +282,12 @@
                             @php
                                 // Programadas = meta anual (fallback a stats o conteo de reuniones programadas)
                                 $totalProgramadas = (int) ($grupo->meta_anual ?? ($stats['total_programadas'] ?? ($grupo->reuniones->where('programada', true)->count())));
+                                // Para productos (APT/AFT/PPT/NP), usar Terminados como "Atendidas"
+                                $atendidasMostrar = isset($stats['terminados_total']) && !is_null($stats['terminados_total'])
+                                    ? (int)$stats['terminados_total']
+                                    : (int)$totalRealizadas;
                             @endphp
-                            <strong>{{ $totalRealizadas }} / {{ $totalProgramadas }}</strong>
+                            <strong>{{ $atendidasMostrar }} / {{ $totalProgramadas }}</strong>
                         </td>
 
                         <td>
@@ -292,12 +296,6 @@
                                         onclick="abrirModalUrl('{{ route('grupotrabajo.edit', $grupo->id) }}')"
                                         title="Editar grupo">
                                     <img src="{{ asset('img/pencil.png') }}" alt="Editar grupo">
-                                </button>
-                                <button type="button" class="btn-icon" 
-                                        data-nombre="{{ $grupo->nombre }}"
-                                        onclick="abrirAgendaDeGrupo(this)"
-                                        title="Agenda del grupo">
-                                    <img src="{{ asset('img/agend.png') }}" alt="Agenda del grupo">
                                 </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
@@ -326,7 +324,10 @@
                         $sumProgramadas = 0;
                         foreach ($grupos as $g) {
                             $statsG = $statsByGroup[$g->id] ?? [];
-                            $sumAtendidas += (int)($statsG['total_realizadas'] ?? 0);
+                            // Sumar Terminados si aplica, de lo contrario Realizadas
+                            $sumAtendidas += isset($statsG['terminados_total']) && !is_null($statsG['terminados_total'])
+                                ? (int)$statsG['terminados_total']
+                                : (int)($statsG['total_realizadas'] ?? 0);
                             $sumProgramadas += (int)($g->meta_anual ?? ($statsG['total_programadas'] ?? ($g->reuniones->where('programada', true)->count())));
                         }
                     @endphp
