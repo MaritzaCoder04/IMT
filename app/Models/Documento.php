@@ -65,4 +65,9 @@ class Documento extends Model
         return $this->belongsTo(Tipo::class, 'tipo', 'ID_tipo');
     }
 
+    public function eventos()
+    {
+        return $this->hasMany(\App\Models\EtapaEvento::class, 'ID_doc', 'ID_doc');
+    }
+
 }

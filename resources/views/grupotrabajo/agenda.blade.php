@@ -842,7 +842,12 @@ window.addEventListener('message', function(ev){
 function abrirModalEditReunionUrl(url){
   try{
     const iframe = document.getElementById('modal-iframe-edit-reunion');
-    iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    // Propagar flag de scope desde la URL de la agenda si existe
+    const params = new URLSearchParams(window.location.search);
+    const scope = params.get('scope');
+    let fullUrl = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+    if (scope) { fullUrl += '&scope=' + encodeURIComponent(scope); }
+    iframe.src = fullUrl;
     document.getElementById('modal-overlay-edit-reunion').classList.add('active');
   }catch(e){}
 }

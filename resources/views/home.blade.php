@@ -86,7 +86,7 @@
           </li>
           <li>
             <a href="{{ route('grupotrabajo.index') }}" data-tooltip="Programaciones">
-              <img src="{{asset('/img/calendarr.png')}}" alt="">
+              <img src="{{asset('/img/group.png')}}" alt="">
               <span class="link-text">&nbsp;Agenda Representaciones</span>
             </a>
           </li>

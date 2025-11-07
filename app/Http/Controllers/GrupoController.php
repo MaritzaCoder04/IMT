@@ -41,6 +41,26 @@ class GrupoController extends Controller
             ->sort()
             ->values();
 
+        // Filtrar por contexto (scope) si viene de una agenda específica
+        $scope = request()->get('scope');
+        if ($scope === 'productos') {
+            $permitidos = [
+                'Anteproyecto Preliminar',
+                'Anteproyecto Final',
+                'Proyecto Preliminar',
+                'Publicación de Manuales/Normas',
+            ];
+            $nombresGrupos = $nombresGrupos->filter(fn($n) => in_array($n, $permitidos))->values();
+            $grupos = $grupos->filter(fn($g) => in_array($g->nombre ?? '', $permitidos))->values();
+        } elseif ($scope === 'representaciones') {
+            $permitidos = [
+                'Subcomité No.4',
+                'Grupo de Trabajo 1',
+            ];
+            $nombresGrupos = $nombresGrupos->filter(fn($n) => in_array($n, $permitidos))->values();
+            $grupos = $grupos->filter(fn($g) => in_array($g->nombre ?? '', $permitidos))->values();
+        }
+
         return view('grupos.index', compact('grupos', 'nombresGrupos'));
     }
 

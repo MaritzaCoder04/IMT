@@ -94,6 +94,8 @@
             color: #666;
             text-align: center;
         }
+        .completed-cell { background: #e8f5e9; }
+        .completed-cell.up { background: #e8f5e9; }
     </style>
 
     <div class="all-form"> 
@@ -124,6 +126,7 @@
                                             </div>
                                         </div>
                                             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('formulario') }}')"> Agregar Nuevo Manual/Norma </button>
+                                            <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('correo.config') }}')"> Correo </button>
                                         
                                     </div>
                                 </div> 
@@ -194,47 +197,41 @@
                                     $ano = max($candidates);
                                 }
                             }
+                            $ev = isset($documento->eventos) ? collect($documento->eventos)->pluck('etapa')->toArray() : [];
                         @endphp
                         <!--<td>{{ $ano }}</td>-->
-                        <td class="up">{{ !empty($documento->etapas->{'1a'}) ? date('d/m', strtotime($documento->etapas->{'1a'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'1b'}) ? date('d/m', strtotime($documento->etapas->{'1b'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'1c'}) ? date('d/m', strtotime($documento->etapas->{'1c'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'1d'}) ? date('d/m', strtotime($documento->etapas->{'1d'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'1e'}) ? date('d/m', strtotime($documento->etapas->{'1e'})) : '-' }}</td>
-                        <td>{{ !empty($documento->etapas->{'2a'}) ? date('d/m', strtotime($documento->etapas->{'2a'})) : '-' }}</td>
-                        <td>{{ !empty($documento->etapas->{'2b'}) ? date('d/m', strtotime($documento->etapas->{'2b'})) : '-' }}</td>
-                        <td>{{ !empty($documento->etapas->{'2c'}) ? date('d/m', strtotime($documento->etapas->{'2c'})) : '-' }}</td>
-                        <td>{{ !empty($documento->etapas->{'2d'}) ? date('d/m', strtotime($documento->etapas->{'2d'})) : '-' }}</td>
-                        <td>{{ !empty($documento->etapas->{'2e'}) ? date('d/m', strtotime($documento->etapas->{'2e'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'3a'}) ? date('d/m', strtotime($documento->etapas->{'3a'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'3b'}) ? date('d/m', strtotime($documento->etapas->{'3b'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'3c'}) ? date('d/m', strtotime($documento->etapas->{'3c'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'3d'}) ? date('d/m', strtotime($documento->etapas->{'3d'})) : '-' }}</td>
-                        <td class="up">{{ !empty($documento->etapas->{'3e'}) ? date('d/m', strtotime($documento->etapas->{'3e'})) : '-' }}</td>
+                        <td class="up {{ in_array('1a',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'1a'}) ? date('d/m', strtotime($documento->etapas->{'1a'})) : '-' }}</td>
+                        <td class="up {{ in_array('1b',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'1b'}) ? date('d/m', strtotime($documento->etapas->{'1b'})) : '-' }}</td>
+                        <td class="up {{ in_array('1c',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'1c'}) ? date('d/m', strtotime($documento->etapas->{'1c'})) : '-' }}</td>
+                        <td class="up {{ in_array('1d',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'1d'}) ? date('d/m', strtotime($documento->etapas->{'1d'})) : '-' }}</td>
+                        <td class="up {{ in_array('1e',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'1e'}) ? date('d/m', strtotime($documento->etapas->{'1e'})) : '-' }}</td>
+                        <td class="{{ in_array('2a',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'2a'}) ? date('d/m', strtotime($documento->etapas->{'2a'})) : '-' }}</td>
+                        <td class="{{ in_array('2b',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'2b'}) ? date('d/m', strtotime($documento->etapas->{'2b'})) : '-' }}</td>
+                        <td class="{{ in_array('2c',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'2c'}) ? date('d/m', strtotime($documento->etapas->{'2c'})) : '-' }}</td>
+                        <td class="{{ in_array('2d',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'2d'}) ? date('d/m', strtotime($documento->etapas->{'2d'})) : '-' }}</td>
+                        <td class="{{ in_array('2e',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'2e'}) ? date('d/m', strtotime($documento->etapas->{'2e'})) : '-' }}</td>
+                        <td class="up {{ in_array('3a',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'3a'}) ? date('d/m', strtotime($documento->etapas->{'3a'})) : '-' }}</td>
+                        <td class="up {{ in_array('3b',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'3b'}) ? date('d/m', strtotime($documento->etapas->{'3b'})) : '-' }}</td>
+                        <td class="up {{ in_array('3c',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'3c'}) ? date('d/m', strtotime($documento->etapas->{'3c'})) : '-' }}</td>
+                        <td class="up {{ in_array('3d',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'3d'}) ? date('d/m', strtotime($documento->etapas->{'3d'})) : '-' }}</td>
+                        <td class="up {{ in_array('3e',$ev) ? 'completed-cell' : '' }}">{{ !empty($documento->etapas->{'3e'}) ? date('d/m', strtotime($documento->etapas->{'3e'})) : '-' }}</td>
                         <td>
                             @php
-                            $etapas = $documento->etapas;
-                            $totalFechas = 10; // Solo fechas de entrega (2a-2e) y terminación (3a-3e)
+                            $totalFechas = 10; // Solo fechas completadas (checks) de entrega 2x y terminación 3x
                             $fechasCompletadas = 0;
+                            $campos = ['2a','2b','2c','2d','2e','3a','3b','3c','3d','3e'];
+                            foreach ($campos as $c) {
+                                if (in_array($c, $ev)) { $fechasCompletadas++; }
+                            }
                                         
-                                        if ($etapas) {
-                                            // Solo considerar fechas de entrega (2a-2e) y terminación (3a-3e)
-                                            $campos = ['2a', '2b', '2c', '2d', '2e', '3a', '3b', '3c', '3d', '3e'];
-                                            foreach ($campos as $campo) {
-                                                if (!empty($etapas->$campo)) {
-                                                    $fechasCompletadas++;
-                                                }
-                                            }
-                                        }
-                                        
-                                        $porcentaje = $totalFechas > 0 ? round(($fechasCompletadas / $totalFechas) * 100) : 0;
-                                    @endphp
-                                    
-                                    <div class="progress-mini" title="{{ $fechasCompletadas }}/{{ $totalFechas }} fechas">
-                                        <div class="progress-bar-mini" style="width: {{ $porcentaje }}%; background: {{ $porcentaje >= 75 ? '#4caf50' : ($porcentaje >= 50 ? '#ff9800' : '#f44336') }};"></div>
-                                    </div>
-                                    <div class="progress-text">{{ $porcentaje }}%</div>
-                                </td>
+                            $porcentaje = $totalFechas > 0 ? round(($fechasCompletadas / $totalFechas) * 100) : 0;
+                        @endphp
+                        
+                        <div class="progress-mini" title="{{ $fechasCompletadas }}/{{ $totalFechas }} fechas">
+                            <div class="progress-bar-mini" style="width: {{ $porcentaje }}%; background: {{ $porcentaje >= 75 ? '#4caf50' : ($porcentaje >= 50 ? '#ff9800' : '#f44336') }};"></div>
+                        </div>
+                        <div class="progress-text">{{ $porcentaje }}%</div>
+                    </td>
                                 <td>
                                     <div class="table-actions">
                     <button type="button" class="btn-icon" title="Ver etapas" onclick="abrirModalUrl('{{ route('documentos.etapas', $documento->ID_doc) }}')">

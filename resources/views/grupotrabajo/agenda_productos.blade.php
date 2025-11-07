@@ -289,7 +289,7 @@
                                         data-nombre="{{ $grupo->nombre }}"
                                         onclick="abrirAgendaDeGrupo(this)"
                                         title="Agenda del grupo">
-                                    <img src="{{ asset('img/calendar.png') }}" alt="Agenda del grupo">
+                                    <img src="{{ asset('img/agend.png') }}" alt="Agenda del grupo">
                                 </button>
                                 <form action="{{ route('grupotrabajo.destroy', $grupo->id) }}" 
                                       method="POST" 
@@ -398,7 +398,8 @@
         function abrirModalGrupos(url){
           try{
             const iframe = document.getElementById('modal-iframe-grupos');
-            iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            const sep = url.includes('?') ? '&' : '?';
+            iframe.src = url + sep + 'modal=1&scope=productos';
             document.getElementById('modal-overlay-grupos').classList.add('active');
           }catch(e){}
         }
@@ -423,6 +424,8 @@
             let url = base + '?modal=1';
             if (anio) { url += '&anio=' + encodeURIComponent(anio); }
             if (nombre) { url += '&busqueda=' + encodeURIComponent(nombre); }
+            // Indicar que la agenda proviene de Agenda de Productos para filtrar selects
+            url += '&scope=productos';
 
             const iframe = document.getElementById('modal-iframe-agenda');
             const titleEl = document.getElementById('agenda-modal-title');

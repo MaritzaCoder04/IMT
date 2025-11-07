@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use Livewire\Component;
 use App\Models\Documento;
+use App\Models\EtapaEvento;
 
 class ControlDeAvances extends Component
 {
@@ -28,9 +29,35 @@ class ControlDeAvances extends Component
         }
     }
 
+    public function toggleEvento($docId, $etapa)
+    {
+        try {
+            $documento = Documento::with(['etapas', 'eventos'])->findOrFail($docId);
+            $etapas = $documento->etapas;
+            $fechaEtapa = $etapas ? ($etapas->{$etapa} ?? null) : null;
+
+            // Solo permitir crear/eliminar evento si existe fecha registrada
+            if (empty($fechaEtapa)) {
+                return; // sin cambios
+            }
+
+            $evento = $documento->eventos()->where('etapa', $etapa)->first();
+            if ($evento) {
+                $evento->delete();
+            } else {
+                $documento->eventos()->create([
+                    'etapa' => $etapa,
+                    'fecha' => $fechaEtapa,
+                ]);
+            }
+        } catch (\Exception $e) {
+            // Silenciar para interfaz; opcionalmente podríamos loguear
+        }
+    }
+
     public function render()
     {
-        $query = Documento::with(['libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'etapas', 'info']);
+        $query = Documento::with(['libroRelacion', 'temaRelacion', 'parteRelacion', 'tituloRelacion', 'etapas', 'info', 'eventos']);
         
         if (!empty($this->busqueda)) {
             $query->where(function($q) {

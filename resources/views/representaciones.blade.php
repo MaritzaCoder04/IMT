@@ -255,6 +255,9 @@
 <div class="reunion-tracker">
     <div class="reunion-header">
         <h1 class="reunion-title">Registro de Reuniones</h1>
+        <div class="actions" style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">Tipos de Grupo</button>
+        </div>
     </div>
     
     <!-- Pestañas de años -->
@@ -590,7 +593,44 @@
     </div>
 </div>
 
+<!-- Modal Tipos de Grupo -->
+<div id="modal-overlay-grupos" class="modal-overlay" onclick="cerrarModalGruposOverlayClick(event)" style="display:none;">
+  <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="modal-title-grupos">
+    <div class="modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+      <h3 id="modal-title-grupos" style="margin:0;">Tipos de Grupo de Trabajo</h3>
+      <button type="button" class="btn btn-secondary" onclick="cerrarModalGrupos()">Cerrar</button>
+    </div>
+    <div class="modal-body" style="height:70vh;">
+      <iframe id="modal-iframe-grupos" src="about:blank" title="Tipos de grupo" style="width:100%; height:100%; border:none;"></iframe>
+    </div>
+  </div>
+  <style>
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); display: none; align-items: center; justify-content: center; z-index: 9999; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: #fff; border-radius: 8px; width: min(1000px, 95vw); box-shadow: 0 10px 25px rgba(0,0,0,0.15); }
+    .modal-header { padding: 10px 16px; border-bottom: 1px solid #e5e7eb; }
+    .modal-body { padding: 10px; }
+  </style>
+</div>
+
 <script>
+    function abrirModalGrupos(url){
+      try{
+        const iframe = document.getElementById('modal-iframe-grupos');
+        const sep = url.includes('?') ? '&' : '?';
+        iframe.src = url + sep + 'modal=1&scope=representaciones';
+        document.getElementById('modal-overlay-grupos').classList.add('active');
+      }catch(e){}
+    }
+    function cerrarModalGrupos(){
+      try{
+        const overlay = document.getElementById('modal-overlay-grupos');
+        const iframe = document.getElementById('modal-iframe-grupos');
+        overlay.classList.remove('active');
+        iframe.src = 'about:blank';
+      }catch(e){}
+    }
+    function cerrarModalGruposOverlayClick(event){ if(event && event.target && event.target.id==='modal-overlay-grupos'){ cerrarModalGrupos(); } }
     function toggleAddYear() {
         const form = document.getElementById('addYearForm');
         const btn = document.getElementById('btnAddYear');

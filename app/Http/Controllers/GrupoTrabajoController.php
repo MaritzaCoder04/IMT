@@ -349,6 +349,7 @@ class GrupoTrabajoController extends Controller
     {
         $anio = $request->get('anio', date('Y'));
         $busqueda = $request->get('busqueda', '');
+        $scope = $request->get('scope');
 
         // Solo mostrar grupos creados para el año seleccionado
         $query = GrupoTrabajo::with(['reuniones' => function($q) use ($anio) {
@@ -357,21 +358,24 @@ class GrupoTrabajoController extends Controller
             ->where('anio_meta', (int)$anio);
 
         // Excluir nombres no deseados de la agenda
-        $excluirLower = [
-            'anteproyecto preliminar',
-            'anteproyecto final',
-            'publicación de manuales/normas',
-            'publicacion de manuales/normas',
-            'publicación de manuales y normas',
-            'publicacion de manuales y normas',
-            'proyecto final',
-            'proyecto preliminar',
-        ];
-        $query->where(function($q) use ($excluirLower) {
-            foreach ($excluirLower as $name) {
-                $q->whereRaw('LOWER(nombre) != ?', [$name]);
-            }
-        });
+        // Si viene desde Agenda de Productos (scope=productos), NO excluir los grupos fijos
+        if ($scope !== 'productos') {
+            $excluirLower = [
+                'anteproyecto preliminar',
+                'anteproyecto final',
+                'publicación de manuales/normas',
+                'publicacion de manuales/normas',
+                'publicación de manuales y normas',
+                'publicacion de manuales y normas',
+                'proyecto final',
+                'proyecto preliminar',
+            ];
+            $query->where(function($q) use ($excluirLower) {
+                foreach ($excluirLower as $name) {
+                    $q->whereRaw('LOWER(nombre) != ?', [$name]);
+                }
+            });
+        }
 
         if ($busqueda) {
             $query->where('nombre', 'like', '%' . $busqueda . '%');

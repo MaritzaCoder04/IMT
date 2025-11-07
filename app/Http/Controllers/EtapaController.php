@@ -62,22 +62,40 @@ class EtapaController extends Controller
         
         $etapas->save();
 
-        // Registrar eventos anualizados por etapa (terminaciones 3x)
-        $eventos = [
-            '3a' => $request->etapa1_periodo3,
-            '3b' => $request->etapa2_periodo3,
-            '3c' => $request->etapa3_periodo3,
-            '3d' => $request->etapa4_periodo3,
-            '3e' => $request->etapa5_periodo3,
+        // Registrar eventos (checks de entrega 2x y terminación 3x) según inputs de check
+        $checks = [
+            // Inicio (1x) – no afecta la barra, pero permite sombrear y avisos
+            '1a' => $request->boolean('complete_1a'),
+            '1b' => $request->boolean('complete_1b'),
+            '1c' => $request->boolean('complete_1c'),
+            '1d' => $request->boolean('complete_1d'),
+            '1e' => $request->boolean('complete_1e'),
+            '2a' => $request->boolean('complete_2a'),
+            '2b' => $request->boolean('complete_2b'),
+            '2c' => $request->boolean('complete_2c'),
+            '2d' => $request->boolean('complete_2d'),
+            '2e' => $request->boolean('complete_2e'),
+            '3a' => $request->boolean('complete_3a'),
+            '3b' => $request->boolean('complete_3b'),
+            '3c' => $request->boolean('complete_3c'),
+            '3d' => $request->boolean('complete_3d'),
+            '3e' => $request->boolean('complete_3e'),
         ];
 
-        foreach ($eventos as $etapaClave => $fecha) {
-            if (!empty($fecha)) {
+        foreach ($checks as $etapaClave => $checked) {
+            $fechaEtapa = $etapas->{$etapaClave} ?? null;
+            if ($checked && !empty($fechaEtapa)) {
+                // Crear o asegurar evento existente para esta etapa y fecha
                 EtapaEvento::firstOrCreate([
                     'ID_doc' => (int) $ID_doc,
                     'etapa' => $etapaClave,
-                    'fecha' => $fecha,
+                    'fecha' => $fechaEtapa,
                 ]);
+            } else {
+                // Si no está marcado, eliminar eventos de esta etapa para el documento
+                EtapaEvento::where('ID_doc', (int) $ID_doc)
+                    ->where('etapa', $etapaClave)
+                    ->delete();
             }
         }
         

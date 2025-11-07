@@ -22,12 +22,47 @@
             @if(request('modal'))
                 <input type="hidden" name="modal" value="1">
             @endif
+            @php
+                // Cuando el editor se abre desde Agenda de Productos, limitar opciones del select
+                $gruposMostrar = $grupos;
+                if (request()->get('scope') === 'productos') {
+                    $soloNombres = [
+                        'Anteproyecto Preliminar',
+                        'Anteproyecto Final',
+                        'Proyecto Preliminar',
+                        'Publicación de Manuales/Normas',
+                    ];
+                    try {
+                        $gruposMostrar = collect($grupos)->filter(function($g) use ($soloNombres){
+                            return in_array($g->nombre, $soloNombres);
+                        });
+                    } catch (\Throwable $e) {
+                        $gruposMostrar = $grupos;
+                    }
+                }
+            @endphp
+            @php
+                // Cuando el editor se abre desde Agenda de Representaciones, limitar opciones a Subcomité No.4 y GT1
+                if (request()->get('scope') === 'representaciones') {
+                    $soloNombresRep = [
+                        'Subcomité No.4',
+                        'Grupo de Trabajo 1',
+                    ];
+                    try {
+                        $gruposMostrar = collect($grupos)->filter(function($g) use ($soloNombresRep){
+                            return in_array($g->nombre, $soloNombresRep);
+                        });
+                    } catch (\Throwable $e) {
+                        // Si algo falla, mantener lista original
+                    }
+                }
+            @endphp
             
             <div class="form-group">
                 <label for="grupo_trabajo_id">Grupo de Trabajo</label>
                 <select id="grupo_trabajo_id" name="grupo_trabajo_id" required>
                     <option value="">Selecciona un grupo...</option>
-                    @foreach($grupos as $grupo)
+                    @foreach($gruposMostrar as $grupo)
                         <option value="{{ $grupo->id }}" {{ $reunion->grupo_trabajo_id == $grupo->id ? 'selected' : '' }}>
                             {{ $grupo->nombre }}
                         </option>

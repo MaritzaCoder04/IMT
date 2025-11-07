@@ -21,6 +21,7 @@ use App\Http\Controllers\EtapaController;
 use App\Http\Controllers\FechaController;
 use App\Http\Controllers\GrupoTrabajoController;
 use App\Http\Controllers\ReunionController;
+use App\Http\Controllers\CorreoController;
 
 Route::resource('reunion', ReunionController::class);
 
@@ -120,6 +121,10 @@ Route::post('/informes/guardar', [DocumentoController::class, 'guardarInformes']
 Route::post('/registroinformes/guardar', [DocumentoController::class, 'guardarInformes'])->name('registroinformes.guardar');
 Route::post('/todoslosdocumentos/guardar', [DocumentoController::class, 'guardarTodoslosdocumentos'])->name('todoslosdocumentos.guardar');
 Route::post('/controldeavances/guardar', [DocumentoController::class, 'guardarControldeavances'])->name('controldeavances.guardar');
+
+// Configuración de correo para notificaciones
+Route::get('/correo/config', [CorreoController::class, 'config'])->name('correo.config');
+Route::post('/correo/guardar', [CorreoController::class, 'guardar'])->name('correo.guardar');
 
 
 Route::get('/plantillasvistas', function (){
