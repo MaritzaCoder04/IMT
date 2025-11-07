@@ -395,11 +395,11 @@
                         @if(count($reunionesBimestre) > 0)
                             @if($cumpleMeta)
                                 <div style="text-align: center; padding: 3px; background: #e8f5e9; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #2e7d32; font-weight: 600;">
-                                    âœ“ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
+                                     {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
                                 </div>
                             @else
                                 <div style="text-align: center; padding: 3px; background: #fff3e0; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #f57c00; font-weight: 600;">
-                                    âš¡ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
+                                     {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
                                 </div>
                             @endif
                         @endif
@@ -415,7 +415,7 @@
                                 ]) }})"
                                 title="Click para ver detalles">
                                 <span class="reunion-fecha">{{ $reunion['fecha_display'] }}</span>
-                                <span class="reunion-icon">{{ $reunion['programada'] ? 'âœ“' : 'âš ' }}</span>
+                                <span class="reunion-icon" aria-hidden="true">{!! $reunion['programada'] ? '&#10003;' : '&#9888;' !!}</span>
                             </div>
                         @empty
                             <div class="empty-bimestre">

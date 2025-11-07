@@ -94,7 +94,23 @@
                 </tbody>
             </table>
         </div>
-    </div>
+</div>
 
 </div>
+<script>
+  // Autocierre cuando esta vista se carga dentro de un iframe modal y hay guardado exitoso
+  document.addEventListener('DOMContentLoaded', function(){
+    try {
+      var isIframe = (window.top !== window.self);
+      var params = new URLSearchParams(window.location.search);
+      var modal = params.get('modal');
+      var saved = params.get('saved');
+      if (isIframe && modal === '1' && saved === '1') {
+        if (window.parent) {
+          window.parent.postMessage({ type: 'modal-close', reload: true }, '*');
+        }
+      }
+    } catch (e) {}
+  });
+  </script>
 @endsection

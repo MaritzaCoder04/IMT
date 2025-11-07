@@ -281,7 +281,7 @@
                                     title="{{ $reporteExiste ? 'Reporte guardado' : 'Sin guardar' }}">
                                 {{ $nombre }}
                                 @if($reporteExiste)
-                                    âœ“
+                                    {!! '&#10003;' !!}
                                 @endif
                             </button>
                         @endforeach
@@ -539,7 +539,7 @@
             @forelse($reportesPorAnio ?? [] as $anio => $reportes)
             <div style="margin-bottom: 30px;">
                 <h3 style="color: #667eea; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                    ðŸ“… Año {{ $anio }}
+                    &#128197; Año {{ $anio }}
                     <span style="font-size: 0.7em; font-weight: normal; color: #666;">
                         ({{ count($reportes) }} de 6 bimestres completados)
                     </span>
@@ -551,12 +551,12 @@
                         <div class="reporte-info">
                             <h4>
                                 {{ $bimestres[$reporte->bimestre] ?? 'Bimestre ' . $reporte->bimestre }}
-                                <span class="estado-badge estado-guardado">âœ“ Guardado</span>
+                                <span class="estado-badge estado-guardado">{!! '&#10003;' !!} Guardado</span>
                             </h4>
                             <p>
-                                ðŸ“… Fecha de creación: {{ $reporte->created_at->format('d/m/Y H:i') }}
+                                &#128197; Fecha de creación: {{ $reporte->created_at->format('d/m/Y H:i') }}
                                 @if($reporte->updated_at != $reporte->created_at)
-                                    | Ãšltima edición: {{ $reporte->updated_at->format('d/m/Y H:i') }}
+                                    | Última edición: {{ $reporte->updated_at->format('d/m/Y H:i') }}
                                 @endif
                             </p>
                         </div>
@@ -767,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const indicator = document.createElement('div');
         indicator.className = 'save-indicator';
         indicator.style.cssText = 'position: absolute; right: 5px; top: 5px; font-size: 10px; color: #28a745; display: none;';
-        indicator.textContent = 'âœ“ Guardado';
+        indicator.textContent = '\u2713 Guardado';
         
         // Hacer el contenedor padre relativo para posicionar el indicador
         textarea.parentElement.style.position = 'relative';
@@ -775,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         textarea.addEventListener('input', function() {
             // Mostrar indicador de "guardando..."
-            indicator.textContent = 'â³ Guardando...';
+            indicator.textContent = '\u23F3 Guardando...';
             indicator.style.color = '#ffc107';
             indicator.style.display = 'block';
             
@@ -788,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Guardando observación:', textarea.dataset.field, '=', textarea.value);
                 
                 // Mostrar confirmación de guardado
-                indicator.textContent = 'âœ“ Guardado';
+                indicator.textContent = '\u2713 Guardado';
                 indicator.style.color = '#28a745';
                 
                 // Ocultar indicador después de 2 segundos
@@ -803,7 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(saveTimeout);
             if (textarea.value !== textarea.defaultValue) {
                 console.log('Guardando observación al perder foco:', textarea.dataset.field, '=', textarea.value);
-                indicator.textContent = 'âœ“ Guardado';
+                indicator.textContent = '\u2713 Guardado';
                 indicator.style.color = '#28a745';
                 indicator.style.display = 'block';
                 setTimeout(function() {
@@ -852,9 +852,3 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 </script>
-
-
-
-
-
-

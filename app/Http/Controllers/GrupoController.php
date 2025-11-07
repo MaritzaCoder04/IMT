@@ -78,7 +78,8 @@ class GrupoController extends Controller
             'unidad_medida' => 'nullable|string|max:255',
         ]);
 
-        $validated['activo'] = $request->boolean('activo');
+        // Establecer activo=true por defecto si no se envía en el formulario
+        $validated['activo'] = $request->has('activo') ? $request->boolean('activo') : true;
         // Asignar consecutivo para columna 'no' si existe
         if (Schema::hasTable('grupos') && Schema::hasColumn('grupos', 'no') && !isset($validated['no'])) {
             $validated['no'] = ((int) DB::table('grupos')->max('no')) + 1;
