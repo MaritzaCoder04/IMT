@@ -1,4 +1,4 @@
-@extends('plantillasvistas')
+﻿@extends('plantillasvistas')
 @section('contenido')
 
     <style>
@@ -101,3 +101,4 @@
 </script>
 
 @endsection
+

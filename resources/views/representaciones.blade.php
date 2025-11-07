@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
 <style>
@@ -256,6 +256,13 @@
     <div class="reunion-header">
         <h1 class="reunion-title">Registro de Reuniones</h1>
         <div class="actions" style="display:flex; gap:8px; align-items:center;">
+    @php
+        $currentYear = (int)date('Y');
+        $selectedYear = (int)request()->get('anio', $currentYear);
+    @endphp
+    <div class="year-switcher" style="display:flex; align-items:center; gap:8px;">
+      <input type="number" id="page-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:90px;" />
+    </div>
             <button type="button" class="btn btn-ejemplo" style="padding: 7px 12px;" onclick="abrirModalGrupos('{{ route('grupos.index') }}')" title="Tipos de Grupo" aria-label="Tipos de Grupo">Tipos de Grupo</button>
         </div>
     </div>
@@ -264,19 +271,19 @@
     <div class="tabs-container">
         <div class="tab-item">
             <button class="tab-button active" onclick="cambiarAnio(2023)">2023</button>
-            <button class="delete-year" onclick="eliminarAnio(2023)">×</button>
+            <button class="delete-year" onclick="eliminarAnio(2023)">x</button>
         </div>
         <div class="tab-item">
             <button class="tab-button" onclick="cambiarAnio(2024)">2024</button>
-            <button class="delete-year" onclick="eliminarAnio(2024)">×</button>
+            <button class="delete-year" onclick="eliminarAnio(2024)">x</button>
         </div>
         <div class="tab-item">
             <button class="tab-button" onclick="cambiarAnio(2025)">2025</button>
-            <button class="delete-year" onclick="eliminarAnio(2025)">×</button>
+            <button class="delete-year" onclick="eliminarAnio(2025)">x</button>
         </div>
         <div class="tab-item">
             <button class="tab-button" onclick="cambiarAnio(2026)">2026</button>
-            <button class="delete-year" onclick="eliminarAnio(2026)">×</button>
+            <button class="delete-year" onclick="eliminarAnio(2026)">x</button>
         </div>
         
         <div class="add-year-form" id="addYearForm">
@@ -315,7 +322,7 @@
                         <th rowspan="2" class="totales-cell" style="min-width: 110px;">Programadas</th>
                     </tr>
                     <tr>
-                        <!-- 12 meses × 4 semanas = 48 columnas -->
+                        <!-- 12 meses x 4 semanas = 48 columnas -->
                         <th class="semana-header">S1</th>
                         <th class="semana-header">S2</th>
                         <th class="semana-header">S3</th>
@@ -719,3 +726,22 @@
 </script>
 
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var input = document.getElementById('page-year-input');
+  if (!input) return;
+  input.addEventListener('change', function(){
+    try { localStorage.setItem('anioGlobal', String(input.value)); } catch(e){}
+    var url = new URL(window.location.href);
+    var params = url.searchParams;
+    var y = input.value || '';
+    if (y) params.set('anio', y); else params.delete('anio');
+    url.search = params.toString();
+    window.location.href = url.toString();
+  });
+});
+</script>
+
+
+
+

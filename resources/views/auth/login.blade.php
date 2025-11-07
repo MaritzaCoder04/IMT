@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="es">
 <head>
   <meta charset="utf-8">
@@ -73,7 +73,7 @@
             <label for="password">Contraseña</label>
             <div class="password-wrap">
               <input id="password" name="password" type="password" autocomplete="current-password"
-                     required placeholder="••••••••">
+                     required placeholder="â€¢â€¢â€¢â€¢â€¢â€¢â€¢â€¢">
               <button type="button" class="btn-icon toggle-icon" id="togglePass"
                       aria-label="Mostrar contraseña" aria-pressed="false" title="Mostrar contraseña">
                 <img id="icon-pass" src="{{ asset('img/showb.png') }}" alt="Mostrar contraseña">
@@ -126,3 +126,4 @@
   </script>
 </body>
 </html>
+

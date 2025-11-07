@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 @section('contenido')
 <div class="all-form">
         

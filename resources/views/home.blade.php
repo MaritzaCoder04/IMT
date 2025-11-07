@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="">
 <head>
     <meta charset="UTF-8" />
@@ -38,14 +38,7 @@
 </head>
 <body> 
     <header class="responsive-header">
-       @php
-            $currentYear = (int)date('Y');
-            $selectedYear = request()->get('anio', $currentYear);
-          @endphp
-          <div class="year-switcher" style="display:flex; align-items:center; gap:8px; width:100px;">
-            <input type="number" id="global-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:70px;" />
-          </div>
-        <div class="header-icon left-icon">
+       <div class="header-icon left-icon">
           <img src="{{asset("/img/Logo_blanco.png")}}" alt="Icono Izquierdo">
         </div>
         <div class="title-group" style="display:flex; align-items:center; gap:12px; order:2; flex:1;">
@@ -277,3 +270,4 @@
     </script>
 </body>
 </html>
+

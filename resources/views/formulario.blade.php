@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
 <link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
@@ -27,7 +27,7 @@
                 <div class="form-group">
                     <label for="sel-libro">Libro</label>
                     <select name="ID_libro" id="sel-libro" required>
-                        <option value="">Selecciona un libro…</option>
+                        <option value="">Selecciona un libroâ€¦</option>
                         @foreach($libros as $l)
                             <option value="{{ $l->ID_libro }}" @selected(old('ID_libro')==$l->ID_libro)>
                                 {{ $l->desc }}
@@ -121,7 +121,7 @@
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3>Tipos de documento</h3>
-      <button type="button" class="close-modal-btn" onclick="cerrarModalTipos()">×</button>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalTipos()">x</button>
     </div>
     <div class="modal-body">
       <iframe id="modal-iframe-tipos" src="about:blank" title="Tipos"></iframe>
@@ -134,7 +134,7 @@
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3>Libros</h3>
-      <button type="button" class="close-modal-btn" onclick="cerrarModalLibros()">×</button>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalLibros()">x</button>
     </div>
     <div class="modal-body">
       <iframe id="modal-iframe-libros" src="about:blank" title="Libros"></iframe>
@@ -147,7 +147,7 @@
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3>Temas</h3>
-      <button type="button" class="close-modal-btn" onclick="cerrarModalTemas()">×</button>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalTemas()">x</button>
     </div>
     <div class="modal-body">
       <iframe id="modal-iframe-temas" src="about:blank" title="Temas"></iframe>
@@ -160,7 +160,7 @@
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
       <h3>Orígenes</h3>
-      <button type="button" class="close-modal-btn" onclick="cerrarModalOrigenes()">×</button>
+      <button type="button" class="close-modal-btn" onclick="cerrarModalOrigenes()">x</button>
     </div>
     <div class="modal-body">
       <iframe id="modal-iframe-origenes" src="about:blank" title="Orígenes"></iframe>
@@ -249,3 +249,4 @@ function cerrarModalOrigenesClick(event){ if(event && event.target && event.targ
 </script>
 
 @endsection
+

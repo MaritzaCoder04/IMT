@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
 <div class="all-form">
@@ -184,13 +184,13 @@
                             </div>
                             <div class="item-actions">
                                 <button class="btn btn-secondary btn-small" onclick="editarOrganismo(${organismo.id}, 'nombre')" title="Editar nombre">
-                                    ✏️
+                                    âœï¸
                                 </button>
                                 <button class="btn btn-secondary btn-small" onclick="editarOrganismo(${organismo.id}, 'reuniones')" title="Editar reuniones programadas">
-                                    📊
+                                    ðŸ“Š
                                 </button>
                                 <button class="btn btn-danger btn-small" onclick="eliminarOrganismo(${organismo.id})" title="Eliminar">
-                                    🗑️
+                                    ðŸ—‘ï¸
                                 </button>
                             </div>
                         </div>

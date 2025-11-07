@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">

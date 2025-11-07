@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     @if(session('success'))
         <div class="alert alert-success">
             {{ session('success') }}
@@ -115,14 +115,14 @@
                                             <label for="busqueda">Cualquier Palabra</label>
                                             <div class="input-clearable">
                                                 <input type="text" wire:model.live="busqueda" id="busqueda" placeholder="Ingrese cualquier palabra">
-                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="palabraExacta">Palabra Exacta</label>
                                             <div class="input-clearable">
                                                 <input type="text" wire:model.live="palabraExacta" id="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
-                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                                             </div>
                                         </div>
                                             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('formulario') }}')"> Agregar Nuevo Manual/Norma </button>
@@ -142,7 +142,7 @@
                         <th rowspan="2">Designación</th>
                         <th rowspan="2">Nombre</th>
                         <th rowspan="2">Nueva/Actualización</th>
-                        <th rowspan="2">Última Fecha</th>
+                        <th rowspan="2">Ultima Fecha</th>
                         <!--<th rowspan="2">Año</th>-->
                         <th colspan="5">Fecha Inicio</th>
                         <th colspan="5">Fecha Entrega</th>
@@ -263,7 +263,7 @@
         <div class="modal-content" role="dialog" aria-modal="true" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3>Acción</h3>
-                <button class="close-modal-btn" onclick="cerrarModal()" aria-label="Cerrar">×</button>
+                <button class="close-modal-btn" onclick="cerrarModal()" aria-label="Cerrar">x</button>
             </div>
             <div class="modal-body">
                 <iframe id="modalIframe" src="about:blank"></iframe>

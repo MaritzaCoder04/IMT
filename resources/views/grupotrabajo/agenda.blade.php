@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 @section('contenido')
 <link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 @if(session('success'))
@@ -395,11 +395,11 @@
                         @if(count($reunionesBimestre) > 0)
                             @if($cumpleMeta)
                                 <div style="text-align: center; padding: 3px; background: #e8f5e9; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #2e7d32; font-weight: 600;">
-                                    ✓ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
+                                    âœ“ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
                                 </div>
                             @else
                                 <div style="text-align: center; padding: 3px; background: #fff3e0; border-radius: 3px; font-size: 0.75em; margin-bottom: 5px; color: #f57c00; font-weight: 600;">
-                                    ⚡ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
+                                    âš¡ {{ count($reunionesBimestre) }}/{{ $metaBimestre }}
                                 </div>
                             @endif
                         @endif
@@ -415,7 +415,7 @@
                                 ]) }})"
                                 title="Click para ver detalles">
                                 <span class="reunion-fecha">{{ $reunion['fecha_display'] }}</span>
-                                <span class="reunion-icon">{{ $reunion['programada'] ? '✓' : '⚠' }}</span>
+                                <span class="reunion-icon">{{ $reunion['programada'] ? 'âœ“' : 'âš ' }}</span>
                             </div>
                         @empty
                             <div class="empty-bimestre">
@@ -445,7 +445,7 @@
         <div class="modal-content" onclick="event.stopPropagation()">
             <div class="modal-header">
                 <h3>Agregar Reunión - {{ $grupo->nombre }}</h3>
-                <button type="button" class="close-modal-btn" onclick="cerrarModalBtn({{ $grupo->id }})">×</button>
+                <button type="button" class="close-modal-btn" onclick="cerrarModalBtn({{ $grupo->id }})">x</button>
             </div>
             <div class="modal-body">
                 <form action="{{ route('grupotrabajo.guardarReunion') }}" method="POST">
@@ -460,7 +460,7 @@
                     <div class="form-group">
                         <label>
                             ¿Esta reunión fue programada o fuera de programación? *
-                            <!--<span class="info-tooltip" title="Indica si la reunión estaba en la agenda original">ℹ️</span>-->
+                            <!--<span class="info-tooltip" title="Indica si la reunión estaba en la agenda original">â„¹ï¸</span>-->
                         </label>
                         <div class="radio-group">
                             <label class="radio-option">
@@ -524,7 +524,7 @@
     <div class="modal-content" onclick="event.stopPropagation()" style="max-width: 500px;">
         <div class="modal-header">
             <h3>Detalles de la Reunión</h3>
-            <button type="button" class="close-modal-btn" onclick="cerrarModalDetalleBtn()">×</button>
+            <button type="button" class="close-modal-btn" onclick="cerrarModalDetalleBtn()">x</button>
         </div>
         <div class="modal-body">
             <div class="form-group">
@@ -559,16 +559,16 @@
 
 <!-- Info flotante de ayuda 
 <div style="position: fixed; bottom: 20px; right: 20px; background: white; border: 2px solid #667eea; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.2); z-index: 999;" onclick="toggleAyuda()" title="Ayuda">
-    <span style="font-size: 1.5em;">💡</span>
+    <span style="font-size: 1.5em;">ðŸ’¡</span>
 </div>
 <div id="panel-ayuda" style="display: none; position: fixed; bottom: 80px; right: 20px; background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 20px; max-width: 350px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); z-index: 998;">
-    <h4 style="margin: 0 0 15px 0; color: #667eea;">💡 Guía Rápida</h4>
+    <h4 style="margin: 0 0 15px 0; color: #667eea;">ðŸ’¡ Guía Rápida</h4>
     <ul style="margin: 0; padding-left: 20px; font-size: 0.9em; line-height: 1.6;">
         <li><strong>Click en una reunión</strong> para ver sus detalles completos</li>
         <li><strong>Colores:</strong> Verde = programada, Naranja = fuera de programación</li>
         <li><strong>Meta por bimestre:</strong> Se muestra en el encabezado de cada columna</li>
         <li><strong>Indicador de progreso:</strong> Aparece cuando hay reuniones en el bimestre</li>
-        <li><strong>Botón ⚙️:</strong> Edita el grupo y sus metas</li>
+        <li><strong>Botón âš™ï¸:</strong> Edita el grupo y sus metas</li>
         <li><strong>Estado del grupo:</strong> Muestra si la meta anual se cumplió o cuántas faltan</li>
     </ul>
     <button onclick="toggleAyuda()" style="margin-top: 15px; padding: 8px 15px; background: #667eea; color: white; border: none; border-radius: 4px; cursor: pointer; width: 100%;">
@@ -789,7 +789,7 @@ document.addEventListener('DOMContentLoaded', function() {
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
             <h3>Editar Grupo de Trabajo</h3>
-            <button type="button" class="close-modal-btn" onclick="cerrarModalEdit()">×</button>
+            <button type="button" class="close-modal-btn" onclick="cerrarModalEdit()">x</button>
         </div>
         <div class="modal-body">
             <iframe id="modal-iframe-edit-grupo" src="about:blank" title="Editar grupo"></iframe>
@@ -830,7 +830,7 @@ window.addEventListener('message', function(ev){
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
             <h3>Editar Reunión</h3>
-            <button type="button" class="close-modal-btn" onclick="cerrarModalEditReunion()">×</button>
+            <button type="button" class="close-modal-btn" onclick="cerrarModalEditReunion()">x</button>
         </div>
         <div class="modal-body">
             <iframe id="modal-iframe-edit-reunion" src="about:blank" title="Editar reunión"></iframe>

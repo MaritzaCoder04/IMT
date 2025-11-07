@@ -1,4 +1,4 @@
-<p>Hola,</p>
+﻿<p>Hola,</p>
 
 <p>Este es un recordatorio automático: en dos semanas se cumple una fecha registrada sin marcar como completada.</p>
 

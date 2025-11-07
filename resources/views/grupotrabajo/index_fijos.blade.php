@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
 <div class="main-container">
@@ -9,7 +9,7 @@
         <form method="GET" action="{{ route('grupotrabajo.fijos') }}" class="search-box">
             <div class="input-clearable">
                 <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
-                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
+                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">x</button>
             </div>
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
                 Agregar Grupo
@@ -97,7 +97,7 @@
                     @empty
                     <tr>
                         <td colspan="10" class="empty-state">
-                            <div class="empty-state-icon">📋</div>
+                            <div class="empty-state-icon">ðŸ“‹</div>
                             <p><strong>No hay grupos de trabajo registrados</strong></p>
                             <p style="color: #666; font-size: 0.9em;">Comienza agregando tu primer grupo de trabajo</p>
                         </td>
@@ -128,7 +128,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3>Grupo de Trabajo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-gt" src="about:blank" title="Crear grupo"></iframe>

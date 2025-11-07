@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 @section('contenido')
 <link rel="stylesheet" href="{{ asset('css/estilosModales.css') }}">
 @if(session('success'))
@@ -239,10 +239,10 @@
         <!--
         <div class="tabs-container">
             <button class="tab-btn active" onclick="cambiarTab('crear')">
-                ➕ Crear/Editar Reporte
+                âž• Crear/Editar Reporte
             </button>
             <button class="tab-btn" onclick="cambiarTab('inventario')">
-                📚 Inventario de Reportes
+                ðŸ“š Inventario de Reportes
             </button>
         </div>
         -->
@@ -264,7 +264,13 @@
                     $bimestreActual = $bimestreSeleccionado ?? 1;
                 @endphp
 
-                <div class="reporte-toolbar" style="display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px; width:100%;">
+                <div class="reporte-toolbar" style="display:grid; grid-template-columns: 1fr auto; align-items:center; gap:10px; width:100%;">    @php
+        $currentYear = (int)date('Y');
+        $selectedYear = (int)request()->get('anio', $anioSeleccionado ?? $currentYear);
+    @endphp
+    <div class="year-switcher" style="display:flex; align-items:center; gap:8px;">
+      <input type="number" id="page-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:90px;" />
+    </div>
                     <div class="bimestres-left" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
                         @foreach($bimestres as $num => $nombre)
                             @php
@@ -275,7 +281,7 @@
                                     title="{{ $reporteExiste ? 'Reporte guardado' : 'Sin guardar' }}">
                                 {{ $nombre }}
                                 @if($reporteExiste)
-                                    ✓
+                                    âœ“
                                 @endif
                             </button>
                         @endforeach
@@ -373,17 +379,18 @@
     @php
         // Tabla normativa: solo los cuatro rubros de productos (sin coordinación)
         $grupos = [
-            ['id' => '',  'descripcion' => 'Con base en el entorno tecnológico mundial, el IMT emitirá normas y manuales para ampliar y actualizar la Normativa Técnica de la SICT para la infraestructura del transporte, en lo referente a proyecto, construcción, conservación y características de materiales, así como métodos de muestreo y pruebas de materiales, con una meta de 18 anteproyectos preliminares, 17 anteproyectos finales, 14 proyectos preliminares y 14 normas y manuales por publicar.', 'unidad' => 'Producto Terminado'],
-            ['id' => 'apt',  'descripcion' => 'Elaboración de anteproyectos preliminares de normas y manuales', 'unidad' => 'Anteproyecto preliminar'],
-            ['id' => 'aft',  'descripcion' => 'Elaboración de anteproyectos finales de normas y manuales',    'unidad' => 'Anteproyecto final'],
-            ['id' => 'ppt',  'descripcion' => 'Elaboración de proyectos preliminares de normas y manuales',   'unidad' => 'Proyecto preliminar'],
-            ['id' => 'np',   'descripcion' => 'Publicación de normas y manuales', 'unidad' => 'Norma y/o manual'],
-            ['id' => '',   'descripcion' => 'Se continuará coordinando el Subcomité Número 4 de Señalamiento y Dispositivos de Seguridad Vial, del Comité Consultivo Nacional de Normalización de Transporte Terrestre y su Grupo de Trabajo 1, mismo que concluirá la NOM-037-SCT2-2025, Barreras de protección en carreteras y vías urbanas y publicará la NOM-033-SCT2-2024, Diseño de plazas de cobro en carreteras. Criterios de seguridad vial.', 'unidad' => ''],
-            ['id' => 'sub4', 'descripcion' => 'Coordinación de las reuniones de trabajo del Subcomité No. 4', 'unidad' => 'Reunión'],
-            ['id' => 'gt1',  'descripcion' => 'Coordinación de las reuniones del grupo de trabajo',            'unidad' => 'Reunión'],
-            ['id' => '',   'descripcion' => 'Se continuará participando en los comités consultivos nacionales de normalización de Transporte Terrestre, de Transporte Aéreo, de Seguridad al Usuario, de la Secretaría de Economía, de Ordenamiento Territorial y Desarrollo Urbano; en los grupos de trabajo del Organismo Nacional de Normalización y Certificación de la Construcción y Edificación, S. C. (ONNCCE), y en el Comité Técnico 4.6 de la Asociación Mundial de la Carretera.', 'unidad' => 'Reunión'],
-                                        
-        ];
+            
+    ['id' => '', 'descripcion' => 'Con base en el entorno tecnológico mundial, el IMT emitirá normas y manuales para ampliar y actualizar la Normativa Técnica de la SICT para la infraestructura del transporte, en lo referente a proyecto, construcción, conservación y características de materiales, así como métodos de muestreo y pruebas de materiales, con una meta de 18 anteproyectos preliminares, 17 anteproyectos finales, 14 proyectos preliminares y 14 normas y manuales por publicar.', 'unidad' => 'Producto Terminado'],
+    ['id' => 'apt', 'descripcion' => 'Elaboración de anteproyectos preliminares de normas y manuales', 'unidad' => 'Anteproyecto preliminar'],
+    ['id' => 'aft', 'descripcion' => 'Elaboración de anteproyectos finales de normas y manuales', 'unidad' => 'Anteproyecto final'],
+    ['id' => 'ppt', 'descripcion' => 'Elaboración de proyectos preliminares de normas y manuales', 'unidad' => 'Proyecto preliminar'],
+    ['id' => 'np', 'descripcion' => 'Publicación de normas y manuales', 'unidad' => 'Norma y/o manual'],
+    ['id' => '', 'descripcion' => 'Se continuará coordinando el Subcomité Número 4 de Señalamiento y Dispositivos de Seguridad Vial, del Comité Consultivo Nacional de Normalización de Transporte Terrestre y su Grupo de Trabajo 1, mismo que concluirá la NOM-037-SCT2-2025, Barreras de protección en carreteras y vías urbanas y publicará la NOM-033-SCT2-2024, Diseño de plazas de cobro en carreteras. Criterios de seguridad vial.', 'unidad' => ''],
+    ['id' => 'sub4', 'descripcion' => 'Coordinación de las reuniones de trabajo del Subcomité No. 4', 'unidad' => 'Reunión'],
+    ['id' => 'gt1', 'descripcion' => 'Coordinación de las reuniones del grupo de trabajo', 'unidad' => 'Reunión'],
+    ['id' => '', 'descripcion' => 'Se continuará participando en los comités consultivos nacionales de normalización de Transporte Terrestre, de Transporte Aéreo, de Seguridad al Usuario, de la Secretaría de Economía, de Ordenamiento Territorial y Desarrollo Urbano; en los grupos de trabajo del Organismo Nacional de Normalización y Certificación de la Construcción y Edificación, S. C. (ONNCCE), y en el Comité Técnico 4.6 de la Asociación Mundial de la Carretera.', 'unidad' => 'Reunión'],
+];
+
 
         // Calcular rowspan del bloque de observaciones (desde 6.1.4 hasta g))
         $rowspanBloque = 0;
@@ -473,7 +480,7 @@
                 $aftMeta = $metaPorId['aft'] ?? 0;
                 $pptMeta = $metaPorId['ppt'] ?? 0;
                 $npMeta  = $metaPorId['np']  ?? 0;
-                $descripcionDinamica = "Con base en el entorno tecnológico mundial, el IMT emitirá normas y manuales para ampliar y actualizar la Normativa Técnica de la SICT para la infraestructura del transporte, en lo referente a proyecto, construcción, conservación y características de materiales, así como métodos de muestreo y pruebas de materiales, con una meta de {$aptMeta} anteproyectos preliminares, {$aftMeta} anteproyectos finales, {$pptMeta} proyectos preliminares y {$npMeta} normas y manuales por publicar.";
+                $descripcionDinamica = "Con base en el entorno tecnológico mundial, el IMT emitirá normas y manuales para ampliar y actualizar la Normativa Técnica de la SICT para la infraestructura del transporte, en lo referente a proyecto, construcción, conservación y caracterí­sticas de materiales, así­ como métodos de muestreo y pruebas de materiales, con una meta de {$aptMeta} anteproyectos preliminares, {$aftMeta} anteproyectos finales, {$pptMeta} proyectos preliminares y {$npMeta} normas y manuales por publicar.";
             }
         @endphp
         <tr>
@@ -525,14 +532,14 @@
                 </div>
                 <div class="stat-box">
                     <h3>{{ $ultimoReporte->anio ?? '--' }}</h3>
-                    <p>Último Año Registrado</p>
+                    <p>Ãšltimo Año Registrado</p>
                 </div>
             </div>
 
             @forelse($reportesPorAnio ?? [] as $anio => $reportes)
             <div style="margin-bottom: 30px;">
                 <h3 style="color: #667eea; margin-bottom: 15px; display: flex; align-items: center; gap: 10px;">
-                    📅 Año {{ $anio }}
+                    ðŸ“… Año {{ $anio }}
                     <span style="font-size: 0.7em; font-weight: normal; color: #666;">
                         ({{ count($reportes) }} de 6 bimestres completados)
                     </span>
@@ -544,28 +551,28 @@
                         <div class="reporte-info">
                             <h4>
                                 {{ $bimestres[$reporte->bimestre] ?? 'Bimestre ' . $reporte->bimestre }}
-                                <span class="estado-badge estado-guardado">✓ Guardado</span>
+                                <span class="estado-badge estado-guardado">âœ“ Guardado</span>
                             </h4>
                             <p>
-                                📅 Fecha de creación: {{ $reporte->created_at->format('d/m/Y H:i') }}
+                                ðŸ“… Fecha de creación: {{ $reporte->created_at->format('d/m/Y H:i') }}
                                 @if($reporte->updated_at != $reporte->created_at)
-                                    | Última edición: {{ $reporte->updated_at->format('d/m/Y H:i') }}
+                                    | Ãšltima edición: {{ $reporte->updated_at->format('d/m/Y H:i') }}
                                 @endif
                             </p>
                         </div>
                         <div class="reporte-actions">
                             <button class="btn btn-secondary" 
                                     onclick="window.location='{{ route('grupotrabajo.reporte') }}?anio={{ $reporte->anio }}&bimestre={{ $reporte->bimestre }}'">
-                                👁️ Ver
+                                ðŸ‘ï¸ Ver
                             </button>
                             <button class="btn btn-secondary" 
                                     onclick="window.location='{{ route('grupotrabajo.pdf', ['anio' => $reporte->anio, 'bimestre' => $reporte->bimestre]) }}'">
-                                📥 PDF
+                                ðŸ“¥ PDF
                             </button>
                             <button class="btn btn-secondary2" 
                                     onclick="confirmarEliminarReporte({{ $reporte->anio }}, {{ $reporte->bimestre }})"
                                     style="background: #f44336;">
-                                🗑️
+                                ðŸ—‘ï¸
                             </button>
                         </div>
                     </div>
@@ -574,11 +581,11 @@
             </div>
             @empty
             <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 4em; margin-bottom: 15px; opacity: 0.3;">📋</div>
+                <div style="font-size: 4em; margin-bottom: 15px; opacity: 0.3;">ðŸ“‹</div>
                 <h3>No hay reportes guardados</h3>
                 <p style="color: #666;">Comienza creando tu primer reporte en la pestaña "Crear/Editar Reporte"</p>
                 <button class="btn btn-secondary" onclick="cambiarTab('crear')">
-                    ➕ Crear Primer Reporte
+                    âž• Crear Primer Reporte
                 </button>
             </div> 
             @endforelse
@@ -590,7 +597,7 @@
 <div id="modal-guardar" class="modal-overlay" onclick="cerrarModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
         <div class="modal-header">
-            <h3>💾 Guardar Reporte</h3>
+            <h3>ðŸ’¾ Guardar Reporte</h3>
         </div>
         <div class="modal-body">
             <form action="{{ route('grupotrabajo.guardarReporte') }}" method="POST">
@@ -600,30 +607,30 @@
                 <input type="hidden" name="datos_grupos" id="form-datos">
 
                 <div class="form-group">
-                    <label>📅 Año</label>
+                    <label>ðŸ“… Año</label>
                     <input type="text" value="{{ $anioSeleccionado ?? date('Y') }}" readonly style="background: #f5f5f5;">
                 </div>
 
                 <div class="form-group">
-                    <label>📊 Bimestre</label>
+                    <label>ðŸ“Š Bimestre</label>
                     <input type="text" value="{{ $bimestres[$bimestreSeleccionado ?? 1] ?? 'Bimestre 1' }}" readonly style="background: #f5f5f5;">
                 </div>
 
                 <div class="form-group">
-                    <label>📝 Notas adicionales (opcional)</label>
+                    <label>ðŸ“ Notas adicionales (opcional)</label>
                     <textarea name="notas" rows="3" placeholder="Agregar notas generales sobre este reporte..."></textarea>
                 </div>
 
                 <div style="background: #e8f5e9; padding: 12px; border-radius: 4px; margin: 15px 0; border-left: 3px solid #4caf50;">
-                    <strong>ℹ️ Nota:</strong> Se guardarán los datos actuales de todos los grupos y sus observaciones.
+                    <strong>â„¹ï¸ Nota:</strong> Se guardarán los datos actuales de todos los grupos y sus observaciones.
                 </div>
 
                 <div class="modal-actions">
                     <button type="submit" class="btn btn-secondary" style="background: #4caf50;">
-                        💾 Guardar Reporte
+                        ðŸ’¾ Guardar Reporte
                     </button>
                     <button type="button" class="btn btn-secondary2" onclick="cerrarModalBtn()">
-                        ❌ Cancelar
+                        âŒ Cancelar
                     </button>
                 </div>
             </form>
@@ -760,7 +767,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const indicator = document.createElement('div');
         indicator.className = 'save-indicator';
         indicator.style.cssText = 'position: absolute; right: 5px; top: 5px; font-size: 10px; color: #28a745; display: none;';
-        indicator.textContent = '✓ Guardado';
+        indicator.textContent = 'âœ“ Guardado';
         
         // Hacer el contenedor padre relativo para posicionar el indicador
         textarea.parentElement.style.position = 'relative';
@@ -768,7 +775,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         textarea.addEventListener('input', function() {
             // Mostrar indicador de "guardando..."
-            indicator.textContent = '⏳ Guardando...';
+            indicator.textContent = 'â³ Guardando...';
             indicator.style.color = '#ffc107';
             indicator.style.display = 'block';
             
@@ -781,7 +788,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 console.log('Guardando observación:', textarea.dataset.field, '=', textarea.value);
                 
                 // Mostrar confirmación de guardado
-                indicator.textContent = '✓ Guardado';
+                indicator.textContent = 'âœ“ Guardado';
                 indicator.style.color = '#28a745';
                 
                 // Ocultar indicador después de 2 segundos
@@ -796,7 +803,7 @@ document.addEventListener('DOMContentLoaded', function() {
             clearTimeout(saveTimeout);
             if (textarea.value !== textarea.defaultValue) {
                 console.log('Guardando observación al perder foco:', textarea.dataset.field, '=', textarea.value);
-                indicator.textContent = '✓ Guardado';
+                indicator.textContent = 'âœ“ Guardado';
                 indicator.style.color = '#28a745';
                 indicator.style.display = 'block';
                 setTimeout(function() {
@@ -827,3 +834,27 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var input = document.getElementById('page-year-input');
+  if (!input) return;
+  input.addEventListener('change', function(){
+    try { localStorage.setItem('anioGlobal', String(input.value)); } catch(e){}
+    var url = new URL(window.location.href);
+    var params = url.searchParams;
+    var y = input.value || '';
+    var b = params.get('bimestre') || '{{ $bimestreSeleccionado ?? 1 }}';
+    if (y) params.set('anio', y); else params.delete('anio');
+    if (b) params.set('bimestre', b);
+    url.search = params.toString();
+    window.location.href = url.toString();
+  });
+});
+</script>
+
+
+
+
+
+

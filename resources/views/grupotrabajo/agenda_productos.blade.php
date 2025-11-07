@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 @section('contenido')
 
 <style>
@@ -206,14 +206,22 @@
 <div class="all-form">
     <div class="form-container">
     <div class="section-content">
-        <h2 class="section-title">Agenda de Productos</h2>
+        <h2 class="section-title">Agenda de Productos</h2>  
+        
 
         <!-- Buscador -->
         <form method="GET" action="{{ route('grupotrabajo.agenda_productos') }}" class="search-box">
             <div class="input-clearable">
                 <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
-                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
+                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">x</button>
             </div>
+             @php
+        $currentYear = (int)date('Y');
+        $selectedYear = (int)request()->get('anio', $currentYear);
+    @endphp
+    <div class="year-switcher" style="display:flex; align-items:center; gap:8px;">
+      <input type="number" id="page-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:90px;" />
+    </div>
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
                 Agregar Grupo
             </button>
@@ -307,7 +315,7 @@
                     @empty
                     <tr>
                         <td colspan="10" class="empty-state">
-                            <div class="empty-state-icon">📋</div>
+                            <div class="empty-state-icon">ðŸ“‹</div>
                             <p><strong>No hay grupos de trabajo registrados</strong></p>
                             <p style="color: #666; font-size: 0.9em;">Comienza agregando tu primer grupo de trabajo</p>
                         </td>
@@ -337,7 +345,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3>Grupo de Trabajo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-gt" src="about:blank" title="Crear grupo"></iframe>
@@ -350,7 +358,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3>Tipos de Grupo de Trabajo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalGrupos()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGrupos()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-grupos" src="about:blank" title="Tipos de grupo"></iframe>
@@ -363,7 +371,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3 id="agenda-modal-title">Agenda del grupo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalAgenda()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalAgenda()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-agenda" src="about:blank" title="Agenda del grupo"></iframe>
@@ -466,3 +474,41 @@
 </div>
 
 @endsection
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var input = document.getElementById('page-year-input');
+  if (!input) return;
+  input.addEventListener('change', function(){
+    try { localStorage.setItem('anioGlobal', String(input.value)); } catch(e){}
+    var url = new URL(window.location.href);
+    var params = url.searchParams;
+    var y = input.value || '';
+    var busqueda = (document.querySelector('.search-box input[name="busqueda"]') || {}).value || '';
+    if (y) params.set('anio', y); else params.delete('anio');
+    if (busqueda) params.set('busqueda', busqueda); else params.delete('busqueda');
+    url.search = params.toString();
+    window.location.href = url.toString();
+  });
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var input = document.getElementById('page-year-input');
+  if (!input) return;
+  input.addEventListener('change', function(){
+    try { localStorage.setItem('anioGlobal', String(input.value)); } catch(e){}
+    var url = new URL(window.location.href);
+    var params = url.searchParams;
+    var y = input.value || '';
+    var busqueda = (document.querySelector('.search-box input[name="busqueda"]') || {}).value || '';
+    if (y) params.set('anio', y); else params.delete('anio');
+    if (busqueda) params.set('busqueda', busqueda); else params.delete('busqueda');
+    url.search = params.toString();
+    window.location.href = url.toString();
+  });
+});
+</script>
+
+
+

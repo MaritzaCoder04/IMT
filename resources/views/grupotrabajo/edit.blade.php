@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
     <!-- Formulario -->
@@ -142,3 +142,4 @@
     </form>
 </div>
 @endsection
+

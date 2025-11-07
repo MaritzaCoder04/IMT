@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     <style>
         /* Input con botón de limpiar (X) */
         .input-clearable { position: relative; display: inline-block; width: 100%; }
@@ -31,21 +31,21 @@
                         <label for="palabra">Cualquier Palabra</label>
                         <div class="input-clearable">
                             <input type="text" id="palabra" wire:model.live="palabra" placeholder="Ingrese cualquier palabra">
-                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="palabraExacta">Palabra Exacta</label>
                         <div class="input-clearable">
                             <input type="text" id="palabraExacta" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
-                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                         </div>
                     </div>
                     <div class="form-group">
                         <label for="designacion">Designación</label>
                         <div class="input-clearable">
                             <input type="text" id="designacion" wire:model.live="designacion" placeholder="Ingrese designación">
-                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                         </div>
                     </div>
                     <div class="form-group">
@@ -61,7 +61,7 @@
                         <label for="anio">Año</label>
                         <div class="input-clearable">
                             <input type="number" id="anio" wire:model.live="anio" placeholder="Ej: 2012" min="1990" max="2030">
-                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                            <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                         </div>
                     </div>
                     <div class="actions">
@@ -117,3 +117,4 @@
                     </table>
                 </div>
 </div>
+

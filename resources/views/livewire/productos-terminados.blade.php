@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     <style>
         /* Input con botón de limpiar (X) */
         .input-clearable { position: relative; display: inline-block; width: 100%; }
@@ -35,14 +35,14 @@
                                             <label for="cp">Cualquier Palabra</label>
                                             <div class="input-clearable">
                                                 <input type="text" id="cp" wire:model.live="busqueda" placeholder="Ingrese cualquier palabra">
-                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                                             </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="pe">Palabra Exacta</label>
                                             <div class="input-clearable">
                                                 <input type="text" id="pe" wire:model.live="palabraExacta" placeholder="Coincidencia exacta (ej: cal)">
-                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">×</button>
+                                                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));">x</button>
                                             </div>
                                         </div>
                                         

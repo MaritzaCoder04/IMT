@@ -1,4 +1,4 @@
-@extends('home')
+﻿@extends('home')
 
 @section('contenido')
 
@@ -232,12 +232,12 @@
             $progresoGeneral = $totalMetaAnual > 0 ? round(($totalReuniones / $totalMetaAnual) * 100) : 0;
         @endphp
 
-        <!-- Tarjetas de estadísticas -->
+        <!-- Tarjetas de estadáísticas -->
          <!--
         <div class="stats-cards">
             <div class="stat-card">
                 <div class="stat-icon" style="background: #e3f2fd;">
-                    👥
+                    ðŸ‘¥
                 </div>
                 <div class="stat-info">
                     <h4>Total Grupos</h4>
@@ -247,7 +247,7 @@
 
             <div class="stat-card">
                 <div class="stat-icon" style="background: #f3e5f5;">
-                    🎯
+                    ðŸŽ¯
                 </div>
                 <div class="stat-info">
                     <h4>Meta Anual Total</h4>
@@ -257,7 +257,7 @@
 
             <div class="stat-card">
                 <div class="stat-icon" style="background: #e8f5e9;">
-                    ✅
+                    âœ…
                 </div>
                 <div class="stat-info">
                     <h4>Reuniones Realizadas</h4>
@@ -267,7 +267,7 @@
 
             <div class="stat-card">
                 <div class="stat-icon" style="background: #fff3e0;">
-                    📊
+                    ðŸ“Š
                 </div>
                 <div class="stat-info">
                     <h4>Progreso General</h4>
@@ -284,8 +284,52 @@
         <form method="GET" action="{{ route('grupotrabajo.index') }}" class="search-box">
             <div class="input-clearable">
                 <input type="text" name="busqueda" placeholder="Buscar grupo por nombre..." value="{{ request('busqueda') }}">
-                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">×</button>
+                <button type="button" class="clear-input" aria-label="Limpiar" onclick="const i=this.previousElementSibling;i.value='';i.dispatchEvent(new Event('input',{bubbles:true}));i.focus();">x</button>
             </div>
+             @php
+        $currentYear = (int)date('Y');
+        $selectedYear = (int)request()->get('anio', $currentYear);
+    @endphp
+    <div class="year-switcher" style="display:flex; align-items:center; gap:8px;">
+      <input type="number" id="page-year-input" value="{{ $selectedYear }}" min="1990" max="{{ $currentYear + 50 }}" placeholder="{{ $currentYear }}" style="padding:6px 10px; border-radius:6px; border:1px solid #cbd5e1; font-size:0.9rem; width:90px;" />
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var input = document.getElementById('page-year-input');
+  if (!input) return;
+  input.addEventListener('change', function(){
+    try { localStorage.setItem('anioGlobal', String(input.value)); } catch(e){}
+    var url = new URL(window.location.href);
+    var params = url.searchParams;
+    var y = input.value || '';
+    if (y) params.set('anio', y); else params.delete('anio');
+    url.search = params.toString();
+    window.location.href = url.toString();
+  });
+});
+</script>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  try {
+    var input = document.getElementById('page-year-input');
+    var url = new URL(window.location.href);
+    var params = url.searchParams;
+    var anioParam = params.get('anio');
+    var saved = null; try { saved = localStorage.getItem('anioGlobal'); } catch(e){}
+    if (!anioParam && saved) {
+      var y = parseInt(saved, 10);
+      var min = parseInt(input && input.getAttribute('min') || '0', 10);
+      var max = parseInt(input && input.getAttribute('max') || '9999', 10);
+      if (!Number.isNaN(y) && (!min || y >= min) && (!max || y <= max)) {
+        if (input) input.value = String(y);
+        params.set('anio', String(y));
+        url.search = params.toString();
+        window.location.replace(url.toString());
+      }
+    }
+  } catch (e) {}
+});
+</script>
             <button type="button" class="btn btn-ejemplo" onclick="abrirModalUrl('{{ route('grupotrabajo.create') }}')">
                 Agregar Grupo
             </button>
@@ -390,7 +434,7 @@
                     @empty
                     <tr>
                         <td colspan="10" class="empty-state">
-                            <div class="empty-state-icon">📋</div>
+                            <div class="empty-state-icon">ðŸ“‹</div>
                             <p><strong>No hay grupos de trabajo registrados</strong></p>
                             <p style="color: #666; font-size: 0.9em;">Comienza agregando tu primer grupo de trabajo</p>
                         </td>
@@ -468,7 +512,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3>Grupo de Trabajo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGT()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-gt" src="about:blank" title="Crear grupo"></iframe>
@@ -481,7 +525,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3>Tipos de Grupo de Trabajo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalGrupos()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalGrupos()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-grupos" src="about:blank" title="Tipos de grupo"></iframe>
@@ -494,7 +538,7 @@
             <div class="modal-content" onclick="event.stopPropagation()">
                 <div class="modal-header">
                     <h3 id="agenda-modal-title">Agenda del grupo</h3>
-                    <button type="button" class="close-modal-btn" onclick="cerrarModalAgenda()">×</button>
+                    <button type="button" class="close-modal-btn" onclick="cerrarModalAgenda()">x</button>
                 </div>
                 <div class="modal-body">
                     <iframe id="modal-iframe-agenda" src="about:blank" title="Agenda del grupo"></iframe>
@@ -595,3 +639,4 @@
 </div>
 
 @endsection
+
