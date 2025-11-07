@@ -13,6 +13,9 @@
             @if(request('modal'))
             <input type="hidden" name="modal" value="1">
             @endif
+            @if(request('scope'))
+            <input type="hidden" name="scope" value="{{ request('scope') }}">
+            @endif
             <input type="text" 
                    name="nombre" 
                    placeholder="Nombre" 
@@ -28,12 +31,6 @@
             </button>
         </form>
 
-        <!-- Sugerencias de nombres combinados -->
-        <datalist id="nombres-grupos">
-            @foreach($nombresGrupos as $nombre)
-                <option value="{{ $nombre }}"></option>
-            @endforeach
-        </datalist>
     </div>
 
     <!-- Tabla -->
@@ -76,6 +73,9 @@
                                     @method('PUT')
                                     @if(request('modal'))
                                     <input type="hidden" name="modal" value="1">
+                                    @endif
+                                    @if(request('scope'))
+                                    <input type="hidden" name="scope" value="{{ request('scope') }}">
                                     @endif
                                     <button type="submit" class="btn-icon" title="Actualizar">
                                         <img src="{{ asset('img/pencil.png') }}" alt="Actualizar">

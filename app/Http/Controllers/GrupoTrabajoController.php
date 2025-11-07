@@ -138,6 +138,7 @@ class GrupoTrabajoController extends Controller
     // Vista 2: Formulario para crear grupo
     public function create()
     {
+        $scope = request()->get('scope');
         // Construir opciones SOLO desde el catálogo de 'grupos' activos,
         // para que permanezcan disponibles aunque se borren de 'grupos_trabajo'.
         if (Schema::hasTable('grupos')) {
@@ -157,16 +158,22 @@ class GrupoTrabajoController extends Controller
             ]);
         }
 
-        // Excluir de las opciones del select los grupos fijos solicitados
-        $excluirNombres = [
+        // Aplicar filtrado por scope en las opciones del select
+        $productos = [
             'Anteproyecto Preliminar',
             'Anteproyecto Final',
             'Proyecto Preliminar',
             'Publicación de Manuales/Normas',
         ];
-        $nombresGrupos = $nombresGrupos
-            ->reject(function($n) use ($excluirNombres){ return in_array($n, $excluirNombres); })
-            ->filter()->unique()->sort()->values();
+        if ($scope === 'productos') {
+            $nombresGrupos = $nombresGrupos
+                ->filter(fn($n) => in_array($n, $productos))
+                ->filter()->unique()->sort()->values();
+        } else {
+            $nombresGrupos = $nombresGrupos
+                ->reject(fn($n) => in_array($n, $productos))
+                ->filter()->unique()->sort()->values();
+        }
 
         return view('grupotrabajo.create', [
             'nombresGrupos' => $nombresGrupos,

@@ -158,7 +158,7 @@
             if(!anio){
               try { anio = localStorage.getItem('anioGlobal'); } catch(e) {}
             }
-            let src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            let src = url + (url.includes('?') ? '&' : '?') + 'modal=1&scope=productos';
             if (anio) { src += '&anio=' + encodeURIComponent(anio); }
             iframe.src = src;
             document.getElementById('modal-overlay-gt').classList.add('active');
@@ -176,7 +176,7 @@
         function abrirModalGrupos(url){
           try{
             const iframe = document.getElementById('modal-iframe-grupos');
-            iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            iframe.src = url + (url.includes('?') ? '&' : '?') + 'modal=1&scope=productos';
             document.getElementById('modal-overlay-grupos').classList.add('active');
           }catch(e){}
         }

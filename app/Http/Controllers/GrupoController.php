@@ -26,7 +26,7 @@ class GrupoController extends Controller
         $nombresTipos = $grupos->pluck('nombre');
 
         $nombresTrabajo = collect();
-        if (Schema::hasTable('grupo_trabajos')) {
+        if (Schema::hasTable('grupos_trabajo')) {
             try {
                 $nombresTrabajo = GrupoTrabajo::orderBy('nombre')->pluck('nombre');
             } catch (\Throwable $e) {
@@ -59,6 +59,15 @@ class GrupoController extends Controller
             ];
             $nombresGrupos = $nombresGrupos->filter(fn($n) => in_array($n, $permitidos))->values();
             $grupos = $grupos->filter(fn($g) => in_array($g->nombre ?? '', $permitidos))->values();
+        } elseif ($scope === 'otros') {
+            $excluir = [
+                'Anteproyecto Preliminar',
+                'Anteproyecto Final',
+                'Proyecto Preliminar',
+                'Publicación de Manuales/Normas',
+            ];
+            $nombresGrupos = $nombresGrupos->filter(fn($n) => !in_array($n, $excluir))->values();
+            $grupos = $grupos->filter(fn($g) => !in_array($g->nombre ?? '', $excluir))->values();
         }
 
         return view('grupos.index', compact('grupos', 'nombresGrupos'));
@@ -96,9 +105,13 @@ class GrupoController extends Controller
         }
 
         $target = route('grupos.index');
+        $scope = $request->get('scope');
         if ($request->boolean('modal')) {
-            return redirect()->to($target.'?modal=1&saved=1');
+            $redir = $target.'?modal=1&saved=1';
+            if ($scope) { $redir .= '&scope=' . urlencode($scope); }
+            return redirect()->to($redir);
         }
+        if ($scope) { $target .= '?scope=' . urlencode($scope); }
         return redirect()->to($target)->with('success');
     }
 
@@ -126,9 +139,13 @@ class GrupoController extends Controller
         }
 
         $target = route('grupos.index');
+        $scope = $request->get('scope');
         if ($request->boolean('modal')) {
-            return redirect()->to($target.'?modal=1&saved=1');
+            $redir = $target.'?modal=1&saved=1';
+            if ($scope) { $redir .= '&scope=' . urlencode($scope); }
+            return redirect()->to($redir);
         }
+        if ($scope) { $target .= '?scope=' . urlencode($scope); }
         return redirect()->to($target)->with('success');
     }
 
@@ -145,9 +162,13 @@ class GrupoController extends Controller
             return redirect()->route('grupos.index')->with('error', 'Error al eliminar: ' . $e->getMessage());
         }
         $target = route('grupos.index');
+        $scope = $request->get('scope');
         if ($request->boolean('modal')) {
-            return redirect()->to($target.'?modal=1&saved=1');
+            $redir = $target.'?modal=1&saved=1';
+            if ($scope) { $redir .= '&scope=' . urlencode($scope); }
+            return redirect()->to($redir);
         }
+        if ($scope) { $target .= '?scope=' . urlencode($scope); }
         return redirect()->to($target)->with('success');
     }
 }

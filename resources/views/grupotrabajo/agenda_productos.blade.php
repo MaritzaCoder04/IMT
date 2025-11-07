@@ -388,7 +388,7 @@
             if(!anio){
               try { anio = localStorage.getItem('anioGlobal'); } catch(e) {}
             }
-            let src = url + (url.includes('?') ? '&' : '?') + 'modal=1';
+            let src = url + (url.includes('?') ? '&' : '?') + 'modal=1&scope=productos';
             if (anio) { src += '&anio=' + encodeURIComponent(anio); }
             iframe.src = src;
             document.getElementById('modal-overlay-gt').classList.add('active');
@@ -509,6 +509,3 @@ document.addEventListener('DOMContentLoaded', function(){
   });
 });
 </script>
-
-
-
